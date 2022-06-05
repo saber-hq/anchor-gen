@@ -81,18 +81,26 @@ fn to_str(ty: &IdlType) -> String {
     }
 }
 
-/// parses a string literal public key into a byte array public key
+/// Generates an Anchor CPI crate from a JSON file.
 ///
 /// # Arguments
 ///
-/// * `input` - A public key string
+/// * `input` - Path to a JSON IDL relative to the crate's the Cargo.toml.
 ///
 /// # Examples
 ///
 /// ```
-/// use static_pubkey::static_pubkey;
-/// let key = static_pubkey!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
-/// assert!(key.to_string() == "GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
+/// idl_macro::generate_cpi_crate!("tests/src/idl.json");
+/// declare_id!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
+/// # fn main() -> Result<()> {
+/// let _my_governor = GovernanceParameters {
+///     quorum_votes: 0,
+///     timelock_delay_seconds: 0,
+///     voting_period: 0,
+///     voting_delay: 0,
+/// };
+/// #   Ok(())
+/// # }
 /// ```
 #[proc_macro]
 pub fn generate_cpi_crate(input: proc_macro::TokenStream) -> proc_macro::TokenStream {

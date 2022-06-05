@@ -18,3 +18,6 @@ anchor-syn = { version = "0.24.2", features = ["idl"] }
 proc-macro2 = "1"
 quote = "1"
 syn = { version = "1", features = ["full"] }
+
+[dev-dependencies]
+anchor-lang = "0.24.2"
