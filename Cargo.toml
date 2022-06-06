@@ -1,2 +1,2 @@
 [workspace]
-members = ["idl-macro", "tests"]
+members = ["anchor-gen", "examples/*"]

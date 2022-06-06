@@ -90,7 +90,7 @@ fn to_str(ty: &IdlType) -> String {
 /// # Examples
 ///
 /// ```
-/// idl_macro::generate_cpi_crate!("tests/src/idl.json");
+/// anchor_gen::generate_cpi_crate!("tests/src/idl.json");
 /// declare_id!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
 /// # fn main() -> Result<()> {
 /// let _my_governor = GovernanceParameters {

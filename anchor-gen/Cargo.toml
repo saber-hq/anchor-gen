@@ -1,10 +1,10 @@
 [package]
-name = "idl-macro"
+name = "anchor-gen"
 version = "0.1.0"
 edition = "2021"
 description = "Generates an Anchor CPI crate from a JSON IDL."
 authors = ["Ian Macalinao <ian@saber.so>"]
-repository = "https://github.com/saber-hq/idl-macro"
+repository = "https://github.com/saber-hq/anchor-gen"
 license = "Apache-2.0"
 keywords = ["solana", "anchor"]
 readme = "../README.md"
