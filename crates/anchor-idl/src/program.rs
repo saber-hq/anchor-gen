@@ -40,9 +40,8 @@ pub fn generate_cpi_helpers(idl: &anchor_syn::idl::Idl) -> TokenStream {
         }
 
         use ix_accounts::*;
-        use state::*;
-        use typedefs::*;
-
+        pub use state::*;
+        pub use typedefs::*;
 
         #[program]
         pub mod #program_name {
