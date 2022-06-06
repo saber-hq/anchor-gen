@@ -86,7 +86,7 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
             can_copy: false,
             can_derive_default: false,
         },
-        IdlType::String => FieldListProperties {
+        IdlType::String | IdlType::Vec(_) => FieldListProperties {
             can_copy: false,
             can_derive_default: true,
         },
@@ -102,11 +102,6 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
             }
         }
         IdlType::Option(inner) => get_type_properties(defs, &inner),
-        IdlType::Vec(inner) => {
-            let mut props = get_type_properties(defs, &inner);
-            props.can_copy = false;
-            props
-        }
         IdlType::Array(inner, _) => get_type_properties(defs, &inner),
     }
 }
