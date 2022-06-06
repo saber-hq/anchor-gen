@@ -17,7 +17,7 @@ pub fn generate_struct(struct_name: &Ident, fields: &[IdlField]) -> TokenStream 
         })
         .collect::<Vec<_>>();
     quote! {
-        #[account]
+        #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
         pub struct #struct_name {
             #(#fields_rendered),*
         }
@@ -28,7 +28,7 @@ pub fn generate_struct(struct_name: &Ident, fields: &[IdlField]) -> TokenStream 
 pub fn generate_enum(enum_name: &Ident, variants: &[IdlEnumVariant]) -> TokenStream {
     let variant_idents = variants.iter().map(|v| format_ident!("{}", v.name));
     quote! {
-        #[derive(AnchorSerialize, AnchorDeserialize)]
+        #[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone, Debug)]
         pub enum #enum_name {
             #(#variant_idents),*
         }
@@ -44,13 +44,7 @@ pub fn generate_typedefs(typedefs: &[IdlTypeDefinition]) -> TokenStream {
                 generate_struct(&struct_name, &fields)
             }
             anchor_syn::idl::IdlTypeDefinitionTy::Enum { variants } => {
-                let variant_idents = variants.iter().map(|v| format_ident!("{}", v.name));
-                quote! {
-                    #[derive(AnchorSerialize, AnchorDeserialize)]
-                    pub enum #struct_name {
-                        #(#variant_idents),*
-                    }
-                }
+                generate_enum(&struct_name, &variants)
             }
         }
     });

@@ -1,17 +1,15 @@
+use crate::*;
 use proc_macro2::{Ident, TokenStream};
-use quote::{format_ident,quote};
-
-use crate::GEN_VERSION;
+use quote::{format_ident, quote};
 
 /// Generates all CPI helpers.
 pub fn generate_cpi_helpers(idl: &anchor_syn::idl::Idl) -> TokenStream {
     let program_name: Ident = format_ident!("{}", idl.name);
 
-    let typedefs = crate::generate_typedefs(&idl.types);
-
-    let ix_handlers = crate::generate_ix_handlers(&idl.instructions);
-
-    let ix_structs = crate::generate_ix_structs(&idl.instructions);
+    let accounts = generate_accounts(&idl.accounts);
+    let typedefs = generate_typedefs(&idl.types);
+    let ix_handlers = generate_ix_handlers(&idl.instructions);
+    let ix_structs = generate_ix_structs(&idl.instructions);
 
     let docs = format!(
         " Anchor CPI crate generated from {} v{} using [anchor-gen](https://crates.io/crates/anchor-gen) v{}.",
@@ -23,9 +21,28 @@ pub fn generate_cpi_helpers(idl: &anchor_syn::idl::Idl) -> TokenStream {
     quote! {
         use anchor_lang::prelude::*;
 
-        #typedefs
+        pub mod typedefs {
+            //! User-defined types.
+            use super::*;
+            #typedefs
+        }
 
-        #ix_structs
+        pub mod state {
+            //! Accounts which hold state.
+            use super::*;
+            #accounts
+        }
+
+        pub mod instructions {
+            //! Accounts used in instructions.
+            use super::*;
+            #ix_structs
+        }
+
+        use instructions::*;
+        use state::*;
+        use typedefs::*;
+
 
         #[program]
         pub mod #program_name {

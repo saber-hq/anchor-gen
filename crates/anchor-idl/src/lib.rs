@@ -5,10 +5,12 @@ use quote::{format_ident, quote};
 
 mod instruction;
 mod program;
+mod state;
 mod typedef;
 
 pub use instruction::*;
 pub use program::*;
+pub use state::*;
 pub use typedef::*;
 
 /// Version of anchor-idl.
