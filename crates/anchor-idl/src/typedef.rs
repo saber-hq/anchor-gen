@@ -3,23 +3,27 @@ use heck::ToSnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
+pub fn generate_fields(fields: &[IdlField]) -> TokenStream {
+    let fields_rendered = fields.iter().map(|arg| {
+        let name = format_ident!("{}", arg.name.to_snake_case());
+        let type_name = crate::ty_to_rust_type(&arg.ty);
+        let stream: proc_macro2::TokenStream = type_name.parse().unwrap();
+        quote! {
+            pub #name: #stream
+        }
+    });
+    quote! {
+        #(#fields_rendered),*
+    }
+}
+
 /// Generates a struct.
 pub fn generate_struct(struct_name: &Ident, fields: &[IdlField]) -> TokenStream {
-    let fields_rendered = fields
-        .iter()
-        .map(|arg| {
-            let name = format_ident!("{}", arg.name.to_snake_case());
-            let type_name = crate::ty_to_rust_type(&arg.ty);
-            let stream: proc_macro2::TokenStream = type_name.parse().unwrap();
-            quote! {
-                pub #name: #stream
-            }
-        })
-        .collect::<Vec<_>>();
+    let fields_rendered = generate_fields(&fields);
     quote! {
         #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
         pub struct #struct_name {
-            #(#fields_rendered),*
+            #fields_rendered
         }
     }
 }
