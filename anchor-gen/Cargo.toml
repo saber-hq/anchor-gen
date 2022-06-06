@@ -1,6 +1,6 @@
 [package]
 name = "anchor-gen"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Generates an Anchor CPI crate from a JSON IDL."
 authors = ["Ian Macalinao <ian@saber.so>"]
