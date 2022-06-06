@@ -28,18 +28,18 @@ pub fn generate_cpi_helpers(idl: &anchor_syn::idl::Idl) -> TokenStream {
         }
 
         pub mod state {
-            //! Accounts which hold state.
+            //! Structs of accounts which hold state.
             use super::*;
             #accounts
         }
 
-        pub mod instructions {
+        pub mod ix_accounts {
             //! Accounts used in instructions.
             use super::*;
             #ix_structs
         }
 
-        use instructions::*;
+        use ix_accounts::*;
         use state::*;
         use typedefs::*;
 

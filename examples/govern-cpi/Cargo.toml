@@ -8,6 +8,13 @@ repository = "https://github.com/saber-hq/anchor-gen"
 license = "Apache-2.0"
 keywords = ["solana", "anchor"]
 
+[features]
+default = ["cpi"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+
 [dependencies]
 anchor-gen = { version = "0.1.0", path = "../../anchor-gen" }
 anchor-lang = ">=0.20"

@@ -26,7 +26,7 @@ pub fn generate_ix_handler(ix: &IdlInstruction) -> TokenStream {
             _ctx: Context<#accounts_name>,
             #(#args),*
         ) -> Result<()> {
-            todo!()
+            unimplemented!("This program is a wrapper for CPI.")
         }
     }
 }
