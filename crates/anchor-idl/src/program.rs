@@ -6,7 +6,7 @@ use quote::{format_ident, quote};
 pub fn generate_cpi_helpers(idl: &anchor_syn::idl::Idl) -> TokenStream {
     let program_name: Ident = format_ident!("{}", idl.name);
 
-    let accounts = generate_accounts(&idl.types,&idl.accounts);
+    let accounts = generate_accounts(&idl.types, &idl.accounts);
     let typedefs = generate_typedefs(&idl.types);
     let ix_handlers = generate_ix_handlers(&idl.instructions);
     let ix_structs = generate_ix_structs(&idl.instructions);
@@ -14,7 +14,7 @@ pub fn generate_cpi_helpers(idl: &anchor_syn::idl::Idl) -> TokenStream {
     let docs = format!(
         " Anchor CPI crate generated from {} v{} using [anchor-gen](https://crates.io/crates/anchor-gen) v{}.",
         &idl.name,
-        &idl.version, 
+        &idl.version,
         &GEN_VERSION.unwrap_or("unknown")
     );
 
