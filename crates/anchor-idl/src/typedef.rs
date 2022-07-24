@@ -31,7 +31,7 @@ pub fn get_type_list_properties(
         |acc, el| {
             let inner_props = get_type_properties(defs, el);
             let can_copy = acc.can_copy && inner_props.can_copy;
-            let can_derive_default = acc.can_copy && inner_props.can_derive_default;
+            let can_derive_default = acc.can_derive_default && inner_props.can_derive_default;
             FieldListProperties {
                 can_copy,
                 can_derive_default,
