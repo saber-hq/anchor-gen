@@ -29,7 +29,7 @@ pub fn generate_account(
 
     let doc = format!(" Account: {}", account_name);
     let struct_name = format_ident!("{}", account_name);
-    let fields_rendered = generate_fields(&fields);
+    let fields_rendered = generate_fields(fields);
     quote! {
         #[account]
         #[doc = #doc]
@@ -48,7 +48,7 @@ pub fn generate_accounts(
 ) -> TokenStream {
     let defined = account_defs.iter().map(|def| match &def.ty {
         anchor_syn::idl::IdlTypeDefinitionTy::Struct { fields } => {
-            generate_account(typedefs, &def.name, &fields)
+            generate_account(typedefs, &def.name, fields)
         }
         anchor_syn::idl::IdlTypeDefinitionTy::Enum { .. } => {
             panic!("unexpected enum account");
