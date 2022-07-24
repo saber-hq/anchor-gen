@@ -32,16 +32,17 @@ pub fn generate_account_fields(
             anchor_syn::idl::IdlAccountItem::IdlAccounts(inner) => {
                 let field_name = format_ident!("{}{}", name, inner.name.to_snake_case());
                 let sub_name = format!("{}{}", name, inner.name.to_pascal_case());
+                let sub_ident = format_ident!("{}", &sub_name);
                 let (sub_structs, sub_fields) = generate_account_fields(&sub_name, &inner.accounts);
                 all_structs.push(sub_structs);
                 all_structs.push(quote! {
                     #[derive(Accounts)]
-                    pub struct #sub_name<'info> {
+                    pub struct #sub_ident<'info> {
                         #sub_fields
                     }
                 });
                 quote! {
-                    pub #field_name: #sub_name<'info>
+                    pub #field_name: #sub_ident<'info>
                 }
             }
         })

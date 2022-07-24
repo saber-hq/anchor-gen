@@ -29,7 +29,7 @@ pub fn get_type_list_properties(
             can_derive_default: true,
         },
         |acc, el| {
-            let inner_props = get_type_properties(defs, &el);
+            let inner_props = get_type_properties(defs, el);
             let can_copy = acc.can_copy && inner_props.can_copy;
             let can_derive_default = acc.can_copy && inner_props.can_derive_default;
             FieldListProperties {
@@ -51,8 +51,8 @@ pub fn get_variant_list_properties(
         },
         |acc, el| {
             let props = match &el.fields {
-                Some(EnumFields::Named(fields)) => get_field_list_properties(defs, &fields),
-                Some(EnumFields::Tuple(fields)) => get_type_list_properties(defs, &fields),
+                Some(EnumFields::Named(fields)) => get_field_list_properties(defs, fields),
+                Some(EnumFields::Tuple(fields)) => get_type_list_properties(defs, fields),
                 None => acc,
             };
             FieldListProperties {
@@ -94,15 +94,15 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
             let def = defs.iter().find(|def| def.name == *inner).unwrap();
             match &def.ty {
                 anchor_syn::idl::IdlTypeDefinitionTy::Struct { fields } => {
-                    get_field_list_properties(defs, &fields)
+                    get_field_list_properties(defs, fields)
                 }
                 anchor_syn::idl::IdlTypeDefinitionTy::Enum { variants } => {
                     get_variant_list_properties(defs, variants)
                 }
             }
         }
-        IdlType::Option(inner) => get_type_properties(defs, &inner),
-        IdlType::Array(inner, _) => get_type_properties(defs, &inner),
+        IdlType::Option(inner) => get_type_properties(defs, inner),
+        IdlType::Array(inner, _) => get_type_properties(defs, inner),
     }
 }
 
@@ -127,8 +127,8 @@ pub fn generate_struct(
     struct_name: &Ident,
     fields: &[IdlField],
 ) -> TokenStream {
-    let fields_rendered = generate_fields(&fields);
-    let props = get_field_list_properties(defs, &fields);
+    let fields_rendered = generate_fields(fields);
+    let props = get_field_list_properties(defs, fields);
 
     let derive_copy = if props.can_copy {
         quote! {
@@ -195,10 +195,10 @@ pub fn generate_typedefs(typedefs: &[IdlTypeDefinition]) -> TokenStream {
         let struct_name = format_ident!("{}", def.name);
         match &def.ty {
             anchor_syn::idl::IdlTypeDefinitionTy::Struct { fields } => {
-                generate_struct(typedefs, &struct_name, &fields)
+                generate_struct(typedefs, &struct_name, fields)
             }
             anchor_syn::idl::IdlTypeDefinitionTy::Enum { variants } => {
-                generate_enum(typedefs, &struct_name, &variants)
+                generate_enum(typedefs, &struct_name, variants)
             }
         }
     });
