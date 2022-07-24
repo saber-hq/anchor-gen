@@ -16,5 +16,5 @@ no-log-ix-name = []
 cpi = ["no-entrypoint"]
 
 [dependencies]
-anchor-gen = { version = "0.2.0", path = "../../anchor-gen" }
+anchor-gen = { version = "0.2.0", path = "../../crates/anchor-gen" }
 anchor-lang = ">=0.20"

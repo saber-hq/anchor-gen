@@ -1,4 +1,18 @@
-//! Generates an Anchor crate interface from a JSON IDL.
+//! Generates a crate for cross-program invocations to an Anchor program from a JSON IDL.
+//!
+//! # Usage
+//!
+//! In a new crate, write:
+//!
+//! ```skip
+//! anchor_gen::generate_cpi_crate!("../../examples/govern-cpi/idl.json");
+//!
+//! declare_id!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
+//! ```
+//!
+//! This will generate a fully functional Rust CPI client for your IDL.
+//!
+//! More examples can be found in the [examples/](https://github.com/saber-hq/anchor-gen/tree/master/examples) directory.
 
 use std::{env, fs, path::PathBuf};
 use syn::{parse_macro_input, LitStr};
@@ -12,7 +26,7 @@ use syn::{parse_macro_input, LitStr};
 /// # Examples
 ///
 /// ```
-/// anchor_gen::generate_cpi_crate!("../examples/govern-cpi/idl.json");
+/// anchor_gen::generate_cpi_crate!("../../examples/govern-cpi/idl.json");
 /// declare_id!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
 /// # fn main() -> Result<()> {
 /// let _my_governor = GovernanceParameters {

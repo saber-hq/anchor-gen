@@ -1,2 +1,2 @@
 [workspace]
-members = ["anchor-gen", "crates/*", "examples/*"]
+members = ["crates/*", "examples/*"]
