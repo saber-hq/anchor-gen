@@ -10,7 +10,7 @@ pub fn generate_account(
     account_name: &str,
     fields: &[IdlField],
 ) -> TokenStream {
-    let props = get_field_list_properties(defs, &fields);
+    let props = get_field_list_properties(defs, fields);
 
     let derive_copy = if props.can_copy {
         quote! {

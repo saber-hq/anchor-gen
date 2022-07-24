@@ -36,9 +36,9 @@ pub fn ty_to_rust_type(ty: &IdlType) -> String {
         IdlType::Bytes => "Vec<u8>".to_string(),
         IdlType::String => "String".to_string(),
         IdlType::PublicKey => "Pubkey".to_string(),
-        IdlType::Option(inner) => format!("Option<{}>", ty_to_rust_type(&inner)),
-        IdlType::Vec(inner) => format!("Vec<{}>", ty_to_rust_type(&inner)),
-        IdlType::Array(ty, size) => format!("[{}; {}]", ty_to_rust_type(&ty), size),
-        IdlType::Defined(name) => format!("{}", name),
+        IdlType::Option(inner) => format!("Option<{}>", ty_to_rust_type(inner)),
+        IdlType::Vec(inner) => format!("Vec<{}>", ty_to_rust_type(inner)),
+        IdlType::Array(ty, size) => format!("[{}; {}]", ty_to_rust_type(ty), size),
+        IdlType::Defined(name) => name.to_string(),
     }
 }
