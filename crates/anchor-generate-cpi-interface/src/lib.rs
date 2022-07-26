@@ -23,12 +23,12 @@ use syn::parse_macro_input;
 ///
 /// # Arguments
 ///
-/// * `input` - Path to a JSON IDL relative to the crate's the Cargo.toml.
+/// * `idl_path` - Path to a JSON IDL relative to the crate's the Cargo.toml.
 ///
 /// # Examples
 ///
 /// ```
-/// anchor_generate_cpi_interface::generate_cpi_interface!("../../examples/govern-cpi/idl.json");
+/// anchor_generate_cpi_interface::generate_cpi_interface!(idl_path = "../../examples/govern-cpi/idl.json");
 /// declare_id!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
 /// # fn main() -> Result<()> {
 /// let _my_governor = GovernanceParameters {

@@ -16,8 +16,6 @@ proc-macro = true
 
 [dependencies]
 anchor-idl = { version = "0.2.0", path = "../anchor-idl" }
-serde_json = "1.0.81"
-anchor-syn = { version = "0.24.2", features = ["idl"] }
 syn = { version = "1", features = ["full"] }
 
 [dev-dependencies]
