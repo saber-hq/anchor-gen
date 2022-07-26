@@ -1,19 +1,23 @@
 [package]
-name = "anchor-idl"
+name = "anchor-generate-cpi-interface"
 version = "0.2.0"
 edition = "2021"
-description = "Generates Rust code from an Anchor IDL."
+description = "Generates an Anchor CPI crate from a JSON IDL."
 authors = ["Ian Macalinao <ian@saber.so>"]
 repository = "https://github.com/saber-hq/anchor-gen"
 license = "Apache-2.0"
 keywords = ["solana", "anchor"]
+readme = "../../README.md"
+
+[lib]
+name = "anchor_generate_cpi_interface"
+path = "src/lib.rs"
+proc-macro = true
 
 [dependencies]
+anchor-idl = { version = "0.2.0", path = "../anchor-idl" }
 anchor-syn = { version = "0.24.2", features = ["idl"] }
 darling = "0.14"
-heck = "0.4.0"
-proc-macro2 = "1"
-quote = "1"
 serde_json = "1.0.81"
 syn = { version = "1", features = ["full"] }
 

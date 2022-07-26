@@ -1,7 +1,11 @@
+use std::collections::BTreeMap;
+
 use anchor_syn::idl::{EnumFields, IdlEnumVariant, IdlField, IdlType, IdlTypeDefinition};
 use heck::ToSnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
+
+use crate::StructOpts;
 
 #[derive(Copy, Clone, Debug, Default)]
 pub struct FieldListProperties {
@@ -104,7 +108,7 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
         IdlType::Option(inner) => get_type_properties(defs, inner),
         IdlType::Array(inner, len) => {
             let inner = get_type_properties(defs, inner);
-            let can_derive_array_len = *len <= 32usize;
+            let can_derive_array_len = *len <= 32;
             FieldListProperties {
                 can_copy: inner.can_copy,
                 can_derive_default: can_derive_array_len && inner.can_derive_default,
@@ -133,17 +137,11 @@ pub fn generate_struct(
     defs: &[IdlTypeDefinition],
     struct_name: &Ident,
     fields: &[IdlField],
+    opts: StructOpts,
 ) -> TokenStream {
     let fields_rendered = generate_fields(fields);
     let props = get_field_list_properties(defs, fields);
 
-    let derive_copy = if props.can_copy {
-        quote! {
-            #[derive(Copy)]
-        }
-    } else {
-        quote! {}
-    };
     let derive_default = if props.can_derive_default {
         quote! {
             #[derive(Default)]
@@ -151,10 +149,37 @@ pub fn generate_struct(
     } else {
         quote! {}
     };
+    let derive_serializers = if opts.zero_copy {
+        let repr = if opts.packed {
+            quote! {
+                #[repr(packed)]
+            }
+        } else {
+            quote! {
+                #[repr(C)]
+            }
+        };
+        quote! {
+            #[zero_copy]
+            #repr
+        }
+    } else {
+        let derive_copy = if props.can_copy {
+            quote! {
+                #[derive(Copy)]
+            }
+        } else {
+            quote! {}
+        };
+        quote! {
+            #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+            #derive_copy
+        }
+    };
 
     quote! {
-        #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
-        #derive_copy
+        #derive_serializers
+        #[derive(Debug)]
         #derive_default
         pub struct #struct_name {
             #fields_rendered
@@ -197,12 +222,16 @@ pub fn generate_enum(
 }
 
 /// Generates structs and enums.
-pub fn generate_typedefs(typedefs: &[IdlTypeDefinition]) -> TokenStream {
+pub fn generate_typedefs(
+    typedefs: &[IdlTypeDefinition],
+    struct_opts: &BTreeMap<String, StructOpts>,
+) -> TokenStream {
     let defined = typedefs.iter().map(|def| {
         let struct_name = format_ident!("{}", def.name);
         match &def.ty {
             anchor_syn::idl::IdlTypeDefinitionTy::Struct { fields } => {
-                generate_struct(typedefs, &struct_name, fields)
+                let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
+                generate_struct(typedefs, &struct_name, fields, opts)
             }
             anchor_syn::idl::IdlTypeDefinitionTy::Enum { variants } => {
                 generate_enum(typedefs, &struct_name, variants)

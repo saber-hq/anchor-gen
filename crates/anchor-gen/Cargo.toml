@@ -12,10 +12,10 @@ readme = "../../README.md"
 [lib]
 name = "anchor_gen"
 path = "src/lib.rs"
-proc-macro = true
 
 [dependencies]
-anchor-idl = { version = "0.2.0", path = "../anchor-idl" }
+anchor-generate-cpi-crate = { version = "0.2.0", path = "../anchor-generate-cpi-crate" }
+anchor-generate-cpi-interface = { version = "0.2.0", path = "../anchor-generate-cpi-interface" }
 serde_json = "1.0.81"
 anchor-syn = { version = "0.24.2", features = ["idl"] }
 syn = { version = "1", features = ["full"] }
