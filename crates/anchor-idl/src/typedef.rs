@@ -103,12 +103,12 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
         }
         IdlType::Option(inner) => get_type_properties(defs, inner),
         IdlType::Array(inner, len) => {
-          let inner = get_type_properties(defs, inner);
-          let can_derive_array_len = *len <= 32usize;
-          FieldListProperties {
-              can_copy: inner.can_copy,
-              can_derive_default: can_derive_array_len && inner.can_derive_default,
-          }
+            let inner = get_type_properties(defs, inner);
+            let can_derive_array_len = *len <= 32usize;
+            FieldListProperties {
+                can_copy: inner.can_copy,
+                can_derive_default: can_derive_array_len && inner.can_derive_default,
+            }
         }
     }
 }
