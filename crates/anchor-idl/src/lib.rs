@@ -1,4 +1,4 @@
-//! Code generation from an Anchor IDL.
+//! Generates Rust code from an Anchor IDL.
 
 pub use anchor_syn::idl::*;
 

@@ -2,7 +2,7 @@
 name = "anchor-idl"
 version = "0.2.0"
 edition = "2021"
-description = "Anchor IDL helpers."
+description = "Generates Rust code from an Anchor IDL."
 authors = ["Ian Macalinao <ian@saber.so>"]
 repository = "https://github.com/saber-hq/anchor-gen"
 license = "Apache-2.0"
