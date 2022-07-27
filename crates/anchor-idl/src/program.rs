@@ -20,6 +20,8 @@ pub struct GeneratorOptions {
     pub zero_copy: Option<PathList>,
     /// List of `repr(packed)` structs.
     pub packed: Option<PathList>,
+    /// List of structs that should have `Default` impl skipped.
+    pub skip_default: Option<PathList>,
 }
 
 fn path_list_to_string(list: Option<&PathList>) -> HashSet<String> {
@@ -40,15 +42,23 @@ impl GeneratorOptions {
 
         let zero_copy = path_list_to_string(self.zero_copy.as_ref());
         let packed = path_list_to_string(self.packed.as_ref());
+        let skip_default = path_list_to_string(self.skip_default.as_ref());
+
+        let mut all_structs: HashSet<String> = HashSet::new();
+        for struct_item in [&zero_copy, &packed, &skip_default].into_iter().flatten() {
+            if !all_structs.contains(struct_item) {
+                all_structs.insert(struct_item.clone());
+            }
+        }
 
         let mut struct_opts: BTreeMap<String, StructOpts> = BTreeMap::new();
-        let all_structs: HashSet<&String> = zero_copy.union(&packed).collect::<HashSet<_>>();
-        all_structs.into_iter().for_each(|name| {
+        all_structs.iter().for_each(|name| {
             struct_opts.insert(
                 name.to_string(),
                 StructOpts {
                     zero_copy: zero_copy.contains(name),
                     packed: packed.contains(name),
+                    skip_default: skip_default.contains(name),
                 },
             );
         });
@@ -61,6 +71,7 @@ impl GeneratorOptions {
 pub struct StructOpts {
     pub packed: bool,
     pub zero_copy: bool,
+    pub skip_default: bool,
 }
 
 pub struct Generator {
