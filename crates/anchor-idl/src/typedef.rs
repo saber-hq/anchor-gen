@@ -4,6 +4,7 @@ use anchor_syn::idl::{EnumFields, IdlEnumVariant, IdlField, IdlType, IdlTypeDefi
 use heck::ToSnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
+use semver::Version;
 
 use crate::StructOpts;
 
@@ -224,6 +225,7 @@ pub fn generate_enum(
 /// Generates structs and enums.
 pub fn generate_typedefs(
     typedefs: &[IdlTypeDefinition],
+    _target_anchor_version: &Version,
     struct_opts: &BTreeMap<String, StructOpts>,
 ) -> TokenStream {
     let defined = typedefs.iter().map(|def| {

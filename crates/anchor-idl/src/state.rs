@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use anchor_syn::idl::{IdlField, IdlTypeDefinition};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
+use semver::Version;
 
 use crate::{generate_fields, get_field_list_properties, StructOpts};
 
@@ -67,6 +68,7 @@ pub fn generate_account(
 pub fn generate_accounts(
     typedefs: &[IdlTypeDefinition],
     account_defs: &[IdlTypeDefinition],
+    _target_anchor_version: &Version,
     struct_opts: &BTreeMap<String, StructOpts>,
 ) -> TokenStream {
     let defined = account_defs.iter().map(|def| match &def.ty {

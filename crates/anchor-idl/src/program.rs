@@ -7,6 +7,7 @@ use std::{
 use darling::{util::PathList, FromMeta};
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
+use semver::Version;
 
 use crate::{
     generate_accounts, generate_ix_handlers, generate_ix_structs, generate_typedefs, GEN_VERSION,
@@ -16,6 +17,8 @@ use crate::{
 pub struct GeneratorOptions {
     /// Path to the IDL.
     pub idl_path: String,
+    /// Target anchor version.
+    pub target_anchor_version: String,
     /// List of zero copy structs.
     pub zero_copy: Option<PathList>,
     /// List of `repr(packed)` structs.
@@ -38,6 +41,12 @@ impl GeneratorOptions {
         let idl_contents = fs::read_to_string(&path).unwrap();
         let idl: anchor_syn::idl::Idl = serde_json::from_str(&idl_contents).unwrap();
 
+        let target_anchor_version = if self.target_anchor_version.is_empty() {
+            Version::new(u64::max_value(), 0, 0)
+        } else {
+            Version::parse(&self.target_anchor_version).unwrap()
+        };
+
         let zero_copy = path_list_to_string(self.zero_copy.as_ref());
         let packed = path_list_to_string(self.packed.as_ref());
 
@@ -53,7 +62,7 @@ impl GeneratorOptions {
             );
         });
 
-        Generator { idl, struct_opts }
+        Generator { idl, target_anchor_version, struct_opts }
     }
 }
 
@@ -65,6 +74,7 @@ pub struct StructOpts {
 
 pub struct Generator {
     pub idl: anchor_syn::idl::Idl,
+    pub target_anchor_version: Version,
     pub struct_opts: BTreeMap<String, StructOpts>,
 }
 
@@ -73,10 +83,10 @@ impl Generator {
         let idl = &self.idl;
         let program_name: Ident = format_ident!("{}", idl.name);
 
-        let accounts = generate_accounts(&idl.types, &idl.accounts, &self.struct_opts);
-        let typedefs = generate_typedefs(&idl.types, &self.struct_opts);
-        let ix_handlers = generate_ix_handlers(&idl.instructions);
-        let ix_structs = generate_ix_structs(&idl.instructions);
+        let accounts = generate_accounts(&idl.types, &idl.accounts, &self.target_anchor_version, &self.struct_opts);
+        let typedefs = generate_typedefs(&idl.types, &self.target_anchor_version, &self.struct_opts);
+        let ix_handlers = generate_ix_handlers(&idl.instructions, &self.target_anchor_version);
+        let ix_structs = generate_ix_structs(&idl.instructions, &self.target_anchor_version);
 
         let docs = format!(
         " Anchor CPI crate generated from {} v{} using [anchor-gen](https://crates.io/crates/anchor-gen) v{}.",

@@ -9,6 +9,7 @@
 
 anchor_gen::generate_cpi_interface!(
     idl_path = "idl.json",
+    target_anchor_version = "",
     zero_copy(TickArray, Tick),
     packed(TickArray, Tick)
 );
