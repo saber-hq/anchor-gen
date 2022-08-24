@@ -28,7 +28,7 @@ use syn::parse_macro_input;
 /// # Examples
 ///
 /// ```
-/// anchor_generate_cpi_interface::generate_cpi_interface!(idl_path = "../../examples/govern-cpi/idl.json");
+/// anchor_generate_cpi_interface::generate_cpi_interface!(idl_path = "../../examples/govern-cpi/idl.json", target_anchor_version = "");
 /// declare_id!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
 /// # fn main() -> Result<()> {
 /// let _my_governor = GovernanceParameters {
