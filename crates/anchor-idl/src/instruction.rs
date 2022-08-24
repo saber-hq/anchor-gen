@@ -5,10 +5,7 @@ use quote::{format_ident, quote};
 use semver::{Version, VersionReq};
 
 /// Generates a single instruction handler.
-pub fn generate_ix_handler(
-    ix: &IdlInstruction,
-    target_anchor_version: &Version,
-) -> TokenStream {
+pub fn generate_ix_handler(ix: &IdlInstruction, target_anchor_version: &Version) -> TokenStream {
     let ix_name = format_ident!("{}", ix.name.to_snake_case());
     let accounts_name = format_ident!("{}", ix.name.to_pascal_case());
 
@@ -25,7 +22,10 @@ pub fn generate_ix_handler(
         })
         .collect::<Vec<_>>();
 
-    if VersionReq::parse(">=0.22.0").unwrap().matches(target_anchor_version) {
+    if VersionReq::parse(">=0.22.0")
+        .unwrap()
+        .matches(target_anchor_version)
+    {
         quote! {
             pub fn #ix_name(
                 _ctx: Context<#accounts_name>,
@@ -34,8 +34,7 @@ pub fn generate_ix_handler(
                 unimplemented!("This program is a wrapper for CPI.")
             }
         }
-    }
-    else {
+    } else {
         quote! {
             pub fn #ix_name(
                 _ctx: Context<#accounts_name>,
@@ -77,9 +76,9 @@ pub fn generate_ix_handlers(
     ixs: &[IdlInstruction],
     target_anchor_version: &Version,
 ) -> TokenStream {
-    let streams = ixs.iter().map(|ix|
-        generate_ix_handler(ix, target_anchor_version)
-    );
+    let streams = ixs
+        .iter()
+        .map(|ix| generate_ix_handler(ix, target_anchor_version));
     quote! {
         #(#streams)*
     }

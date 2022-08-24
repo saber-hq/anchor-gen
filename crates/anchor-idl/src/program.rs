@@ -62,7 +62,11 @@ impl GeneratorOptions {
             );
         });
 
-        Generator { idl, target_anchor_version, struct_opts }
+        Generator {
+            idl,
+            target_anchor_version,
+            struct_opts,
+        }
     }
 }
 
@@ -83,8 +87,14 @@ impl Generator {
         let idl = &self.idl;
         let program_name: Ident = format_ident!("{}", idl.name);
 
-        let accounts = generate_accounts(&idl.types, &idl.accounts, &self.target_anchor_version, &self.struct_opts);
-        let typedefs = generate_typedefs(&idl.types, &self.target_anchor_version, &self.struct_opts);
+        let accounts = generate_accounts(
+            &idl.types,
+            &idl.accounts,
+            &self.target_anchor_version,
+            &self.struct_opts,
+        );
+        let typedefs =
+            generate_typedefs(&idl.types, &self.target_anchor_version, &self.struct_opts);
         let ix_handlers = generate_ix_handlers(&idl.instructions, &self.target_anchor_version);
         let ix_structs = generate_ix_structs(&idl.instructions, &self.target_anchor_version);
 
