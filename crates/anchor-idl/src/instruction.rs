@@ -21,12 +21,23 @@ pub fn generate_ix_handler(ix: &IdlInstruction) -> TokenStream {
         })
         .collect::<Vec<_>>();
 
-    quote! {
-        pub fn #ix_name(
-            _ctx: Context<#accounts_name>,
-            #(#args),*
-        ) -> Result<()> {
-            unimplemented!("This program is a wrapper for CPI.")
+    if cfg!(feature = "compat-program-result") {
+        quote! {
+            pub fn #ix_name(
+                _ctx: Context<#accounts_name>,
+                #(#args),*
+            ) -> ProgramResult {
+                unimplemented!("This program is a wrapper for CPI.")
+            }
+        }
+    } else {
+        quote! {
+            pub fn #ix_name(
+                _ctx: Context<#accounts_name>,
+                #(#args),*
+            ) -> Result<()> {
+                unimplemented!("This program is a wrapper for CPI.")
+            }
         }
     }
 }

@@ -14,6 +14,9 @@ name = "anchor_generate_cpi_crate"
 path = "src/lib.rs"
 proc-macro = true
 
+[features]
+compat-program-result = ["anchor-idl/compat-program-result"]
+
 [dependencies]
 anchor-idl = { version = "0.3.0", path = "../anchor-idl" }
 syn = { version = "1", features = ["full"] }

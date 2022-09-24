@@ -8,6 +8,9 @@ repository = "https://github.com/saber-hq/anchor-gen"
 license = "Apache-2.0"
 keywords = ["solana", "anchor"]
 
+[features]
+compat-program-result = []
+
 [dependencies]
 anchor-syn = { version = "0.24.2", features = ["idl"] }
 darling = "0.14"
