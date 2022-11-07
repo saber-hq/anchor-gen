@@ -118,13 +118,20 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
 }
 
 /// Generates struct fields from a list of [IdlField]s.
-pub fn generate_fields(fields: &[IdlField]) -> TokenStream {
+pub fn generate_fields(fields: &[IdlField], public: bool) -> TokenStream {
     let fields_rendered = fields.iter().map(|arg| {
         let name = format_ident!("{}", arg.name.to_snake_case());
         let type_name = crate::ty_to_rust_type(&arg.ty);
         let stream: proc_macro2::TokenStream = type_name.parse().unwrap();
-        quote! {
-            pub #name: #stream
+
+        if public {
+            quote! {
+                pub #name: #stream
+            }
+        } else {
+            quote! {
+                #name: #stream
+            }
         }
     });
     quote! {
@@ -139,7 +146,7 @@ pub fn generate_struct(
     fields: &[IdlField],
     opts: StructOpts,
 ) -> TokenStream {
-    let fields_rendered = generate_fields(fields);
+    let fields_rendered = generate_fields(fields, true);
     let props = get_field_list_properties(defs, fields);
 
     let derive_default = if props.can_derive_default {
@@ -180,7 +187,6 @@ pub fn generate_struct(
     quote! {
         #derive_serializers
         #[derive(Debug)]
-        #derive_default
         pub struct #struct_name {
             #fields_rendered
         }
@@ -193,7 +199,24 @@ pub fn generate_enum(
     enum_name: &Ident,
     variants: &[IdlEnumVariant],
 ) -> TokenStream {
-    let variant_idents = variants.iter().map(|v| format_ident!("{}", v.name));
+    let variant_idents = variants.iter().map(|v| {
+        let name = format_ident!("{}", v.name);
+
+        match &v.fields {
+            Some(EnumFields::Named(fields)) => {
+                let fields_rendered = generate_fields(fields, false);
+                quote! {
+                    #name { #fields_rendered }
+                }
+            }
+            Some(EnumFields::Tuple(_fields)) => {
+                quote! { #name }
+            } // TODO: fix this
+            None => {
+                quote! { #name }
+            }
+        }
+    });
     let props = get_variant_list_properties(defs, variants);
 
     let derive_copy = if props.can_copy {
@@ -211,12 +234,6 @@ pub fn generate_enum(
         #derive_copy
         pub enum #enum_name {
             #(#variant_idents),*
-        }
-
-        impl Default for #enum_name {
-            fn default() -> Self {
-                Self::#default_variant
-            }
         }
     }
 }

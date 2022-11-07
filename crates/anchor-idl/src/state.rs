@@ -51,12 +51,10 @@ pub fn generate_account(
 
     let doc = format!(" Account: {}", account_name);
     let struct_name = format_ident!("{}", account_name);
-    let fields_rendered = generate_fields(fields);
+    let fields_rendered = generate_fields(fields, true);
     quote! {
         #derive_account
         #[doc = #doc]
-        #derive_copy
-        #derive_default
         pub struct #struct_name {
             #fields_rendered
         }
