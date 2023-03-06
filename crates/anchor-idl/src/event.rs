@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use anchor_syn::idl::{IdlEvent, IdlField, IdlTypeDefinition};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
+use sha2::{Digest, Sha256};
 
 use crate::{generate_struct, StructOpts};
 
@@ -21,9 +22,9 @@ pub fn generate_events(
                 let discriminator: proc_macro2::TokenStream = {
                     let discriminator_preimage = format!("event:{}", struct_name);
                     let mut discriminator = [0u8; 8];
-                    discriminator.copy_from_slice(
-                        &anchor_syn::hash::hash(discriminator_preimage.as_bytes()).to_bytes()[..8],
-                    );
+                    let mut hash = Sha256::default();
+                    hash.update(discriminator_preimage.as_bytes());
+                    discriminator.copy_from_slice(&hash.finalize()[..8]);
                     format!("{:?}", discriminator).parse().unwrap()
                 };
 
