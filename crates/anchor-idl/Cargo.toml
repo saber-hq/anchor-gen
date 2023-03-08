@@ -12,7 +12,7 @@ keywords = ["solana", "anchor"]
 compat-program-result = []
 
 [dependencies]
-anchor-syn = { version = "0.24.2", features = ["idl"] }
+anchor-syn = { version = "0.27.0", features = ["idl"] }
 darling = "0.14"
 heck = "0.4.0"
 proc-macro2 = "1"
