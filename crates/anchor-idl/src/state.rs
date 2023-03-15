@@ -15,7 +15,7 @@ pub fn generate_account(
 ) -> TokenStream {
     let props = get_field_list_properties(defs, fields);
 
-    let derive_copy = if props.can_copy && !opts.zero_copy {
+    let derive_copy = if props.can_copy && !opts.zero_copy.is_some() {
         quote! {
             #[derive(Copy)]
         }
@@ -29,24 +29,31 @@ pub fn generate_account(
     } else {
         quote! {}
     };
-    let derive_account = if opts.zero_copy {
-        let repr = if opts.packed {
-            quote! {
-                #[repr(packed)]
+    let derive_account = if let Some(zero_copy) = opts.zero_copy {
+        let zero_copy_quote = match zero_copy {
+            crate::ZeroCopy::Unsafe => quote! {
+                #[account(zero_copy(unsafe))]
+            },
+            crate::ZeroCopy::Safe => quote! {
+                #[account(zero_copy)]
+            },
+        };
+        if let Some(repr) = opts.representation {
+            match repr {
+                crate::Representation::C => quote! {
+                    #zero_copy_quote
+                    #[repr(C)]
+                },
+                crate::Representation::Transparent => quote! {
+                    #zero_copy_quote
+                    #[repr(transparent)]
+                },
             }
         } else {
-            quote! {
-                #[repr(C)]
-            }
-        };
-        quote! {
-            #[account(zero_copy)]
-            #repr
+            zero_copy_quote
         }
     } else {
-        quote! {
-            #[account]
-        }
+        quote! {#[account]}
     };
 
     let doc = format!(" Account: {}", account_name);

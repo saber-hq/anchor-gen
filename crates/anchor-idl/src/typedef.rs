@@ -82,6 +82,8 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
         | IdlType::F64
         | IdlType::U128
         | IdlType::I128
+        | IdlType::U256
+        | IdlType::I256
         | IdlType::PublicKey => FieldListProperties {
             can_copy: true,
             can_derive_default: true,
@@ -149,19 +151,28 @@ pub fn generate_struct(
     } else {
         quote! {}
     };
-    let derive_serializers = if opts.zero_copy {
-        let repr = if opts.packed {
-            quote! {
-                #[repr(packed)]
+    let derive_serializers = if let Some(zero_copy) = opts.zero_copy {
+        let zero_copy_quote = match zero_copy {
+            crate::ZeroCopy::Unsafe => quote! {
+                #[zero_copy(unsafe)]
+            },
+            crate::ZeroCopy::Safe => quote! {
+                #[zero_copy]
+            },
+        };
+        if let Some(repr) = opts.representation {
+            match repr {
+                crate::Representation::C => quote! {
+                    #zero_copy_quote
+                    #[repr(C)]
+                },
+                crate::Representation::Transparent => quote! {
+                    #zero_copy_quote
+                    #[repr(transparent)]
+                },
             }
         } else {
-            quote! {
-                #[repr(C)]
-            }
-        };
-        quote! {
-            #[zero_copy]
-            #repr
+            zero_copy_quote
         }
     } else {
         let derive_copy = if props.can_copy {
