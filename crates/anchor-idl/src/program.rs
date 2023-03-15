@@ -66,8 +66,6 @@ impl GeneratorOptions {
             let is_c_repr = c_repr.contains(name);
             let is_transparent_repr = transparent_repr.contains(name);
 
-            assert!(!(is_c_repr && is_transparent_repr));
-
             let representation = match (is_c_repr, is_transparent_repr) {
                 (true, true) => panic!("cant be c and transparent representation at the same time"),
                 (true, false) => Some(Representation::C),
