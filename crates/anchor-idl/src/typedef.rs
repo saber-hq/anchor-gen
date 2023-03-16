@@ -161,15 +161,21 @@ pub fn generate_struct(
             },
         };
         if let Some(repr) = opts.representation {
-            match repr {
+            let repr_quote = match repr {
                 crate::Representation::C => quote! {
-                    #zero_copy_quote
                     #[repr(C)]
                 },
                 crate::Representation::Transparent => quote! {
-                    #zero_copy_quote
+
                     #[repr(transparent)]
                 },
+                crate::Representation::Packed => quote! {
+                    #[repr(packed)]
+                },
+            };
+            quote! {
+                #zero_copy_quote
+                #repr_quote
             }
         } else {
             zero_copy_quote

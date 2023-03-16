@@ -24,6 +24,8 @@ pub struct GeneratorOptions {
     pub c_representation: Option<PathList>,
     /// List of `repr(transparent)` structs.
     pub transparent_representation: Option<PathList>,
+    /// List of `repr(packed)` structs.
+    pub packed_representation: Option<PathList>,
 }
 
 fn path_list_to_string(list: Option<&PathList>) -> HashSet<String> {
@@ -50,8 +52,13 @@ impl GeneratorOptions {
 
         let transparent_repr = path_list_to_string(self.transparent_representation.as_ref());
 
+        let packed_repr = path_list_to_string(self.packed_representation.as_ref());
+
         let repr = c_repr
             .union(&transparent_repr)
+            .cloned()
+            .collect::<HashSet<_>>()
+            .union(&packed_repr)
             .cloned()
             .collect::<HashSet<_>>();
 
@@ -65,12 +72,14 @@ impl GeneratorOptions {
         all_structs.into_iter().for_each(|name| {
             let is_c_repr = c_repr.contains(name);
             let is_transparent_repr = transparent_repr.contains(name);
+            let is_packed_repr = packed_repr.contains(name);
 
-            let representation = match (is_c_repr, is_transparent_repr) {
-                (true, true) => panic!("cant be c and transparent representation at the same time"),
-                (true, false) => Some(Representation::C),
-                (false, true) => Some(Representation::Transparent),
-                (false, false) => None,
+            let representation = match (is_c_repr, is_transparent_repr, is_packed_repr) {
+                (true, false, false) => Some(Representation::C),
+                (false, true, false) => Some(Representation::Transparent),
+                (false, false, true) => Some(Representation::Packed),
+                (false, false, false) => None,
+                _ => panic!("a type cannot have many representation"),
             };
 
             let is_zero_copy_safe = zero_copy_safe.contains(name);
@@ -112,6 +121,7 @@ pub enum ZeroCopy {
 pub enum Representation {
     C,
     Transparent,
+    Packed,
 }
 pub struct Generator {
     pub idl: anchor_syn::idl::Idl,
