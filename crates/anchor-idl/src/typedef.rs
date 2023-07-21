@@ -242,7 +242,7 @@ pub fn generate_enum(
         }
         _ => {
             let default_variant = format_ident!("{}", variants.first().unwrap().name);
-            default_impl = quote! {
+            quote! {
               impl Default for #enum_name {
                   fn default() -> Self {
                       Self::#default_variant
