@@ -237,7 +237,7 @@ pub fn generate_enum(
     };
 
     let mut default_impl = quote! {};
-    if variants.first().map(|f| f.fields.len() == 0).unwrap_or(false) {
+    if variants.first().map(|f| f.fields.is_none()).unwrap_or(false) {
       let default_variant = format_ident!("{}", variants.first().unwrap().name);
       default_impl = quote! {
         impl Default for #enum_name {
