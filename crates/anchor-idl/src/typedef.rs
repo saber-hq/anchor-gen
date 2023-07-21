@@ -236,17 +236,21 @@ pub fn generate_enum(
         quote! {}
     };
 
-    let mut default_impl = quote! {};
-    if variants.first().map(|f| f.fields.is_none()).unwrap_or(false) {
-      let default_variant = format_ident!("{}", variants.first().unwrap().name);
-      default_impl = quote! {
-        impl Default for #enum_name {
-            fn default() -> Self {
-                Self::#default_variant
+    let default_impl = match variants.first() {
+        Some(IdlEnumVariant(EnumFields::Named(fields), _)) if fields.len() > 0 => {
+            quote! {}
+        }
+        _ => {
+            let default_variant = format_ident!("{}", variants.first().unwrap().name);
+            default_impl = quote! {
+              impl Default for #enum_name {
+                  fn default() -> Self {
+                      Self::#default_variant
+                  }
+              }
             }
         }
-      }
-    }
+    };
 
     quote! {
         #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
