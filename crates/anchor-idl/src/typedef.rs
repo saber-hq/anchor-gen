@@ -237,7 +237,7 @@ pub fn generate_enum(
     };
 
     let default_impl = match variants.first() {
-        Some(IdlEnumVariant { fields: EnumFields::Named(fields), .. }) if fields.len() > 0 => {
+        Some(IdlEnumVariant { fields: Some(EnumFields::Named(fields)), .. }) if fields.len() > 0 => {
             quote! {}
         }
         _ => {
