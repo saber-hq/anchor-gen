@@ -236,7 +236,17 @@ pub fn generate_enum(
         quote! {}
     };
 
-    let default_variant = format_ident!("{}", variants.first().unwrap().name);
+    let mut default_impl = quote! {};
+    if variants.first().fields.len() == 0 {
+      let default_variant = format_ident!("{}", variants.first().unwrap().name);
+      default_impl = quote! {
+        impl Default for #enum_name {
+            fn default() -> Self {
+                Self::#default_variant
+            }
+        }
+      }
+    }
 
     quote! {
         #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
@@ -245,11 +255,7 @@ pub fn generate_enum(
             #(#variant_idents),*
         }
 
-        impl Default for #enum_name {
-            fn default() -> Self {
-                Self::#default_variant
-            }
-        }
+        #default_impl
     }
 }
 
