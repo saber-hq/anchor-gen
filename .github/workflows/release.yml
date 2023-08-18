@@ -26,7 +26,7 @@ jobs:
       - run: cargo doc
       - id: build-changelog
         name: Update the changelog
-        uses: mikepenz/release-changelog-builder-action@v3
+        uses: mikepenz/release-changelog-builder-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
