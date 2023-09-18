@@ -15,7 +15,7 @@ pub fn generate_account(
 ) -> TokenStream {
     let props = get_field_list_properties(defs, fields);
 
-    let derive_copy = if props.can_copy && !opts.zero_copy.is_some() {
+    let derive_copy = if props.can_copy && opts.zero_copy.is_none() {
         quote! {
             #[derive(Copy)]
         }
