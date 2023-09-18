@@ -1,6 +1,6 @@
 [package]
 name = "anchor-idl"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 description = "Generates Rust code from an Anchor IDL."
 authors = ["Ian Macalinao <ian@saber.so>"]
@@ -12,14 +12,13 @@ keywords = ["solana", "anchor"]
 compat-program-result = []
 
 [dependencies]
-anchor-syn = { version = "0.27.0", features = ["idl"] }
+anchor-syn = { version = "0.28.0", features = ["idl"] }
 darling = "0.14"
 heck = "0.4.1"
 proc-macro2 = "1"
 quote = "1"
 serde_json = "1.0.105"
 syn = { version = "1", features = ["full"] }
-bytemuck = { version = "1.4.0", features = ["derive", "min_const_generics"]}
 
 [dev-dependencies]
-anchor-lang = "0.27.0"
+anchor-lang = "0.28.0"
