@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use anchor_syn::idl::{EnumFields, IdlEnumVariant, IdlField, IdlType, IdlTypeDefinition};
+use anchor_syn::idl::types::{EnumFields, IdlEnumVariant, IdlField, IdlType, IdlTypeDefinition, IdlTypeDefinitionTy};
 use heck::ToSnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
@@ -99,11 +99,14 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
         IdlType::Defined(inner) => {
             let def = defs.iter().find(|def| def.name == *inner).unwrap();
             match &def.ty {
-                anchor_syn::idl::IdlTypeDefinitionTy::Struct { fields } => {
+                IdlTypeDefinitionTy::Struct { fields } => {
                     get_field_list_properties(defs, fields)
                 }
-                anchor_syn::idl::IdlTypeDefinitionTy::Enum { variants } => {
+                IdlTypeDefinitionTy::Enum { variants } => {
                     get_variant_list_properties(defs, variants)
+                }
+                IdlTypeDefinitionTy::Alias { value } => {
+                    get_type_properties(defs, value)
                 }
             }
         }
@@ -114,6 +117,25 @@ pub fn get_type_properties(defs: &[IdlTypeDefinition], ty: &IdlType) -> FieldLis
             FieldListProperties {
                 can_copy: inner.can_copy,
                 can_derive_default: can_derive_array_len && inner.can_derive_default,
+            }
+        }
+        IdlType::GenericLenArray(inner, _) => {
+            let inner = get_type_properties(defs, inner);
+            FieldListProperties {
+                can_copy: inner.can_copy,
+                can_derive_default: inner.can_derive_default,
+            }
+        }
+        IdlType::Generic(_) => {
+            FieldListProperties {
+                can_copy: false,
+                can_derive_default: false,
+            }
+        }
+        IdlType::DefinedWithTypeArgs { .. } => {
+            FieldListProperties {
+                can_copy: false,
+                can_derive_default: false,
             }
         }
     }
@@ -246,12 +268,19 @@ pub fn generate_typedefs(
     let defined = typedefs.iter().map(|def| {
         let struct_name = format_ident!("{}", def.name);
         match &def.ty {
-            anchor_syn::idl::IdlTypeDefinitionTy::Struct { fields } => {
+            IdlTypeDefinitionTy::Struct { fields } => {
                 let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
                 generate_struct(typedefs, &struct_name, fields, opts)
             }
-            anchor_syn::idl::IdlTypeDefinitionTy::Enum { variants } => {
+            IdlTypeDefinitionTy::Enum { variants } => {
                 generate_enum(typedefs, &struct_name, variants)
+            }
+            IdlTypeDefinitionTy::Alias { value } => {
+                let ty = crate::ty_to_rust_type(value);
+                let stream: proc_macro2::TokenStream = ty.parse().unwrap();
+                quote! {
+                    pub type #struct_name = #stream;
+                }
             }
         }
     });

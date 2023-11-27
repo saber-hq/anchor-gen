@@ -42,7 +42,7 @@ impl GeneratorOptions {
         let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
         let path = PathBuf::from(cargo_manifest_dir).join(&self.idl_path);
         let idl_contents = fs::read_to_string(path).unwrap();
-        let idl: anchor_syn::idl::Idl = serde_json::from_str(&idl_contents).unwrap();
+        let idl: anchor_syn::idl::types::Idl = serde_json::from_str(&idl_contents).unwrap();
 
         let zero_copy_safe = path_list_to_string(self.zero_copy.as_ref());
 
@@ -124,7 +124,7 @@ pub enum Representation {
     Packed,
 }
 pub struct Generator {
-    pub idl: anchor_syn::idl::Idl,
+    pub idl: anchor_syn::idl::types::Idl,
     pub struct_opts: BTreeMap<String, StructOpts>,
 }
 
