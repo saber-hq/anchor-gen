@@ -28,7 +28,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a9b75d05b6b4ac9d95bb6e3b786b27d3a708c4c5a87c92ffaa25bbe9ae4c5d91"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "anyhow",
  "proc-macro2",
  "quote",
@@ -42,7 +42,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "485351a6d8157750d10d88c8e256f1bf8339262b2220ae9125aed3471309b5de"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "anyhow",
  "bs58 0.4.0",
  "proc-macro2",
@@ -57,7 +57,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc632c540913dd051a78b00587cc47f57013d303163ddfaf4fa18717f7ccc1e0"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "proc-macro2",
  "syn 1.0.109",
 ]
@@ -68,7 +68,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b5bd1dcfa7f3bc22dacef233d70a9e0bee269c4ac484510662f257cba2353a1"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -80,7 +80,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c6f9e6ce551ac9a177a45c99a65699a860c9e95fac68675138af1246e2591b0"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "anyhow",
  "proc-macro2",
  "quote",
@@ -93,7 +93,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d104aa17418cb329ed7418b227e083d5f326a27f26ce98f5d92e33da62a5f459"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "anyhow",
  "heck 0.3.3",
  "proc-macro2",
@@ -107,7 +107,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6831b920b173c004ddf7ae1167d1d25e9f002ffcb1773bbc5c7ce532a4441e1"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "anyhow",
  "proc-macro2",
  "quote",
@@ -120,7 +120,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cde147b10c71d95dc679785db0b5f3abac0091f789167aa62ac0135e2f54e8b9"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "anyhow",
  "proc-macro2",
  "quote",
@@ -133,7 +133,7 @@ version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9cde98a0e1a56046b040ff591dfda391f88917af2b6487d02b45093c05be3514"
 dependencies = [
- "anchor-syn",
+ "anchor-syn 0.24.2",
  "anyhow",
  "proc-macro2",
  "quote",
@@ -172,7 +172,7 @@ name = "anchor-idl"
 version = "0.3.1"
 dependencies = [
  "anchor-lang",
- "anchor-syn",
+ "anchor-syn 0.28.0",
  "darling",
  "heck 0.4.1",
  "proc-macro2",
@@ -219,7 +219,25 @@ dependencies = [
  "quote",
  "serde",
  "serde_json",
- "sha2",
+ "sha2 0.9.9",
+ "syn 1.0.109",
+ "thiserror",
+]
+
+[[package]]
+name = "anchor-syn"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a125e4b0cc046cfec58f5aa25038e34cf440151d58f0db3afc55308251fe936d"
+dependencies = [
+ "anyhow",
+ "bs58 0.5.0",
+ "heck 0.3.3",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "sha2 0.10.7",
  "syn 1.0.109",
  "thiserror",
 ]
@@ -297,7 +315,7 @@ dependencies = [
  "cc",
  "cfg-if",
  "constant_time_eq",
- "digest 0.10.5",
+ "digest 0.10.7",
 ]
 
 [[package]]
@@ -381,6 +399,15 @@ name = "bs58"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "771fe0050b883fcc3ea2359b1a96bcfbc090b7116eae7c3c512c7a083fdf23d3"
+
+[[package]]
+name = "bs58"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5353f36341f7451062466f0b755b96ac3a9547e4d7f6b70d603fc721a7d7896"
+dependencies = [
+ "tinyvec",
+]
 
 [[package]]
 name = "bumpalo"
@@ -556,9 +583,9 @@ dependencies = [
 
 [[package]]
 name = "digest"
-version = "0.10.5"
+version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adfbc57365a37acbd2ebf2b64d7e69bb766e2fea813521ed536f5d0520dcf86c"
+checksum = "9ed9a281f7bc9b7576e61468ba615a66a5c8cfdff42420a70aa82701a3b1e292"
 dependencies = [
  "block-buffer 0.10.3",
  "crypto-common",
@@ -771,7 +798,7 @@ dependencies = [
  "libsecp256k1-gen-genmult",
  "rand",
  "serde",
- "sha2",
+ "sha2 0.9.9",
  "typenum",
 ]
 
@@ -1103,6 +1130,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "sha2"
+version = "0.10.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "479fb9d862239e610720565ca91403019f2f00410f1864c5aa7479b950a76ed8"
+dependencies = [
+ "cfg-if",
+ "cpufeatures",
+ "digest 0.10.7",
+]
+
+[[package]]
 name = "sha3"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1134,7 +1172,7 @@ dependencies = [
  "rustc_version",
  "serde",
  "serde_derive",
- "sha2",
+ "sha2 0.9.9",
  "solana-frozen-abi-macro",
  "solana-logger",
  "thiserror",
@@ -1196,7 +1234,7 @@ dependencies = [
  "serde",
  "serde_bytes",
  "serde_derive",
- "sha2",
+ "sha2 0.9.9",
  "sha3",
  "solana-frozen-abi",
  "solana-frozen-abi-macro",
@@ -1281,6 +1319,21 @@ dependencies = [
  "quote",
  "syn 1.0.109",
 ]
+
+[[package]]
+name = "tinyvec"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87cc5ceb3875bb20c2890005a4e226a4651264a5c75edb2421b52861a0a0cb50"
+dependencies = [
+ "tinyvec_macros",
+]
+
+[[package]]
+name = "tinyvec_macros"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "toml"
