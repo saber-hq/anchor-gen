@@ -142,7 +142,7 @@ pub fn generate_struct(
     let fields_rendered = generate_fields(fields);
     let props = get_field_list_properties(defs, fields);
 
-    let derive_default = if props.can_derive_default {
+    let derive_default = if props.can_derive_default && !opts.skip_default {
         quote! {
             #[derive(Default)]
         }
