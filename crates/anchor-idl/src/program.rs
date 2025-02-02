@@ -1,3 +1,4 @@
+use heck::{ToPascalCase, ToSnakeCase};
 use std::{
     collections::{BTreeMap, HashSet},
     env, fs,
@@ -9,7 +10,8 @@ use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
 use crate::{
-    generate_accounts, generate_ix_handlers, generate_ix_structs, generate_typedefs, GEN_VERSION,
+    generate_accounts, generate_glam_ix_handlers, generate_glam_ix_structs, generate_ix_handlers,
+    generate_ix_structs, generate_typedefs, GEN_VERSION,
 };
 
 #[derive(Default, FromMeta)]
@@ -69,6 +71,111 @@ pub struct Generator {
 }
 
 impl Generator {
+    pub fn generate_glam_code(&self, ixs: &[String], config: &serde_json::Value) -> TokenStream {
+        let idl = &self.idl;
+        let program_name_pascal_case = format_ident!("{}", idl.name.to_pascal_case());
+        let program_name_snake_case = format_ident!("{}", idl.name.to_snake_case());
+
+        // example config json blob:
+        // {
+        //   "kamino_lending": [
+        //     {
+        //       "ix_name": "initUserMetadata",
+        //       "remove_signer": ["owner"],
+        //       "permission": "",
+        //       "integration": ""
+        //     },
+        //     {...}
+        //   ]
+        // }
+        let signers_to_remove = config
+            .get(idl.name.as_str())
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| {
+                        v.get("ix_name").and_then(|v| v.as_str()).map(|ix_name| {
+                            (
+                                ix_name.to_string(),
+                                v.get("remove_signer")
+                                    .and_then(|v| v.as_array())
+                                    .map(|v| {
+                                        v.iter()
+                                            .filter_map(|v| v.as_str().map(String::from))
+                                            .collect::<Vec<_>>()
+                                    })
+                                    .unwrap_or_default(),
+                            )
+                        })
+                    })
+                    .collect::<std::collections::HashMap<_, _>>()
+            })
+            .unwrap_or_default();
+
+        let permissions = config
+            .get(idl.name.as_str())
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| {
+                        v.get("ix_name").and_then(|v| v.as_str()).map(|ix_name| {
+                            (
+                                ix_name.to_string(),
+                                v.get("permission")
+                                    .and_then(|v| v.as_str().map(String::from)),
+                            )
+                        })
+                    })
+                    .collect::<std::collections::HashMap<_, _>>()
+            })
+            .unwrap_or_default();
+
+        let integrations = config
+            .get(idl.name.as_str())
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| {
+                        v.get("ix_name").and_then(|v| v.as_str()).map(|ix_name| {
+                            (
+                                ix_name.to_string(),
+                                v.get("integration")
+                                    .and_then(|v| v.as_str().map(String::from)),
+                            )
+                        })
+                    })
+                    .collect::<std::collections::HashMap<_, _>>()
+            })
+            .unwrap_or_default();
+
+        let ix_structs = generate_glam_ix_structs(
+            &idl.instructions,
+            &program_name_pascal_case,
+            ixs,
+            &signers_to_remove,
+        );
+        let ix_handlers = generate_glam_ix_handlers(
+            &idl.instructions,
+            &program_name_pascal_case,
+            ixs,
+            &permissions,
+            &integrations,
+        );
+
+        quote! {
+            use anchor_lang::prelude::*;
+            use crate::constants::*;
+            use crate::state::{acl::{self, *}, StateAccount};
+            use #program_name_snake_case::program::#program_name_pascal_case;
+            use #program_name_snake_case::typedefs::*;
+
+
+            #ix_structs
+
+            #ix_handlers
+        }
+    }
+
     pub fn generate_cpi_interface(&self) -> TokenStream {
         let idl = &self.idl;
         let program_name: Ident = format_ident!("{}", idl.name);

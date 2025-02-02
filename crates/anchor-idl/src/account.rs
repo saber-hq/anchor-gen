@@ -7,6 +7,7 @@ use quote::{format_ident, quote};
 pub fn generate_account_fields(
     name: &str,
     accounts: &[IdlAccountItem],
+    remove_signers: &[String],
 ) -> (TokenStream, TokenStream) {
     let mut all_structs: Vec<TokenStream> = vec![];
     let all_fields = accounts
@@ -14,14 +15,21 @@ pub fn generate_account_fields(
         .map(|account| match account {
             anchor_syn::idl::IdlAccountItem::IdlAccount(info) => {
                 let acc_name = format_ident!("{}", info.name.to_snake_case());
-                let annotation = if info.is_mut {
+                let mut annotation = if info.is_mut {
                     quote! { #[account(mut)] }
                 } else {
                     quote! {}
                 };
-                let ty = if info.is_signer {
+                let ty = if info.is_signer && !remove_signers.contains(&info.name) {
                     quote! { Signer<'info> }
+                } else if info.name.eq("systemProgram") {
+                    quote! { Program<'info, System> }
+                } else if info.name == "rent" {
+                    quote! { Sysvar<'info, Rent> }
                 } else {
+                    annotation.extend(quote! {
+                        /// CHECK: should be validated by target program
+                    });
                     quote! { AccountInfo<'info> }
                 };
                 quote! {
@@ -33,7 +41,8 @@ pub fn generate_account_fields(
                 let field_name = format_ident!("{}{}", name, inner.name.to_snake_case());
                 let sub_name = format!("{}{}", name, inner.name.to_pascal_case());
                 let sub_ident = format_ident!("{}", &sub_name);
-                let (sub_structs, sub_fields) = generate_account_fields(&sub_name, &inner.accounts);
+                let (sub_structs, sub_fields) =
+                    generate_account_fields(&sub_name, &inner.accounts, remove_signers);
                 all_structs.push(sub_structs);
                 all_structs.push(quote! {
                     #[derive(Accounts)]
