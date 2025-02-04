@@ -67,7 +67,7 @@ pub fn generate_glam_account_fields(
     let (remove_signer, vault_aliases) = if let Some(ix_config) = ix_code_gen_config {
         (
             ix_config.remove_signer.clone().unwrap_or(Vec::new()),
-            ix_config.remove_signer.clone().unwrap_or(Vec::new()),
+            ix_config.vault_aliases.clone().unwrap_or(Vec::new()),
         )
     } else {
         (Vec::new(), Vec::new())

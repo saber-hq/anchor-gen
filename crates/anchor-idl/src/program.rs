@@ -113,7 +113,7 @@ pub struct Generator {
 }
 
 impl Generator {
-    pub fn generate_glam_code(&self, ixs: &[String]) -> TokenStream {
+    pub fn generate_glam_code(&self, ixs: &[String], skip_imports: bool) -> TokenStream {
         let idl = &self.idl;
         let program_name_pascal_case = format_ident!("{}", idl.name.to_pascal_case());
         let program_name_snake_case = format_ident!("{}", idl.name.to_snake_case());
@@ -131,12 +131,20 @@ impl Generator {
             &self.ix_code_gen_configs,
         );
 
-        quote! {
-            use anchor_lang::prelude::*;
-            use crate::state::{acl::{self, *}, StateAccount};
+        let imports = if skip_imports {
+            quote! {}
+        } else {
+            quote! {
+                use anchor_lang::prelude::*;
+                use crate::state::{acl::{self, *}, StateAccount};
 
-            use #program_name_snake_case::program::#program_name_pascal_case;
-            use #program_name_snake_case::typedefs::*;
+                use #program_name_snake_case::program::#program_name_pascal_case;
+                use #program_name_snake_case::typedefs::*;
+            }
+        };
+
+        quote! {
+            #imports
 
             #ix_structs
 

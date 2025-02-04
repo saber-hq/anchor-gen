@@ -31,6 +31,9 @@ enum Commands {
         #[arg(required = true)]
         idl_path: String,
 
+        #[arg(short, long, action = clap::ArgAction::SetTrue)]
+        skip_imports: bool,
+
         #[arg(long)]
         output: Option<String>,
 
@@ -80,6 +83,7 @@ fn main() {
         }
         Commands::Glam {
             idl_path,
+            skip_imports,
             output,
             config,
             ixs,
@@ -91,7 +95,7 @@ fn main() {
             };
             let generator = opts.to_generator();
 
-            let glam_code = generator.generate_glam_code(&ixs.unwrap_or_default());
+            let glam_code = generator.generate_glam_code(&ixs.unwrap_or_default(), skip_imports);
             let pretty_code = prettify(glam_code);
 
             if let Some(output_file) = output {
