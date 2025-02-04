@@ -3,7 +3,6 @@ use clap::{Parser, Subcommand};
 use prettyplease::unparse;
 use proc_macro2::TokenStream;
 use quote::quote;
-use serde_json;
 use syn::{parse2, File};
 
 #[derive(Parser)]
@@ -87,18 +86,12 @@ fn main() {
         } => {
             let opts = GeneratorOptions {
                 idl_path,
+                glam_codegen_config: config,
                 ..Default::default()
             };
             let generator = opts.to_generator();
 
-            let config = if let Some(config) = config {
-                let config_json = std::fs::read_to_string(config).unwrap();
-                serde_json::from_str(&config_json).unwrap()
-            } else {
-                serde_json::Value::default()
-            };
-
-            let glam_code = generator.generate_glam_code(&ixs.unwrap_or_default(), &config);
+            let glam_code = generator.generate_glam_code(&ixs.unwrap_or_default());
             let pretty_code = prettify(glam_code);
 
             if let Some(output_file) = output {

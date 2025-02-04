@@ -1,6 +1,6 @@
 use heck::{ToPascalCase, ToSnakeCase};
 use std::{
-    collections::{BTreeMap, HashSet},
+    collections::{BTreeMap, HashMap, HashSet},
     env, fs,
     path::PathBuf,
 };
@@ -8,16 +8,33 @@ use std::{
 use darling::{util::PathList, FromMeta};
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
+use serde::{Deserialize, Serialize};
+use serde_json;
 
 use crate::{
     generate_accounts, generate_glam_ix_handlers, generate_glam_ix_structs, generate_ix_handlers,
     generate_ix_structs, generate_typedefs, GEN_VERSION,
 };
 
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+#[serde(default)]
+pub struct GlamIxCodeGenConfig {
+    pub ix_name: String,
+    pub permission: Option<String>,
+    pub integration: Option<String>,
+    pub remove_signer: Option<Vec<String>>,
+    pub vault_aliases: Option<Vec<String>>,
+    pub signed_by_vault: bool,
+    pub mutable_vault: bool,
+    pub mutable_state: bool,
+}
+
 #[derive(Default, FromMeta)]
 pub struct GeneratorOptions {
     /// Path to the IDL.
     pub idl_path: String,
+    /// GLAM autogen config json.
+    pub glam_codegen_config: Option<String>,
     /// List of zero copy structs.
     pub zero_copy: Option<PathList>,
     /// List of `repr(packed)` structs.
@@ -55,7 +72,31 @@ impl GeneratorOptions {
             );
         });
 
-        Generator { idl, struct_opts }
+        let mut ix_code_gen_configs = HashMap::new();
+
+        if let Some(glam_codegen_config) = &self.glam_codegen_config {
+            let glam_autogen_config_contents = fs::read_to_string(glam_codegen_config).unwrap();
+            let config: serde_json::Value =
+                serde_json::from_str(&glam_autogen_config_contents).unwrap();
+
+            ix_code_gen_configs = config
+                .get(idl.name.as_str())
+                .unwrap()
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|el| serde_json::from_value(el.clone()).unwrap())
+                .collect::<Vec<GlamIxCodeGenConfig>>()
+                .into_iter()
+                .map(|c| (c.ix_name.clone(), c))
+                .collect();
+        }
+
+        Generator {
+            idl,
+            struct_opts,
+            ix_code_gen_configs,
+        }
     }
 }
 
@@ -68,107 +109,34 @@ pub struct StructOpts {
 pub struct Generator {
     pub idl: anchor_syn::idl::Idl,
     pub struct_opts: BTreeMap<String, StructOpts>,
+    pub ix_code_gen_configs: HashMap<String, GlamIxCodeGenConfig>,
 }
 
 impl Generator {
-    pub fn generate_glam_code(&self, ixs: &[String], config: &serde_json::Value) -> TokenStream {
+    pub fn generate_glam_code(&self, ixs: &[String]) -> TokenStream {
         let idl = &self.idl;
         let program_name_pascal_case = format_ident!("{}", idl.name.to_pascal_case());
         let program_name_snake_case = format_ident!("{}", idl.name.to_snake_case());
-
-        // example config json blob:
-        // {
-        //   "kamino_lending": [
-        //     {
-        //       "ix_name": "initUserMetadata",
-        //       "remove_signer": ["owner"],
-        //       "permission": "",
-        //       "integration": ""
-        //     },
-        //     {...}
-        //   ]
-        // }
-        let signers_to_remove = config
-            .get(idl.name.as_str())
-            .and_then(|v| v.as_array())
-            .map(|arr| {
-                arr.iter()
-                    .filter_map(|v| {
-                        v.get("ix_name").and_then(|v| v.as_str()).map(|ix_name| {
-                            (
-                                ix_name.to_string(),
-                                v.get("remove_signer")
-                                    .and_then(|v| v.as_array())
-                                    .map(|v| {
-                                        v.iter()
-                                            .filter_map(|v| v.as_str().map(String::from))
-                                            .collect::<Vec<_>>()
-                                    })
-                                    .unwrap_or_default(),
-                            )
-                        })
-                    })
-                    .collect::<std::collections::HashMap<_, _>>()
-            })
-            .unwrap_or_default();
-
-        let permissions = config
-            .get(idl.name.as_str())
-            .and_then(|v| v.as_array())
-            .map(|arr| {
-                arr.iter()
-                    .filter_map(|v| {
-                        v.get("ix_name").and_then(|v| v.as_str()).map(|ix_name| {
-                            (
-                                ix_name.to_string(),
-                                v.get("permission")
-                                    .and_then(|v| v.as_str().map(String::from)),
-                            )
-                        })
-                    })
-                    .collect::<std::collections::HashMap<_, _>>()
-            })
-            .unwrap_or_default();
-
-        let integrations = config
-            .get(idl.name.as_str())
-            .and_then(|v| v.as_array())
-            .map(|arr| {
-                arr.iter()
-                    .filter_map(|v| {
-                        v.get("ix_name").and_then(|v| v.as_str()).map(|ix_name| {
-                            (
-                                ix_name.to_string(),
-                                v.get("integration")
-                                    .and_then(|v| v.as_str().map(String::from)),
-                            )
-                        })
-                    })
-                    .collect::<std::collections::HashMap<_, _>>()
-            })
-            .unwrap_or_default();
 
         let ix_structs = generate_glam_ix_structs(
             &idl.instructions,
             &program_name_pascal_case,
             ixs,
-            &signers_to_remove,
+            &self.ix_code_gen_configs,
         );
         let ix_handlers = generate_glam_ix_handlers(
             &idl.instructions,
             &program_name_pascal_case,
             ixs,
-            &permissions,
-            &integrations,
+            &self.ix_code_gen_configs,
         );
 
         quote! {
             use anchor_lang::prelude::*;
-            use crate::constants::*;
             use crate::state::{acl::{self, *}, StateAccount};
+
             use #program_name_snake_case::program::#program_name_pascal_case;
             use #program_name_snake_case::typedefs::*;
-
 
             #ix_structs
 

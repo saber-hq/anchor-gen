@@ -4,6 +4,8 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use syn::Ident;
 
+use crate::GlamIxCodeGenConfig;
+
 /// Generates a single instruction handler.
 pub fn generate_ix_handler(ix: &IdlInstruction) -> TokenStream {
     let ix_name = format_ident!("{}", ix.name.to_snake_case());
@@ -47,28 +49,49 @@ pub fn generate_glam_ix_structs(
     ixs: &[IdlInstruction],
     program_name: &Ident,
     ixs_to_generate: &[String],
-    signers_to_remove: &std::collections::HashMap<String, Vec<String>>,
+    ix_code_gen_configs: &std::collections::HashMap<String, GlamIxCodeGenConfig>,
 ) -> TokenStream {
     let defs = ixs
         .iter()
         .filter(|ix| ixs_to_generate.is_empty() || ixs_to_generate.contains(&ix.name.to_string()))
         .map(|ix| {
             let accounts_name = format_ident!("{}{}", program_name, ix.name.to_pascal_case());
+            let ix_code_gen_config = ix_code_gen_configs.get(ix.name.as_str());
 
-            let (_all_structs, all_fields) = crate::generate_account_fields(
+            let (_all_structs, all_fields) = crate::generate_glam_account_fields(
                 &ix.name.to_pascal_case(),
                 &ix.accounts,
-                signers_to_remove
-                    .get(&ix.name.to_string())
-                    .unwrap_or(&Vec::new()),
+                ix_code_gen_config,
             );
+
+            let glam_state_annotation = ix_code_gen_config
+                .map(|config| {
+                    if config.mutable_state {
+                        quote! { #[account(mut)] }
+                    } else {
+                        quote! {}
+                    }
+                })
+                .unwrap_or(quote! {});
+
+            let seeds =
+                quote! { [crate::constants::SEED_VAULT.as_bytes(), glam_state.key().as_ref()] };
+            let glam_vault_annotation = if let Some(config) = ix_code_gen_config {
+                if config.mutable_vault {
+                    quote! { #[account(mut, seeds = #seeds, bump)] }
+                } else {
+                    quote! { #[account(seeds = #seeds, bump)] }
+                }
+            } else {
+                quote! { #[account(seeds = #seeds, bump)] }
+            };
 
             let mut glam_accounts_ts = TokenStream::new();
             glam_accounts_ts.extend(quote! {
-                #[account(mut)]
+                #glam_state_annotation
                 pub glam_state: Box<Account<'info, StateAccount>>,
 
-                #[account(mut, seeds = [SEED_VAULT.as_bytes(), glam_state.key().as_ref()], bump)]
+                #glam_vault_annotation
                 pub glam_vault: SystemAccount<'info>,
 
                 #[account(mut)]
@@ -96,7 +119,7 @@ pub fn generate_ix_structs(ixs: &[IdlInstruction]) -> TokenStream {
         let accounts_name = format_ident!("{}", ix.name.to_pascal_case());
 
         let (all_structs, all_fields) =
-            crate::generate_account_fields(&ix.name.to_pascal_case(), &ix.accounts, &[]);
+            crate::generate_account_fields(&ix.name.to_pascal_case(), &ix.accounts);
 
         quote! {
             #all_structs
@@ -124,8 +147,7 @@ pub fn generate_ix_handlers(ixs: &[IdlInstruction]) -> TokenStream {
 pub fn generate_glam_ix_handler(
     ix: &IdlInstruction,
     program_name: &Ident,
-    permission: &Option<String>,
-    integration: &Option<String>,
+    ix_code_gen_config: &GlamIxCodeGenConfig,
 ) -> TokenStream {
     let program_name_snake_case = format_ident!("{}", program_name.to_string().to_snake_case());
     let program_name_pascal_case = format_ident!("{}", program_name.to_string().to_pascal_case());
@@ -175,7 +197,7 @@ pub fn generate_glam_ix_handler(
         })
         .collect::<Vec<_>>();
 
-    let access_control_permission = if let Some(permission) = permission {
+    let access_control_permission = if let Some(permission) = &ix_code_gen_config.permission {
         let permission = format_ident!("{}", permission);
         quote! {
             #[access_control(acl::check_access(&ctx.accounts.glam_state, &ctx.accounts.glam_signer.key, Permission::#permission))]
@@ -184,7 +206,7 @@ pub fn generate_glam_ix_handler(
         quote! {}
     };
 
-    let access_control_integration = if let Some(integration) = integration {
+    let access_control_integration = if let Some(integration) = &ix_code_gen_config.integration {
         let integration = format_ident!("{}", integration);
         quote! {
             #[access_control(acl::check_integration(&ctx.accounts.glam_state, Integration::#integration))]
@@ -193,28 +215,39 @@ pub fn generate_glam_ix_handler(
         quote! {}
     };
 
-    quote! {
-        #access_control_permission
-        #access_control_integration
-        pub fn #glam_ix_name(
-            ctx: Context<#glam_ix_accounts_name>,
-            #(#args),*
-        ) -> Result<()> {
-            let state_key = ctx.accounts.glam_state.key();
-            let seeds = [
-                "vault".as_ref(),
-                state_key.as_ref(),
-                &[ctx.bumps.glam_vault],
-            ];
-            let vault_signer_seeds = &[&seeds[..]];
-
-            #program_name_snake_case::cpi::#cpi_ix_name(CpiContext::new_with_signer(
-                ctx.accounts.cpi_program.to_account_info(),
-                #program_name_snake_case::cpi::accounts::#cpi_ix_accounts_name {
-                    #(#account_infos),*
-                },
-                vault_signer_seeds
-            ),#(#cpi_ix_args),*)
+    if ix_code_gen_config.signed_by_vault {
+        quote! {
+            #access_control_permission
+            #access_control_integration
+            #[glam_macros::glam_vault_signer_seeds]
+            pub fn #glam_ix_name(
+                ctx: Context<#glam_ix_accounts_name>,
+                #(#args),*
+            ) -> Result<()> {
+                #program_name_snake_case::cpi::#cpi_ix_name(CpiContext::new_with_signer(
+                    ctx.accounts.cpi_program.to_account_info(),
+                    #program_name_snake_case::cpi::accounts::#cpi_ix_accounts_name {
+                        #(#account_infos),*
+                    },
+                    glam_vault_signer_seeds
+                ),#(#cpi_ix_args),*)
+            }
+        }
+    } else {
+        quote! {
+            #access_control_permission
+            #access_control_integration
+            pub fn #glam_ix_name(
+                ctx: Context<#glam_ix_accounts_name>,
+                #(#args),*
+            ) -> Result<()> {
+                #program_name_snake_case::cpi::#cpi_ix_name(CpiContext::new(
+                    ctx.accounts.cpi_program.to_account_info(),
+                    #program_name_snake_case::cpi::accounts::#cpi_ix_accounts_name {
+                        #(#account_infos),*
+                    },
+                ),#(#cpi_ix_args),*)
+            }
         }
     }
 }
@@ -223,19 +256,18 @@ pub fn generate_glam_ix_handlers(
     ixs: &[IdlInstruction],
     program_name: &Ident,
     ixs_to_generate: &[String],
-    permissions: &std::collections::HashMap<String, Option<String>>,
-    integrations: &std::collections::HashMap<String, Option<String>>,
+    ix_code_gen_configs: &std::collections::HashMap<String, GlamIxCodeGenConfig>,
 ) -> TokenStream {
     let streams = ixs
         .iter()
         .filter(|ix| ixs_to_generate.is_empty() || ixs_to_generate.contains(&ix.name.to_string()))
         .map(|ix| {
-            generate_glam_ix_handler(
-                ix,
-                program_name,
-                permissions.get(ix.name.as_str()).unwrap_or(&None),
-                integrations.get(ix.name.as_str()).unwrap_or(&None),
-            )
+            let ix_code_gen_config = ix_code_gen_configs
+                .get(ix.name.as_str())
+                .cloned()
+                .unwrap_or_default();
+
+            generate_glam_ix_handler(ix, program_name, &ix_code_gen_config)
         });
     quote! {
         #(#streams)*
