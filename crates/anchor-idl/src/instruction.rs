@@ -233,8 +233,8 @@ pub fn generate_glam_ix_handlers(
             generate_glam_ix_handler(
                 ix,
                 program_name,
-                permissions.get(ix.name.as_str()).unwrap(),
-                integrations.get(ix.name.as_str()).unwrap(),
+                permissions.get(ix.name.as_str()).unwrap_or(&None),
+                integrations.get(ix.name.as_str()).unwrap_or(&None),
             )
         });
     quote! {
