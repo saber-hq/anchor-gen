@@ -64,14 +64,8 @@ pub fn generate_glam_account_fields(
     accounts: &[IdlAccountItem],
     ix_code_gen_config: Option<&GlamIxCodeGenConfig>,
 ) -> (TokenStream, TokenStream) {
-    let (remove_signer, vault_aliases) = if let Some(ix_config) = ix_code_gen_config {
-        (
-            ix_config.remove_signer.clone().unwrap_or(Vec::new()),
-            ix_config.vault_aliases.clone().unwrap_or(Vec::new()),
-        )
-    } else {
-        (Vec::new(), Vec::new())
-    };
+    let vault_aliases =
+        ix_code_gen_config.map_or(Vec::new(), |c| c.vault_aliases.clone().unwrap_or_default());
 
     let mut all_structs: Vec<TokenStream> = vec![];
     let all_fields = accounts
@@ -79,6 +73,8 @@ pub fn generate_glam_account_fields(
         .map(|account| match account {
             anchor_syn::idl::IdlAccountItem::IdlAccount(info) => {
                 let acc_name = format_ident!("{}", info.name.to_snake_case());
+
+                // account annotation
                 let mut annotation = if info.is_mut && vault_aliases.contains(&info.name) {
                     quote! { #[account(mut, address = glam_state.vault)] }
                 } else if !info.is_mut && vault_aliases.contains(&info.name) {
@@ -89,7 +85,9 @@ pub fn generate_glam_account_fields(
                     quote! {}
                 };
 
-                let ty = if info.is_signer && !remove_signer.contains(&info.name) {
+                // type and lifetime
+                // always remove signer if it's a vault alias
+                let ty = if info.is_signer && !vault_aliases.contains(&info.name) {
                     quote! { Signer<'info> }
                 } else if info.name.eq("systemProgram") {
                     quote! { Program<'info, System> }
@@ -104,6 +102,8 @@ pub fn generate_glam_account_fields(
 
                     quote! { AccountInfo<'info> }
                 };
+
+                // result
                 quote! {
                    #annotation
                    pub #acc_name: #ty

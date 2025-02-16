@@ -51,6 +51,11 @@ pub fn generate_glam_ix_structs(
     ixs_to_generate: &[String],
     ix_code_gen_configs: &std::collections::HashMap<String, GlamIxCodeGenConfig>,
 ) -> TokenStream {
+    //  ixs_to_generate &&  ix_code_gen_configs: generate only the intersecting instructions
+    // !ixs_to_generate && !ix_code_gen_configs: generate all instructions
+    // !ixs_to_generate &&  ix_code_gen_configs: generate only the instructions specified in the config
+    //  ixs_to_generate && !ix_code_gen_configs: generate only the specified instructions
+
     let defs = ixs
         .iter()
         .filter(|ix| ixs_to_generate.is_empty() || ixs_to_generate.contains(&ix.name.to_string()))
@@ -86,26 +91,37 @@ pub fn generate_glam_ix_structs(
                 quote! { #[account(seeds = #seeds, bump)] }
             };
 
-            let mut glam_accounts_ts = TokenStream::new();
-            glam_accounts_ts.extend(quote! {
-                #glam_state_annotation
-                pub glam_state: Box<Account<'info, StateAccount>>,
+            if let Some(type_alias) = ix_code_gen_config
+                .unwrap_or(&GlamIxCodeGenConfig::default())
+                .accounts_type_alias
+                .clone()
+            {
+                let type_alias = format_ident!("{}{}", program_name, type_alias.to_pascal_case());
+                quote! {
+                    pub type #accounts_name<'info> = #type_alias<'info>;
+                }
+            } else {
+                let mut glam_accounts_ts = TokenStream::new();
+                glam_accounts_ts.extend(quote! {
+                    #glam_state_annotation
+                    pub glam_state: Box<Account<'info, StateAccount>>,
 
-                #glam_vault_annotation
-                pub glam_vault: SystemAccount<'info>,
+                    #glam_vault_annotation
+                    pub glam_vault: SystemAccount<'info>,
 
-                #[account(mut)]
-                pub glam_signer: Signer<'info>,
+                    #[account(mut)]
+                    pub glam_signer: Signer<'info>,
 
-                pub cpi_program: Program<'info, #program_name>,
-            });
+                    pub cpi_program: Program<'info, #program_name>,
+                });
 
-            quote! {
-                #[derive(Accounts)]
-                pub struct #accounts_name<'info> {
-                    #glam_accounts_ts
+                quote! {
+                    #[derive(Accounts)]
+                    pub struct #accounts_name<'info> {
+                        #glam_accounts_ts
 
-                    #all_fields
+                        #all_fields
+                    }
                 }
             }
         });
@@ -215,13 +231,24 @@ pub fn generate_glam_ix_handler(
         quote! {}
     };
 
+    let (lt0, lt1, lt2, lt3) = if ix_code_gen_config.with_remaining_accounts {
+        (
+            quote! { <'c: 'info, 'info> },
+            quote! { '_, '_, 'c, 'info, },
+            quote! { <'info> },
+            quote! { .with_remaining_accounts(ctx.remaining_accounts.to_vec())},
+        )
+    } else {
+        (quote! {}, quote! {}, quote! {}, quote! {})
+    };
+
     if ix_code_gen_config.signed_by_vault {
         quote! {
             #access_control_permission
             #access_control_integration
             #[glam_macros::glam_vault_signer_seeds]
-            pub fn #glam_ix_name(
-                ctx: Context<#glam_ix_accounts_name>,
+            pub fn #glam_ix_name #lt0(
+                ctx: Context<#lt1 #glam_ix_accounts_name #lt2>,
                 #(#args),*
             ) -> Result<()> {
                 #program_name_snake_case::cpi::#cpi_ix_name(CpiContext::new_with_signer(
@@ -230,7 +257,7 @@ pub fn generate_glam_ix_handler(
                         #(#account_infos),*
                     },
                     glam_vault_signer_seeds
-                ),#(#cpi_ix_args),*)
+                )#lt3,#(#cpi_ix_args),*)
             }
         }
     } else {

@@ -22,8 +22,10 @@ pub struct GlamIxCodeGenConfig {
     pub ix_name: String,
     pub permission: Option<String>,
     pub integration: Option<String>,
-    pub remove_signer: Option<Vec<String>>,
+    pub remove_signer: Option<Vec<String>>, // TODO: not being used, consider removing
     pub vault_aliases: Option<Vec<String>>,
+    pub accounts_type_alias: Option<String>, // example: pub type DriftCancelOrdersByIds<'info> = DriftCancelOrders<'info>;
+    pub with_remaining_accounts: bool,
     pub signed_by_vault: bool,
     pub mutable_vault: bool,
     pub mutable_state: bool,
