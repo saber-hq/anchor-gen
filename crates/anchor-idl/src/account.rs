@@ -99,7 +99,7 @@ pub fn generate_glam_account_fields(
 
                 let acc_name = format_ident!("{}", info.name.to_snake_case());
                 // result
-                if vault_aliases.contains(&info.name) {
+                if vault_aliases.contains(&info.name.to_snake_case()) {
                     None
                 } else {
                     Some(quote! {

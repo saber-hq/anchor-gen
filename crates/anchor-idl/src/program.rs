@@ -35,6 +35,8 @@ pub struct GlamIxCodeGenConfig {
 pub struct GeneratorOptions {
     /// Path to the IDL.
     pub idl_path: String,
+    /// IDL name alias.
+    pub idl_name_alias: Option<String>,
     /// GLAM autogen config yaml.
     pub glam_codegen_config: Option<String>,
     /// List of zero copy structs.
@@ -81,8 +83,9 @@ impl GeneratorOptions {
             let config: serde_yaml::Value =
                 serde_yaml::from_str(&glam_autogen_config_contents).unwrap();
 
+            let idl_name = self.idl_name_alias.clone().unwrap_or(idl.name.clone());
             ix_code_gen_configs = config
-                .get(idl.name.as_str())
+                .get(idl_name.as_str())
                 .unwrap()
                 .as_sequence()
                 .unwrap()
@@ -115,10 +118,12 @@ pub struct Generator {
 }
 
 impl Generator {
-    pub fn generate_glam_code(&self, ixs: &[String], skip_imports: bool) -> TokenStream {
+    pub fn generate_glam_code(&self, ixs: &[String], skip_imports: bool, idl_name: Option<String>) -> TokenStream {
         let idl = &self.idl;
-        let program_name_pascal_case = format_ident!("{}", idl.name.to_pascal_case());
-        let program_name_snake_case = format_ident!("{}", idl.name.to_snake_case());
+        let idl_name = idl_name.unwrap_or(idl.name.clone());
+        let program_name_pascal_case = format_ident!("{}", idl_name.to_pascal_case());
+        let program_name_snake_case = format_ident!("{}", idl_name.to_snake_case());
+        let idl_name_pascal_case = format_ident!("{}", idl.name.to_pascal_case());
 
         let ix_structs = generate_glam_ix_structs(
             &idl.instructions,
@@ -137,10 +142,10 @@ impl Generator {
             quote! {}
         } else {
             quote! {
-                use anchor_lang::prelude::*;
                 use crate::state::{acl::{self, *}, StateAccount};
+                use anchor_lang::prelude::*;
 
-                use #program_name_snake_case::program::#program_name_pascal_case;
+                pub use #program_name_snake_case::program::#idl_name_pascal_case as #program_name_pascal_case;
                 use #program_name_snake_case::typedefs::*;
             }
         };

@@ -31,6 +31,9 @@ enum Commands {
         #[arg(required = true)]
         idl_path: String,
 
+        #[arg(long)]
+        idl_name_alias: Option<String>,
+
         #[arg(short, long, action = clap::ArgAction::SetTrue)]
         skip_imports: bool,
 
@@ -83,6 +86,7 @@ fn main() {
         }
         Commands::Glam {
             idl_path,
+            idl_name_alias,
             skip_imports,
             output,
             config,
@@ -90,18 +94,19 @@ fn main() {
         } => {
             let opts = GeneratorOptions {
                 idl_path,
+                idl_name_alias: idl_name_alias.clone(),
                 glam_codegen_config: config,
                 ..Default::default()
             };
             let generator = opts.to_generator();
 
-            let glam_code = generator.generate_glam_code(&ixs.unwrap_or_default(), skip_imports);
+            let glam_code = generator.generate_glam_code(&ixs.unwrap_or_default(), skip_imports, idl_name_alias);
             let pretty_code = prettify(glam_code);
 
             if let Some(output_file) = output {
                 std::fs::write(output_file, pretty_code).unwrap();
             } else {
-                println!("{}", pretty_code);
+                print!("{}", pretty_code);
             }
         }
     }
