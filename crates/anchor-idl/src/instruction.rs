@@ -56,6 +56,9 @@ pub fn generate_glam_ix_structs(
     // !ixs_to_generate &&  ix_code_gen_configs: generate only the instructions specified in the config
     //  ixs_to_generate && !ix_code_gen_configs: generate only the specified instructions
 
+    // Multiple ixs might share the same accounts struct, so we need to keep track of which ones have been generated
+    let mut accounts_structs_generated: Vec<String> = vec![];
+
     let defs = ixs
         .iter()
         .filter(|ix| ixs_to_generate.is_empty() || ixs_to_generate.contains(&ix.name.to_string()))
@@ -91,16 +94,44 @@ pub fn generate_glam_ix_structs(
                 quote! { #[account(seeds = #seeds, bump)] }
             };
 
-            if let Some(type_alias) = ix_code_gen_config
+            if let Some(accounts_struct) = ix_code_gen_config
                 .unwrap_or(&GlamIxCodeGenConfig::default())
-                .accounts_type_alias
+                .accounts_struct
                 .clone()
             {
-                let type_alias = format_ident!("{}{}", program_name, type_alias.to_pascal_case());
-                quote! {
-                    pub type #accounts_name<'info> = #type_alias<'info>;
+                if accounts_structs_generated.contains(&accounts_struct) {
+                    quote! {}
+                } else {
+                    accounts_structs_generated.push(accounts_struct.clone());
+
+                    let accounts_name =
+                        format_ident!("{}{}", program_name, accounts_struct.to_pascal_case());
+                    let mut glam_accounts_ts = TokenStream::new();
+                    glam_accounts_ts.extend(quote! {
+                        #glam_state_annotation
+                        pub glam_state: Box<Account<'info, StateAccount>>,
+
+                        #glam_vault_annotation
+                        pub glam_vault: SystemAccount<'info>,
+
+                        #[account(mut)]
+                        pub glam_signer: Signer<'info>,
+
+                        pub cpi_program: Program<'info, #program_name>,
+                    });
+
+                    quote! {
+                        #[derive(Accounts)]
+                        pub struct #accounts_name<'info> {
+                            #glam_accounts_ts
+
+                            #all_fields
+                        }
+                    }
                 }
             } else {
+                accounts_structs_generated.push(ix.name.to_pascal_case());
+
                 let mut glam_accounts_ts = TokenStream::new();
                 glam_accounts_ts.extend(quote! {
                     #glam_state_annotation
@@ -171,9 +202,18 @@ pub fn generate_glam_ix_handler(
     let glam_ix_name = format_ident!("{}_{}", program_name_snake_case, ix.name.to_snake_case());
     let cpi_ix_name = format_ident!("{}", ix.name.to_snake_case());
 
-    let glam_ix_accounts_name =
-        format_ident!("{}{}", program_name_pascal_case, ix.name.to_pascal_case());
     let cpi_ix_accounts_name = format_ident!("{}", ix.name.to_pascal_case());
+
+    let glam_ix_accounts_name =
+        if let Some(accounts_struct) = ix_code_gen_config.accounts_struct.clone() {
+            format_ident!(
+                "{}{}",
+                program_name_pascal_case,
+                accounts_struct.to_pascal_case()
+            )
+        } else {
+            format_ident!("{}{}", program_name_pascal_case, ix.name.to_pascal_case())
+        };
 
     let args = ix
         .args
