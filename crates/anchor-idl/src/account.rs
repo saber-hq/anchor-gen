@@ -72,14 +72,8 @@ pub fn generate_glam_account_fields(
         .iter()
         .map(|account| match account {
             anchor_syn::idl::IdlAccountItem::IdlAccount(info) => {
-                let acc_name = format_ident!("{}", info.name.to_snake_case());
-
                 // account annotation
-                let mut annotation = if info.is_mut && vault_aliases.contains(&info.name) {
-                    quote! { #[account(mut, address = glam_state.vault)] }
-                } else if !info.is_mut && vault_aliases.contains(&info.name) {
-                    quote! { #[account(address = glam_state.vault)] }
-                } else if info.is_mut {
+                let mut annotation = if info.is_mut {
                     quote! { #[account(mut)] }
                 } else {
                     quote! {}
@@ -87,9 +81,9 @@ pub fn generate_glam_account_fields(
 
                 // type and lifetime
                 // always remove signer if it's a vault alias
-                let ty = if info.is_signer && !vault_aliases.contains(&info.name) {
+                let ty = if info.is_signer {
                     quote! { Signer<'info> }
-                } else if info.name.eq("systemProgram") {
+                } else if info.name.to_snake_case().eq("system_program") {
                     quote! { Program<'info, System> }
                 } else if info.name == "rent" {
                     quote! { Sysvar<'info, Rent> }
@@ -103,10 +97,15 @@ pub fn generate_glam_account_fields(
                     quote! { AccountInfo<'info> }
                 };
 
+                let acc_name = format_ident!("{}", info.name.to_snake_case());
                 // result
-                quote! {
-                   #annotation
-                   pub #acc_name: #ty
+                if vault_aliases.contains(&info.name) {
+                    None
+                } else {
+                    Some(quote! {
+                       #annotation
+                       pub #acc_name: #ty
+                    })
                 }
             }
             anchor_syn::idl::IdlAccountItem::IdlAccounts(inner) => {
@@ -122,11 +121,13 @@ pub fn generate_glam_account_fields(
                         #sub_fields
                     }
                 });
-                quote! {
+                Some(quote! {
                     pub #field_name: #sub_ident<'info>
-                }
+                })
             }
         })
+        .filter(|x| x.is_some())
+        .map(|x| x.unwrap())
         .collect::<Vec<_>>();
     (
         quote! {

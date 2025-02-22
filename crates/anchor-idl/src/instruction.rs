@@ -63,16 +63,36 @@ pub fn generate_glam_ix_structs(
         .iter()
         .filter(|ix| ixs_to_generate.is_empty() || ixs_to_generate.contains(&ix.name.to_string()))
         .map(|ix| {
-            let accounts_name = format_ident!("{}{}", program_name, ix.name.to_pascal_case());
-            let ix_code_gen_config = ix_code_gen_configs.get(ix.name.as_str());
+            let accounts_struct_name_pascal_case = if let Some(accounts_struct) =
+                ix_code_gen_configs
+                    .get(ix.name.as_str())
+                    .unwrap_or(&GlamIxCodeGenConfig::default())
+                    .accounts_struct
+                    .clone()
+            {
+                accounts_struct.to_pascal_case()
+            } else {
+                ix.name.to_pascal_case()
+            };
 
+            let accounts_struct_name = {
+                if accounts_structs_generated.contains(&accounts_struct_name_pascal_case) {
+                    return quote! {};
+                }
+                accounts_structs_generated.push(accounts_struct_name_pascal_case.clone());
+
+                format_ident!("{}{}", program_name, accounts_struct_name_pascal_case)
+            };
+
+            // Generate fields (with annotations) inside the accounts struct, for example;
             let (_all_structs, all_fields) = crate::generate_glam_account_fields(
                 &ix.name.to_pascal_case(),
                 &ix.accounts,
-                ix_code_gen_config,
+                ix_code_gen_configs.get(ix.name.as_str()),
             );
 
-            let glam_state_annotation = ix_code_gen_config
+            let glam_state_annotation = ix_code_gen_configs
+                .get(ix.name.as_str())
                 .map(|config| {
                     if config.mutable_state {
                         quote! { #[account(mut)] }
@@ -84,75 +104,39 @@ pub fn generate_glam_ix_structs(
 
             let seeds =
                 quote! { [crate::constants::SEED_VAULT.as_bytes(), glam_state.key().as_ref()] };
-            let glam_vault_annotation = if let Some(config) = ix_code_gen_config {
-                if config.mutable_vault {
-                    quote! { #[account(mut, seeds = #seeds, bump)] }
+            let glam_vault_annotation =
+                if let Some(config) = ix_code_gen_configs.get(ix.name.as_str()) {
+                    if config.mutable_vault {
+                        quote! { #[account(mut, seeds = #seeds, bump)] }
+                    } else {
+                        quote! { #[account(seeds = #seeds, bump)] }
+                    }
                 } else {
                     quote! { #[account(seeds = #seeds, bump)] }
-                }
-            } else {
-                quote! { #[account(seeds = #seeds, bump)] }
-            };
+                };
 
-            if let Some(accounts_struct) = ix_code_gen_config
-                .unwrap_or(&GlamIxCodeGenConfig::default())
-                .accounts_struct
-                .clone()
-            {
-                if accounts_structs_generated.contains(&accounts_struct) {
-                    quote! {}
-                } else {
-                    accounts_structs_generated.push(accounts_struct.clone());
+            let mut glam_accounts = TokenStream::new();
+            glam_accounts.extend(quote! {
+                #glam_state_annotation
+                pub glam_state: Box<Account<'info, StateAccount>>,
 
-                    let accounts_name =
-                        format_ident!("{}{}", program_name, accounts_struct.to_pascal_case());
-                    let mut glam_accounts_ts = TokenStream::new();
-                    glam_accounts_ts.extend(quote! {
-                        #glam_state_annotation
-                        pub glam_state: Box<Account<'info, StateAccount>>,
+                #glam_vault_annotation
+                pub glam_vault: SystemAccount<'info>,
 
-                        #glam_vault_annotation
-                        pub glam_vault: SystemAccount<'info>,
+                #[account(mut)]
+                pub glam_signer: Signer<'info>,
 
-                        #[account(mut)]
-                        pub glam_signer: Signer<'info>,
+                // The same ix might allow multiple CPI programs (e.g., kamino mainnet staging & prod)
+                // TODO: Support multiple CPI programs in one ix
+                pub cpi_program: Program<'info, #program_name>,
+            });
 
-                        pub cpi_program: Program<'info, #program_name>,
-                    });
+            quote! {
+                #[derive(Accounts)]
+                pub struct #accounts_struct_name<'info> {
+                    #glam_accounts
 
-                    quote! {
-                        #[derive(Accounts)]
-                        pub struct #accounts_name<'info> {
-                            #glam_accounts_ts
-
-                            #all_fields
-                        }
-                    }
-                }
-            } else {
-                accounts_structs_generated.push(ix.name.to_pascal_case());
-
-                let mut glam_accounts_ts = TokenStream::new();
-                glam_accounts_ts.extend(quote! {
-                    #glam_state_annotation
-                    pub glam_state: Box<Account<'info, StateAccount>>,
-
-                    #glam_vault_annotation
-                    pub glam_vault: SystemAccount<'info>,
-
-                    #[account(mut)]
-                    pub glam_signer: Signer<'info>,
-
-                    pub cpi_program: Program<'info, #program_name>,
-                });
-
-                quote! {
-                    #[derive(Accounts)]
-                    pub struct #accounts_name<'info> {
-                        #glam_accounts_ts
-
-                        #all_fields
-                    }
+                    #all_fields
                 }
             }
         });
@@ -239,14 +223,23 @@ pub fn generate_glam_ix_handler(
         })
         .collect::<Vec<_>>();
 
+    let vault_aliases = ix_code_gen_config.vault_aliases.clone().unwrap_or_default();
+
     let account_infos = ix
         .accounts
         .iter()
         .map(|account| match account {
             anchor_syn::idl::IdlAccountItem::IdlAccount(info) => {
                 let name = format_ident!("{}", info.name.to_snake_case());
-                quote! {
-                    #name: ctx.accounts.#name.to_account_info()
+
+                if vault_aliases.contains(&info.name.to_snake_case()) {
+                    quote! {
+                        #name: ctx.accounts.glam_vault.to_account_info()
+                    }
+                } else {
+                    quote! {
+                        #name: ctx.accounts.#name.to_account_info()
+                    }
                 }
             }
             anchor_syn::idl::IdlAccountItem::IdlAccounts(_info) => quote! {},

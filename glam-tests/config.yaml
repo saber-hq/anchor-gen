@@ -1,0 +1,74 @@
+drift:
+  - ix_name: initializeUserStats
+    permission: DriftInitialize
+    integration: Drift
+    vault_aliases: ["authority"]
+    signed_by_vault: true
+  - ix_name: initializeUser
+    permission: DriftInitialize
+    integration: Drift
+    vault_aliases: ["authority"]
+    signed_by_vault: true
+  - ix_name: deleteUser
+    permission: DriftDeleteUser
+    integration: Drift
+    vault_aliases: ["authority"]
+    signed_by_vault: true
+    mutable_vault: true
+  - ix_name: updateUserDelegate
+    permission: DriftUpdateUser
+    integration: Drift
+    vault_aliases: ["authority"]
+    accounts_struct: UpdateUser
+    signed_by_vault: true
+  - ix_name: updateUserCustomMarginRatio
+    permission: DriftUpdateUser
+    integration: Drift
+    vault_aliases: ["authority"]
+    accounts_struct: UpdateUser
+    signed_by_vault: true
+  - ix_name: updateUserMarginTradingEnabled
+    permission: DriftUpdateUser
+    integration: Drift
+    vault_aliases: ["authority"]
+    accounts_struct: UpdateUser
+    signed_by_vault: true
+  - ix_name: deposit
+    permission: DriftDeposit
+    integration: Drift
+    vault_aliases: ["authority"]
+    with_remaining_accounts: true
+    signed_by_vault: true
+    mutable_vault: true
+  - ix_name: withdraw
+    permission: DriftWithdraw
+    integration: Drift
+    vault_aliases: ["authority"]
+    with_remaining_accounts: true
+    signed_by_vault: true
+    mutable_vault: true
+  - ix_name: placeOrders
+    permission: DriftPlaceOrders
+    integration: Drift
+    vault_aliases: ["authority"]
+    with_remaining_accounts: true
+    signed_by_vault: true
+    mutable_vault: true
+  - ix_name: cancelOrders
+    permission: DriftCancelOrders
+    integration: Drift
+    vault_aliases: ["authority"]
+    with_remaining_accounts: true
+    signed_by_vault: true
+  - ix_name: cancelOrdersByIds
+    permission: DriftCancelOrders
+    integration: Drift
+    vault_aliases: ["authority"]
+    accounts_struct: CancelOrders
+    with_remaining_accounts: true
+    signed_by_vault: true
+  - ix_name: modifyOrder
+    permission: DriftModifyOrders
+    integration: Drift
+    vault_aliases: ["authority"]
+    signed_by_vault: true
