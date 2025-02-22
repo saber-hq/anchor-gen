@@ -24,7 +24,7 @@ pub struct GlamIxCodeGenConfig {
     pub integration: Option<String>,
     pub remove_signer: Option<Vec<String>>, // TODO: not being used, consider removing
     pub vault_aliases: Option<Vec<String>>,
-    pub accounts_type_alias: Option<String>, // example: pub type DriftCancelOrdersByIds<'info> = DriftCancelOrders<'info>;
+    pub accounts_struct: Option<String>, // by default accounts struct name is `<ProgramName><IxName>`, this overwrites it with `<ProgramName><AccountsStruct>`
     pub with_remaining_accounts: bool,
     pub signed_by_vault: bool,
     pub mutable_vault: bool,
