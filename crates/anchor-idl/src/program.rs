@@ -9,7 +9,7 @@ use darling::{util::PathList, FromMeta};
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 use serde::{Deserialize, Serialize};
-use serde_json;
+use serde_yaml;
 
 use crate::{
     generate_accounts, generate_glam_ix_handlers, generate_glam_ix_structs, generate_ix_handlers,
@@ -35,7 +35,7 @@ pub struct GlamIxCodeGenConfig {
 pub struct GeneratorOptions {
     /// Path to the IDL.
     pub idl_path: String,
-    /// GLAM autogen config json.
+    /// GLAM autogen config yaml.
     pub glam_codegen_config: Option<String>,
     /// List of zero copy structs.
     pub zero_copy: Option<PathList>,
@@ -78,16 +78,16 @@ impl GeneratorOptions {
 
         if let Some(glam_codegen_config) = &self.glam_codegen_config {
             let glam_autogen_config_contents = fs::read_to_string(glam_codegen_config).unwrap();
-            let config: serde_json::Value =
-                serde_json::from_str(&glam_autogen_config_contents).unwrap();
+            let config: serde_yaml::Value =
+                serde_yaml::from_str(&glam_autogen_config_contents).unwrap();
 
             ix_code_gen_configs = config
                 .get(idl.name.as_str())
                 .unwrap()
-                .as_array()
+                .as_sequence()
                 .unwrap()
                 .iter()
-                .map(|el| serde_json::from_value(el.clone()).unwrap())
+                .map(|el| serde_yaml::from_value(el.clone()).unwrap())
                 .collect::<Vec<GlamIxCodeGenConfig>>()
                 .into_iter()
                 .map(|c| (c.ix_name.clone(), c))

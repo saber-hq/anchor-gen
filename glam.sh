@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CPI_GEN="cargo run -p glam-cpi-gen glam --config ../glam/anchor/programs/glam/src/cpi_autogen/config.json"
+CPI_GEN="cargo run -p glam-cpi-gen glam --config ../glam/anchor/programs/glam/src/cpi_autogen/config.yaml"
 
 #
 # DRIFT
