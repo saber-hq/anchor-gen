@@ -27,6 +27,7 @@
               rustup
               anchor
               cargo-expand
+              cargo-readme
             ];
           };
       }
