@@ -28,7 +28,7 @@ pub fn get_defined_fields_list_properties(
             IdlDefinedFields::Tuple(ff) => ff.clone(),
         })
         .collect::<Vec<_>>();
-    get_type_list_properties(defs, &*types)
+    get_type_list_properties(defs, &types)
 }
 
 pub fn get_field_list_properties(defs: &[IdlTypeDef], fields: &[IdlField]) -> FieldListProperties {
