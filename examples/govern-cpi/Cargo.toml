@@ -10,6 +10,7 @@ keywords = ["solana", "anchor"]
 
 [features]
 default = ["cpi"]
+anchor-debug = []
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
