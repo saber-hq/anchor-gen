@@ -127,7 +127,7 @@ dependencies = [
 
 [[package]]
 name = "anchor-gen"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anchor-generate-cpi-crate",
  "anchor-generate-cpi-interface",
@@ -135,7 +135,7 @@ dependencies = [
 
 [[package]]
 name = "anchor-generate-cpi-crate"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anchor-idl",
  "anchor-lang",
@@ -144,7 +144,7 @@ dependencies = [
 
 [[package]]
 name = "anchor-generate-cpi-interface"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anchor-idl",
  "anchor-lang",
@@ -154,7 +154,7 @@ dependencies = [
 
 [[package]]
 name = "anchor-idl"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anchor-lang",
  "anchor-lang-idl-spec",
@@ -660,7 +660,7 @@ dependencies = [
 
 [[package]]
 name = "govern-cpi"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "anchor-gen",
  "anchor-lang",
@@ -730,7 +730,7 @@ dependencies = [
 
 [[package]]
 name = "kamino-lend"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "anchor-gen",
  "anchor-lang",
@@ -821,7 +821,7 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "marinade-cpi"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "anchor-gen",
  "anchor-lang",
