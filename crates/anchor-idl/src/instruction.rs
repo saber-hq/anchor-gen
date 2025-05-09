@@ -6,7 +6,7 @@ use quote::{format_ident, quote};
 /// Generates a single instruction handler.
 pub fn generate_ix_handler(ix: &IdlInstruction) -> TokenStream {
     let ix_name = format_ident!("{}", ix.name.to_snake_case());
-    let accounts_name = format_ident!("{}Instruction", ix.name.to_pascal_case());
+    let accounts_name = format_ident!("{}", ix.name.to_pascal_case());
 
     let args = ix
         .args
@@ -45,18 +45,30 @@ pub fn generate_ix_handler(ix: &IdlInstruction) -> TokenStream {
 /// Generates instruction context structs.
 pub fn generate_ix_structs(ixs: &[IdlInstruction]) -> TokenStream {
     let defs = ixs.iter().map(|ix| {
-        let accounts_name = format_ident!("{}Instruction", ix.name.to_pascal_case());
+        let accounts_name = format_ident!("{}", ix.name.to_pascal_case());
 
         let (all_structs, all_fields) =
             crate::generate_account_fields(&ix.name.to_pascal_case(), &ix.accounts);
+
+        let struct_def = if ix.accounts.is_empty() {
+            quote! {
+                pub struct #accounts_name {
+                    #all_fields
+                }
+            }
+        } else {
+            quote! {
+                pub struct #accounts_name<'info> {
+                    #all_fields
+                }
+            }
+        };
 
         quote! {
             #all_structs
 
             #[derive(Accounts)]
-            pub struct #accounts_name<'info> {
-                #all_fields
-            }
+            #struct_def
         }
     });
     quote! {
