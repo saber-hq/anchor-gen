@@ -1,48 +1,48 @@
 {
-  "version": "0.5.6",
-  "name": "govern",
+  "address": "Govz1VyoyLD5BL6CSCxUJLVLsQHRwjfFj1prNsdNg5Jw",
+  "metadata": {
+    "name": "govern",
+    "version": "0.5.6",
+    "spec": "0.1.0"
+  },
   "instructions": [
     {
-      "name": "createGovernor",
+      "name": "create_governor",
+      "discriminator": [103, 30, 78, 252, 28, 128, 40, 3],
       "accounts": [
         {
           "name": "base",
-          "isMut": false,
-          "isSigner": true
+          "signer": true
         },
         {
           "name": "governor",
-          "isMut": true,
-          "isSigner": false,
+          "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "type": "string",
-                "value": "TribecaGovernor"
+                "value": [
+                  34, 84, 114, 105, 98, 101, 99, 97, 71, 111, 118, 101, 114,
+                  110, 111, 114, 34
+                ]
               },
               {
                 "kind": "account",
-                "type": "publicKey",
                 "path": "base"
               }
             ]
           }
         },
         {
-          "name": "smartWallet",
-          "isMut": false,
-          "isSigner": false
+          "name": "smart_wallet"
         },
         {
           "name": "payer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
@@ -52,64 +52,62 @@
         },
         {
           "name": "electorate",
-          "type": "publicKey"
+          "type": "pubkey"
         },
         {
           "name": "params",
           "type": {
-            "defined": "GovernanceParameters"
+            "defined": {
+              "name": "GovernanceParameters"
+            }
           }
         }
       ]
     },
     {
-      "name": "createProposal",
+      "name": "create_proposal",
+      "discriminator": [132, 116, 68, 174, 216, 160, 198, 22],
       "accounts": [
         {
           "name": "governor",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "proposal",
-          "isMut": true,
-          "isSigner": false,
+          "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "type": "string",
-                "value": "TribecaProposal"
+                "value": [
+                  34, 84, 114, 105, 98, 101, 99, 97, 80, 114, 111, 112, 111,
+                  115, 97, 108, 34
+                ]
               },
               {
                 "kind": "account",
-                "type": "publicKey",
-                "account": "Governor",
-                "path": "governor"
+                "path": "governor",
+                "account": "Governor"
               },
               {
                 "kind": "account",
-                "type": "u64",
-                "account": "Governor",
-                "path": "governor.proposal_count"
+                "path": "governor.proposal_count",
+                "account": "Governor"
               }
             ]
           }
         },
         {
           "name": "proposer",
-          "isMut": false,
-          "isSigner": true
+          "signer": true
         },
         {
           "name": "payer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
@@ -121,128 +119,113 @@
           "name": "instructions",
           "type": {
             "vec": {
-              "defined": "ProposalInstruction"
+              "defined": {
+                "name": "ProposalInstruction"
+              }
             }
           }
         }
       ]
     },
     {
-      "name": "activateProposal",
+      "name": "activate_proposal",
+      "discriminator": [90, 186, 203, 234, 70, 185, 191, 21],
       "accounts": [
         {
-          "name": "governor",
-          "isMut": false,
-          "isSigner": false
+          "name": "governor"
         },
         {
           "name": "proposal",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "electorate",
-          "isMut": false,
-          "isSigner": true
+          "signer": true
         }
       ],
       "args": []
     },
     {
-      "name": "cancelProposal",
+      "name": "cancel_proposal",
+      "discriminator": [106, 74, 128, 146, 19, 65, 39, 23],
       "accounts": [
         {
-          "name": "governor",
-          "isMut": false,
-          "isSigner": false
+          "name": "governor"
         },
         {
           "name": "proposal",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "proposer",
-          "isMut": false,
-          "isSigner": true
+          "signer": true
         }
       ],
       "args": []
     },
     {
-      "name": "queueProposal",
+      "name": "queue_proposal",
+      "discriminator": [168, 219, 139, 211, 205, 152, 125, 110],
       "accounts": [
         {
-          "name": "governor",
-          "isMut": false,
-          "isSigner": false
+          "name": "governor"
         },
         {
           "name": "proposal",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "transaction",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "smartWallet",
-          "isMut": true,
-          "isSigner": false
+          "name": "smart_wallet",
+          "writable": true
         },
         {
           "name": "payer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "smartWalletProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "smart_wallet_program"
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
         {
-          "name": "txBump",
+          "name": "tx_bump",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "newVote",
+      "name": "new_vote",
+      "discriminator": [163, 108, 157, 189, 140, 80, 13, 143],
       "accounts": [
         {
-          "name": "proposal",
-          "isMut": false,
-          "isSigner": false
+          "name": "proposal"
         },
         {
           "name": "vote",
-          "isMut": true,
-          "isSigner": false,
+          "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "type": "string",
-                "value": "TribecaVote"
+                "value": [
+                  34, 84, 114, 105, 98, 101, 99, 97, 86, 111, 116, 101, 34
+                ]
               },
               {
                 "kind": "account",
-                "type": "publicKey",
-                "account": "Proposal",
-                "path": "proposal"
+                "path": "proposal",
+                "account": "Proposal"
               },
               {
                 "kind": "arg",
-                "type": "publicKey",
                 "path": "voter"
               }
             ]
@@ -250,13 +233,11 @@
         },
         {
           "name": "payer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
@@ -266,32 +247,28 @@
         },
         {
           "name": "voter",
-          "type": "publicKey"
+          "type": "pubkey"
         }
       ]
     },
     {
-      "name": "setVote",
+      "name": "set_vote",
+      "discriminator": [171, 33, 83, 172, 148, 215, 239, 97],
       "accounts": [
         {
-          "name": "governor",
-          "isMut": false,
-          "isSigner": false
+          "name": "governor"
         },
         {
           "name": "proposal",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "vote",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "electorate",
-          "isMut": false,
-          "isSigner": true
+          "signer": true
         }
       ],
       "args": [
@@ -306,91 +283,87 @@
       ]
     },
     {
-      "name": "setGovernanceParams",
+      "name": "set_governance_params",
+      "discriminator": [175, 187, 3, 73, 8, 251, 67, 178],
       "accounts": [
         {
           "name": "governor",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "smartWallet",
-          "isMut": false,
-          "isSigner": true
+          "name": "smart_wallet",
+          "signer": true
         }
       ],
       "args": [
         {
           "name": "params",
           "type": {
-            "defined": "GovernanceParameters"
+            "defined": {
+              "name": "GovernanceParameters"
+            }
           }
         }
       ]
     },
     {
-      "name": "setElectorate",
+      "name": "set_electorate",
+      "discriminator": [145, 135, 92, 16, 77, 195, 145, 91],
       "accounts": [
         {
           "name": "governor",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "smartWallet",
-          "isMut": false,
-          "isSigner": true
+          "name": "smart_wallet",
+          "signer": true
         }
       ],
       "args": [
         {
-          "name": "newElectorate",
-          "type": "publicKey"
+          "name": "new_electorate",
+          "type": "pubkey"
         }
       ]
     },
     {
-      "name": "createProposalMeta",
+      "name": "create_proposal_meta",
+      "discriminator": [238, 138, 212, 160, 46, 53, 51, 88],
       "accounts": [
         {
-          "name": "proposal",
-          "isMut": false,
-          "isSigner": false
+          "name": "proposal"
         },
         {
           "name": "proposer",
-          "isMut": false,
-          "isSigner": true
+          "signer": true
         },
         {
-          "name": "proposalMeta",
-          "isMut": true,
-          "isSigner": false,
+          "name": "proposal_meta",
+          "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "type": "string",
-                "value": "TribecaProposalMeta"
+                "value": [
+                  34, 84, 114, 105, 98, 101, 99, 97, 80, 114, 111, 112, 111,
+                  115, 97, 108, 77, 101, 116, 97, 34
+                ]
               },
               {
                 "kind": "account",
-                "type": "publicKey",
-                "account": "Proposal",
-                "path": "proposal"
+                "path": "proposal",
+                "account": "Proposal"
               }
             ]
           }
         },
         {
           "name": "payer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
@@ -403,7 +376,7 @@
           "type": "string"
         },
         {
-          "name": "descriptionLink",
+          "name": "description_link",
           "type": "string"
         }
       ]
@@ -412,157 +385,84 @@
   "accounts": [
     {
       "name": "Governor",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "base",
-            "type": "publicKey"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          },
-          {
-            "name": "proposalCount",
-            "type": "u64"
-          },
-          {
-            "name": "electorate",
-            "type": "publicKey"
-          },
-          {
-            "name": "smartWallet",
-            "type": "publicKey"
-          },
-          {
-            "name": "params",
-            "type": {
-              "defined": "GovernanceParameters"
-            }
-          }
-        ]
-      }
+      "discriminator": [37, 136, 44, 80, 68, 85, 213, 178]
     },
     {
       "name": "Proposal",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "governor",
-            "type": "publicKey"
-          },
-          {
-            "name": "index",
-            "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          },
-          {
-            "name": "proposer",
-            "type": "publicKey"
-          },
-          {
-            "name": "quorumVotes",
-            "type": "u64"
-          },
-          {
-            "name": "forVotes",
-            "type": "u64"
-          },
-          {
-            "name": "againstVotes",
-            "type": "u64"
-          },
-          {
-            "name": "abstainVotes",
-            "type": "u64"
-          },
-          {
-            "name": "canceledAt",
-            "type": "i64"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "activatedAt",
-            "type": "i64"
-          },
-          {
-            "name": "votingEndsAt",
-            "type": "i64"
-          },
-          {
-            "name": "queuedAt",
-            "type": "i64"
-          },
-          {
-            "name": "queuedTransaction",
-            "type": "publicKey"
-          },
-          {
-            "name": "instructions",
-            "type": {
-              "vec": {
-                "defined": "ProposalInstruction"
-              }
-            }
-          }
-        ]
-      }
+      "discriminator": [26, 94, 189, 187, 116, 136, 53, 33]
     },
     {
       "name": "ProposalMeta",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "proposal",
-            "type": "publicKey"
-          },
-          {
-            "name": "title",
-            "type": "string"
-          },
-          {
-            "name": "descriptionLink",
-            "type": "string"
-          }
-        ]
-      }
+      "discriminator": [50, 100, 46, 24, 151, 174, 216, 78]
     },
     {
       "name": "Vote",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "proposal",
-            "type": "publicKey"
-          },
-          {
-            "name": "voter",
-            "type": "publicKey"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          },
-          {
-            "name": "side",
-            "type": "u8"
-          },
-          {
-            "name": "weight",
-            "type": "u64"
-          }
-        ]
-      }
+      "discriminator": [96, 91, 104, 57, 145, 35, 172, 155]
+    }
+  ],
+  "events": [
+    {
+      "name": "GovernorCreateEvent",
+      "discriminator": [117, 24, 15, 85, 39, 58, 62, 23]
+    },
+    {
+      "name": "ProposalCreateEvent",
+      "discriminator": [121, 18, 213, 155, 223, 158, 95, 70]
+    },
+    {
+      "name": "ProposalActivateEvent",
+      "discriminator": [247, 53, 166, 250, 118, 62, 53, 80]
+    },
+    {
+      "name": "ProposalCancelEvent",
+      "discriminator": [24, 49, 11, 182, 23, 59, 122, 220]
+    },
+    {
+      "name": "ProposalQueueEvent",
+      "discriminator": [48, 219, 123, 209, 140, 210, 248, 14]
+    },
+    {
+      "name": "VoteSetEvent",
+      "discriminator": [175, 119, 30, 108, 176, 233, 151, 252]
+    },
+    {
+      "name": "ProposalMetaCreateEvent",
+      "discriminator": [50, 59, 195, 75, 85, 227, 187, 82]
+    },
+    {
+      "name": "GovernorSetParamsEvent",
+      "discriminator": [169, 129, 187, 152, 130, 17, 81, 157]
+    },
+    {
+      "name": "GovernorSetElectorateEvent",
+      "discriminator": [146, 179, 141, 206, 235, 125, 146, 26]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidVoteSide",
+      "msg": "Invalid vote side."
+    },
+    {
+      "code": 6001,
+      "name": "GovernorNotFound",
+      "msg": "The owner of the smart wallet doesn't match with current."
+    },
+    {
+      "code": 6002,
+      "name": "VotingDelayNotMet",
+      "msg": "The proposal cannot be activated since it has not yet passed the voting delay."
+    },
+    {
+      "code": 6003,
+      "name": "ProposalNotDraft",
+      "msg": "Only drafts can be canceled."
+    },
+    {
+      "code": 6004,
+      "name": "ProposalNotActive",
+      "msg": "The proposal must be active."
     }
   ],
   "types": [
@@ -572,19 +472,19 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "votingDelay",
+            "name": "voting_delay",
             "type": "u64"
           },
           {
-            "name": "votingPeriod",
+            "name": "voting_period",
             "type": "u64"
           },
           {
-            "name": "quorumVotes",
+            "name": "quorum_votes",
             "type": "u64"
           },
           {
-            "name": "timelockDelaySeconds",
+            "name": "timelock_delay_seconds",
             "type": "i64"
           }
         ]
@@ -596,14 +496,16 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "programId",
-            "type": "publicKey"
+            "name": "program_id",
+            "type": "pubkey"
           },
           {
             "name": "keys",
             "type": {
               "vec": {
-                "defined": "ProposalAccountMeta"
+                "defined": {
+                  "name": "ProposalAccountMeta"
+                }
               }
             }
           },
@@ -621,14 +523,14 @@
         "fields": [
           {
             "name": "pubkey",
-            "type": "publicKey"
+            "type": "pubkey"
           },
           {
-            "name": "isSigner",
+            "name": "is_signer",
             "type": "bool"
           },
           {
-            "name": "isWritable",
+            "name": "is_writable",
             "type": "bool"
           }
         ]
@@ -679,250 +581,382 @@
           }
         ]
       }
-    }
-  ],
-  "events": [
+    },
+    {
+      "name": "Governor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "base",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "proposal_count",
+            "type": "u64"
+          },
+          {
+            "name": "electorate",
+            "type": "pubkey"
+          },
+          {
+            "name": "smart_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "params",
+            "type": {
+              "defined": {
+                "name": "GovernanceParameters"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Proposal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "proposer",
+            "type": "pubkey"
+          },
+          {
+            "name": "quorum_votes",
+            "type": "u64"
+          },
+          {
+            "name": "for_votes",
+            "type": "u64"
+          },
+          {
+            "name": "against_votes",
+            "type": "u64"
+          },
+          {
+            "name": "abstain_votes",
+            "type": "u64"
+          },
+          {
+            "name": "canceled_at",
+            "type": "i64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "activated_at",
+            "type": "i64"
+          },
+          {
+            "name": "voting_ends_at",
+            "type": "i64"
+          },
+          {
+            "name": "queued_at",
+            "type": "i64"
+          },
+          {
+            "name": "queued_transaction",
+            "type": "pubkey"
+          },
+          {
+            "name": "instructions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "ProposalInstruction"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalMeta",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description_link",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vote",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "weight",
+            "type": "u64"
+          }
+        ]
+      }
+    },
     {
       "name": "GovernorCreateEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "electorate",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "smartWallet",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "parameters",
-          "type": {
-            "defined": "GovernanceParameters"
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
           },
-          "index": false
-        }
-      ]
+          {
+            "name": "electorate",
+            "type": "pubkey"
+          },
+          {
+            "name": "smart_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "parameters",
+            "type": {
+              "defined": {
+                "name": "GovernanceParameters"
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "name": "ProposalCreateEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "proposal",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "index",
-          "type": "u64",
-          "index": false
-        },
-        {
-          "name": "instructions",
-          "type": {
-            "vec": {
-              "defined": "ProposalInstruction"
-            }
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
           },
-          "index": false
-        }
-      ]
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          },
+          {
+            "name": "instructions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "ProposalInstruction"
+                }
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "name": "ProposalActivateEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "proposal",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "votingEndsAt",
-          "type": "i64",
-          "index": false
-        }
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "voting_ends_at",
+            "type": "i64"
+          }
+        ]
+      }
     },
     {
       "name": "ProposalCancelEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "proposal",
-          "type": "publicKey",
-          "index": false
-        }
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          }
+        ]
+      }
     },
     {
       "name": "ProposalQueueEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "proposal",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "transaction",
-          "type": "publicKey",
-          "index": false
-        }
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "transaction",
+            "type": "pubkey"
+          }
+        ]
+      }
     },
     {
       "name": "VoteSetEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "proposal",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "voter",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "vote",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "side",
-          "type": "u8",
-          "index": false
-        },
-        {
-          "name": "weight",
-          "type": "u64",
-          "index": false
-        }
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "vote",
+            "type": "pubkey"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "weight",
+            "type": "u64"
+          }
+        ]
+      }
     },
     {
       "name": "ProposalMetaCreateEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "proposal",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "title",
-          "type": "string",
-          "index": false
-        },
-        {
-          "name": "descriptionLink",
-          "type": "string",
-          "index": false
-        }
-      ]
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description_link",
+            "type": "string"
+          }
+        ]
+      }
     },
     {
       "name": "GovernorSetParamsEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "prevParams",
-          "type": {
-            "defined": "GovernanceParameters"
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
           },
-          "index": false
-        },
-        {
-          "name": "params",
-          "type": {
-            "defined": "GovernanceParameters"
+          {
+            "name": "prev_params",
+            "type": {
+              "defined": {
+                "name": "GovernanceParameters"
+              }
+            }
           },
-          "index": false
-        }
-      ]
+          {
+            "name": "params",
+            "type": {
+              "defined": {
+                "name": "GovernanceParameters"
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "name": "GovernorSetElectorateEvent",
-      "fields": [
-        {
-          "name": "governor",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "prevElectorate",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "newElectorate",
-          "type": "publicKey",
-          "index": false
-        }
-      ]
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "InvalidVoteSide",
-      "msg": "Invalid vote side."
-    },
-    {
-      "code": 6001,
-      "name": "GovernorNotFound",
-      "msg": "The owner of the smart wallet doesn't match with current."
-    },
-    {
-      "code": 6002,
-      "name": "VotingDelayNotMet",
-      "msg": "The proposal cannot be activated since it has not yet passed the voting delay."
-    },
-    {
-      "code": 6003,
-      "name": "ProposalNotDraft",
-      "msg": "Only drafts can be canceled."
-    },
-    {
-      "code": 6004,
-      "name": "ProposalNotActive",
-      "msg": "The proposal must be active."
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governor",
+            "type": "pubkey"
+          },
+          {
+            "name": "prev_electorate",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_electorate",
+            "type": "pubkey"
+          }
+        ]
+      }
     }
   ]
 }

@@ -1,804 +1,677 @@
 {
-  "version": "0.1.0",
-  "name": "whirlpool",
+  "address": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+  "metadata": {
+    "name": "whirlpool",
+    "version": "0.1.0",
+    "spec": "0.1.0"
+  },
   "instructions": [
     {
-      "name": "initializeConfig",
+      "name": "initialize_config",
+      "discriminator": [208, 127, 21, 1, 194, 190, 196, 70],
       "accounts": [
         {
           "name": "config",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "funder",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
         {
-          "name": "feeAuthority",
-          "type": "publicKey"
+          "name": "fee_authority",
+          "type": "pubkey"
         },
         {
-          "name": "collectProtocolFeesAuthority",
-          "type": "publicKey"
+          "name": "collect_protocol_fees_authority",
+          "type": "pubkey"
         },
         {
-          "name": "rewardEmissionsSuperAuthority",
-          "type": "publicKey"
+          "name": "reward_emissions_super_authority",
+          "type": "pubkey"
         },
         {
-          "name": "defaultProtocolFeeRate",
+          "name": "default_protocol_fee_rate",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "initializePool",
+      "name": "initialize_pool",
+      "discriminator": [95, 180, 10, 172, 84, 174, 232, 40],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpools_config"
         },
         {
-          "name": "tokenMintA",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_mint_a"
         },
         {
-          "name": "tokenMintB",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_mint_b"
         },
         {
           "name": "funder",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "tokenVaultA",
-          "isMut": true,
-          "isSigner": true
+          "name": "token_vault_a",
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "tokenVaultB",
-          "isMut": true,
-          "isSigner": true
+          "name": "token_vault_b",
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "feeTier",
-          "isMut": false,
-          "isSigner": false
+          "name": "fee_tier"
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
+          "name": "rent"
         }
       ],
       "args": [
         {
           "name": "bumps",
           "type": {
-            "defined": "WhirlpoolBumps"
+            "defined": {
+              "name": "WhirlpoolBumps"
+            }
           }
         },
         {
-          "name": "tickSpacing",
+          "name": "tick_spacing",
           "type": "u16"
         },
         {
-          "name": "initialSqrtPrice",
+          "name": "initial_sqrt_price",
           "type": "u128"
         }
       ]
     },
     {
-      "name": "initializeTickArray",
+      "name": "initialize_tick_array",
+      "discriminator": [11, 188, 193, 214, 141, 91, 149, 184],
       "accounts": [
         {
-          "name": "whirlpool",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpool"
         },
         {
           "name": "funder",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "tickArray",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array",
+          "writable": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
         {
-          "name": "startTickIndex",
+          "name": "start_tick_index",
           "type": "i32"
         }
       ]
     },
     {
-      "name": "initializeFeeTier",
+      "name": "initialize_fee_tier",
+      "discriminator": [183, 74, 156, 160, 112, 2, 42, 30],
       "accounts": [
         {
-          "name": "config",
-          "isMut": false,
-          "isSigner": false
+          "name": "config"
         },
         {
-          "name": "feeTier",
-          "isMut": true,
-          "isSigner": false
+          "name": "fee_tier",
+          "writable": true
         },
         {
           "name": "funder",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "feeAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "fee_authority",
+          "signer": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         }
       ],
       "args": [
         {
-          "name": "tickSpacing",
+          "name": "tick_spacing",
           "type": "u16"
         },
         {
-          "name": "defaultFeeRate",
+          "name": "default_fee_rate",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "initializeReward",
+      "name": "initialize_reward",
+      "discriminator": [95, 135, 192, 196, 242, 129, 230, 68],
       "accounts": [
         {
-          "name": "rewardAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "reward_authority",
+          "signer": true
         },
         {
           "name": "funder",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "rewardMint",
-          "isMut": false,
-          "isSigner": false
+          "name": "reward_mint"
         },
         {
-          "name": "rewardVault",
-          "isMut": true,
-          "isSigner": true
+          "name": "reward_vault",
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
+          "name": "rent"
         }
       ],
       "args": [
         {
-          "name": "rewardIndex",
+          "name": "reward_index",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "setRewardEmissions",
+      "name": "set_reward_emissions",
+      "discriminator": [13, 197, 86, 168, 109, 176, 27, 244],
       "accounts": [
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "rewardAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "reward_authority",
+          "signer": true
         },
         {
-          "name": "rewardVault",
-          "isMut": false,
-          "isSigner": false
+          "name": "reward_vault"
         }
       ],
       "args": [
         {
-          "name": "rewardIndex",
+          "name": "reward_index",
           "type": "u8"
         },
         {
-          "name": "emissionsPerSecondX64",
+          "name": "emissions_per_second_x64",
           "type": "u128"
         }
       ]
     },
     {
-      "name": "openPosition",
+      "name": "open_position",
+      "discriminator": [135, 128, 47, 77, 15, 152, 240, 49],
       "accounts": [
         {
           "name": "funder",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
+          "name": "owner"
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "positionMint",
-          "isMut": true,
-          "isSigner": true
+          "name": "position_mint",
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "positionTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "position_token_account",
+          "writable": true
         },
         {
-          "name": "whirlpool",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpool"
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
+          "name": "rent"
         },
         {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "associated_token_program"
         }
       ],
       "args": [
         {
           "name": "bumps",
           "type": {
-            "defined": "OpenPositionBumps"
+            "defined": {
+              "name": "OpenPositionBumps"
+            }
           }
         },
         {
-          "name": "tickLowerIndex",
+          "name": "tick_lower_index",
           "type": "i32"
         },
         {
-          "name": "tickUpperIndex",
+          "name": "tick_upper_index",
           "type": "i32"
         }
       ]
     },
     {
-      "name": "openPositionWithMetadata",
+      "name": "open_position_with_metadata",
+      "discriminator": [242, 29, 134, 48, 58, 110, 14, 60],
       "accounts": [
         {
           "name": "funder",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
+          "name": "owner"
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "positionMint",
-          "isMut": true,
-          "isSigner": true
+          "name": "position_mint",
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "positionMetadataAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "position_metadata_account",
+          "writable": true
         },
         {
-          "name": "positionTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "position_token_account",
+          "writable": true
         },
         {
-          "name": "whirlpool",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpool"
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program"
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
+          "name": "rent"
         },
         {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "associated_token_program"
         },
         {
-          "name": "metadataProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "metadata_program"
         },
         {
-          "name": "metadataUpdateAuth",
-          "isMut": false,
-          "isSigner": false
+          "name": "metadata_update_auth"
         }
       ],
       "args": [
         {
           "name": "bumps",
           "type": {
-            "defined": "OpenPositionWithMetadataBumps"
+            "defined": {
+              "name": "OpenPositionWithMetadataBumps"
+            }
           }
         },
         {
-          "name": "tickLowerIndex",
+          "name": "tick_lower_index",
           "type": "i32"
         },
         {
-          "name": "tickUpperIndex",
+          "name": "tick_upper_index",
           "type": "i32"
         }
       ]
     },
     {
-      "name": "increaseLiquidity",
+      "name": "increase_liquidity",
+      "discriminator": [46, 156, 243, 118, 13, 205, 251, 178],
       "accounts": [
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         },
         {
-          "name": "positionAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "position_authority",
+          "signer": true
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "positionTokenAccount",
-          "isMut": false,
-          "isSigner": false
+          "name": "position_token_account"
         },
         {
-          "name": "tokenOwnerAccountA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_a",
+          "writable": true
         },
         {
-          "name": "tokenOwnerAccountB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_b",
+          "writable": true
         },
         {
-          "name": "tokenVaultA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_a",
+          "writable": true
         },
         {
-          "name": "tokenVaultB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_b",
+          "writable": true
         },
         {
-          "name": "tickArrayLower",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array_lower",
+          "writable": true
         },
         {
-          "name": "tickArrayUpper",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array_upper",
+          "writable": true
         }
       ],
       "args": [
         {
-          "name": "liquidityAmount",
+          "name": "liquidity_amount",
           "type": "u128"
         },
         {
-          "name": "tokenMaxA",
+          "name": "token_max_a",
           "type": "u64"
         },
         {
-          "name": "tokenMaxB",
+          "name": "token_max_b",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "decreaseLiquidity",
+      "name": "decrease_liquidity",
+      "discriminator": [160, 38, 208, 111, 104, 91, 44, 1],
       "accounts": [
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         },
         {
-          "name": "positionAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "position_authority",
+          "signer": true
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "positionTokenAccount",
-          "isMut": false,
-          "isSigner": false
+          "name": "position_token_account"
         },
         {
-          "name": "tokenOwnerAccountA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_a",
+          "writable": true
         },
         {
-          "name": "tokenOwnerAccountB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_b",
+          "writable": true
         },
         {
-          "name": "tokenVaultA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_a",
+          "writable": true
         },
         {
-          "name": "tokenVaultB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_b",
+          "writable": true
         },
         {
-          "name": "tickArrayLower",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array_lower",
+          "writable": true
         },
         {
-          "name": "tickArrayUpper",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array_upper",
+          "writable": true
         }
       ],
       "args": [
         {
-          "name": "liquidityAmount",
+          "name": "liquidity_amount",
           "type": "u128"
         },
         {
-          "name": "tokenMinA",
+          "name": "token_min_a",
           "type": "u64"
         },
         {
-          "name": "tokenMinB",
+          "name": "token_min_b",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "updateFeesAndRewards",
+      "name": "update_fees_and_rewards",
+      "discriminator": [154, 230, 250, 13, 236, 209, 75, 223],
       "accounts": [
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "tickArrayLower",
-          "isMut": false,
-          "isSigner": false
+          "name": "tick_array_lower"
         },
         {
-          "name": "tickArrayUpper",
-          "isMut": false,
-          "isSigner": false
+          "name": "tick_array_upper"
         }
       ],
       "args": []
     },
     {
-      "name": "collectFees",
+      "name": "collect_fees",
+      "discriminator": [164, 152, 207, 99, 30, 186, 19, 182],
       "accounts": [
         {
-          "name": "whirlpool",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpool"
         },
         {
-          "name": "positionAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "position_authority",
+          "signer": true
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "positionTokenAccount",
-          "isMut": false,
-          "isSigner": false
+          "name": "position_token_account"
         },
         {
-          "name": "tokenOwnerAccountA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_a",
+          "writable": true
         },
         {
-          "name": "tokenVaultA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_a",
+          "writable": true
         },
         {
-          "name": "tokenOwnerAccountB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_b",
+          "writable": true
         },
         {
-          "name": "tokenVaultB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_b",
+          "writable": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         }
       ],
       "args": []
     },
     {
-      "name": "collectReward",
+      "name": "collect_reward",
+      "discriminator": [70, 5, 132, 87, 86, 235, 177, 34],
       "accounts": [
         {
-          "name": "whirlpool",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpool"
         },
         {
-          "name": "positionAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "position_authority",
+          "signer": true
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "positionTokenAccount",
-          "isMut": false,
-          "isSigner": false
+          "name": "position_token_account"
         },
         {
-          "name": "rewardOwnerAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "reward_owner_account",
+          "writable": true
         },
         {
-          "name": "rewardVault",
-          "isMut": true,
-          "isSigner": false
+          "name": "reward_vault",
+          "writable": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         }
       ],
       "args": [
         {
-          "name": "rewardIndex",
+          "name": "reward_index",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "collectProtocolFees",
+      "name": "collect_protocol_fees",
+      "discriminator": [22, 67, 23, 98, 150, 178, 70, 220],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpools_config"
         },
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "collectProtocolFeesAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "collect_protocol_fees_authority",
+          "signer": true
         },
         {
-          "name": "tokenVaultA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_a",
+          "writable": true
         },
         {
-          "name": "tokenVaultB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_b",
+          "writable": true
         },
         {
-          "name": "tokenDestinationA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_destination_a",
+          "writable": true
         },
         {
-          "name": "tokenDestinationB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_destination_b",
+          "writable": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         }
       ],
       "args": []
     },
     {
       "name": "swap",
+      "discriminator": [248, 198, 158, 145, 225, 117, 135, 200],
       "accounts": [
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         },
         {
-          "name": "tokenAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "token_authority",
+          "signer": true
         },
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "tokenOwnerAccountA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_a",
+          "writable": true
         },
         {
-          "name": "tokenVaultA",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_a",
+          "writable": true
         },
         {
-          "name": "tokenOwnerAccountB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_owner_account_b",
+          "writable": true
         },
         {
-          "name": "tokenVaultB",
-          "isMut": true,
-          "isSigner": false
+          "name": "token_vault_b",
+          "writable": true
         },
         {
-          "name": "tickArray0",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array0",
+          "writable": true
         },
         {
-          "name": "tickArray1",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array1",
+          "writable": true
         },
         {
-          "name": "tickArray2",
-          "isMut": true,
-          "isSigner": false
+          "name": "tick_array2",
+          "writable": true
         },
         {
-          "name": "oracle",
-          "isMut": false,
-          "isSigner": false
+          "name": "oracle"
         }
       ],
       "args": [
@@ -807,274 +680,241 @@
           "type": "u64"
         },
         {
-          "name": "otherAmountThreshold",
+          "name": "other_amount_threshold",
           "type": "u64"
         },
         {
-          "name": "sqrtPriceLimit",
+          "name": "sqrt_price_limit",
           "type": "u128"
         },
         {
-          "name": "amountSpecifiedIsInput",
+          "name": "amount_specified_is_input",
           "type": "bool"
         },
         {
-          "name": "aToB",
+          "name": "a_to_b",
           "type": "bool"
         }
       ]
     },
     {
-      "name": "closePosition",
+      "name": "close_position",
+      "discriminator": [123, 134, 81, 0, 49, 68, 98, 98],
       "accounts": [
         {
-          "name": "positionAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "position_authority",
+          "signer": true
         },
         {
           "name": "receiver",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "position",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "positionMint",
-          "isMut": true,
-          "isSigner": false
+          "name": "position_mint",
+          "writable": true
         },
         {
-          "name": "positionTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "position_token_account",
+          "writable": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "token_program"
         }
       ],
       "args": []
     },
     {
-      "name": "setDefaultFeeRate",
+      "name": "set_default_fee_rate",
+      "discriminator": [118, 215, 214, 157, 182, 229, 208, 228],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpools_config"
         },
         {
-          "name": "feeTier",
-          "isMut": true,
-          "isSigner": false
+          "name": "fee_tier",
+          "writable": true
         },
         {
-          "name": "feeAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "fee_authority",
+          "signer": true
         }
       ],
       "args": [
         {
-          "name": "defaultFeeRate",
+          "name": "default_fee_rate",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "setDefaultProtocolFeeRate",
+      "name": "set_default_protocol_fee_rate",
+      "discriminator": [107, 205, 249, 226, 151, 35, 86, 0],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": true,
-          "isSigner": false
+          "name": "whirlpools_config",
+          "writable": true
         },
         {
-          "name": "feeAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "fee_authority",
+          "signer": true
         }
       ],
       "args": [
         {
-          "name": "defaultProtocolFeeRate",
+          "name": "default_protocol_fee_rate",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "setFeeRate",
+      "name": "set_fee_rate",
+      "discriminator": [53, 243, 137, 65, 8, 140, 158, 6],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpools_config"
         },
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "feeAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "fee_authority",
+          "signer": true
         }
       ],
       "args": [
         {
-          "name": "feeRate",
+          "name": "fee_rate",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "setProtocolFeeRate",
+      "name": "set_protocol_fee_rate",
+      "discriminator": [95, 7, 4, 50, 154, 79, 156, 131],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpools_config"
         },
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "feeAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "fee_authority",
+          "signer": true
         }
       ],
       "args": [
         {
-          "name": "protocolFeeRate",
+          "name": "protocol_fee_rate",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "setFeeAuthority",
+      "name": "set_fee_authority",
+      "discriminator": [31, 1, 50, 87, 237, 101, 97, 132],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": true,
-          "isSigner": false
+          "name": "whirlpools_config",
+          "writable": true
         },
         {
-          "name": "feeAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "fee_authority",
+          "signer": true
         },
         {
-          "name": "newFeeAuthority",
-          "isMut": false,
-          "isSigner": false
+          "name": "new_fee_authority"
         }
       ],
       "args": []
     },
     {
-      "name": "setCollectProtocolFeesAuthority",
+      "name": "set_collect_protocol_fees_authority",
+      "discriminator": [34, 150, 93, 244, 139, 225, 233, 67],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": true,
-          "isSigner": false
+          "name": "whirlpools_config",
+          "writable": true
         },
         {
-          "name": "collectProtocolFeesAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "collect_protocol_fees_authority",
+          "signer": true
         },
         {
-          "name": "newCollectProtocolFeesAuthority",
-          "isMut": false,
-          "isSigner": false
+          "name": "new_collect_protocol_fees_authority"
         }
       ],
       "args": []
     },
     {
-      "name": "setRewardAuthority",
+      "name": "set_reward_authority",
+      "discriminator": [34, 39, 183, 252, 83, 28, 85, 127],
       "accounts": [
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "rewardAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "reward_authority",
+          "signer": true
         },
         {
-          "name": "newRewardAuthority",
-          "isMut": false,
-          "isSigner": false
+          "name": "new_reward_authority"
         }
       ],
       "args": [
         {
-          "name": "rewardIndex",
+          "name": "reward_index",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "setRewardAuthorityBySuperAuthority",
+      "name": "set_reward_authority_by_super_authority",
+      "discriminator": [240, 154, 201, 198, 148, 93, 56, 25],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": false,
-          "isSigner": false
+          "name": "whirlpools_config"
         },
         {
           "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
-          "name": "rewardEmissionsSuperAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "reward_emissions_super_authority",
+          "signer": true
         },
         {
-          "name": "newRewardAuthority",
-          "isMut": false,
-          "isSigner": false
+          "name": "new_reward_authority"
         }
       ],
       "args": [
         {
-          "name": "rewardIndex",
+          "name": "reward_index",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "setRewardEmissionsSuperAuthority",
+      "name": "set_reward_emissions_super_authority",
+      "discriminator": [207, 5, 200, 209, 122, 56, 82, 183],
       "accounts": [
         {
-          "name": "whirlpoolsConfig",
-          "isMut": true,
-          "isSigner": false
+          "name": "whirlpools_config",
+          "writable": true
         },
         {
-          "name": "rewardEmissionsSuperAuthority",
-          "isMut": false,
-          "isSigner": true
+          "name": "reward_emissions_super_authority",
+          "signer": true
         },
         {
-          "name": "newRewardEmissionsSuperAuthority",
-          "isMut": false,
-          "isSigner": false
+          "name": "new_reward_emissions_super_authority"
         }
       ],
       "args": []
@@ -1083,389 +923,23 @@
   "accounts": [
     {
       "name": "WhirlpoolsConfig",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "feeAuthority",
-            "type": "publicKey"
-          },
-          {
-            "name": "collectProtocolFeesAuthority",
-            "type": "publicKey"
-          },
-          {
-            "name": "rewardEmissionsSuperAuthority",
-            "type": "publicKey"
-          },
-          {
-            "name": "defaultProtocolFeeRate",
-            "type": "u16"
-          }
-        ]
-      }
+      "discriminator": [157, 20, 49, 224, 217, 87, 193, 254]
     },
     {
       "name": "FeeTier",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "whirlpoolsConfig",
-            "type": "publicKey"
-          },
-          {
-            "name": "tickSpacing",
-            "type": "u16"
-          },
-          {
-            "name": "defaultFeeRate",
-            "type": "u16"
-          }
-        ]
-      }
+      "discriminator": [56, 75, 159, 76, 142, 68, 190, 105]
     },
     {
       "name": "Position",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "whirlpool",
-            "type": "publicKey"
-          },
-          {
-            "name": "positionMint",
-            "type": "publicKey"
-          },
-          {
-            "name": "liquidity",
-            "type": "u128"
-          },
-          {
-            "name": "tickLowerIndex",
-            "type": "i32"
-          },
-          {
-            "name": "tickUpperIndex",
-            "type": "i32"
-          },
-          {
-            "name": "feeGrowthCheckpointA",
-            "type": "u128"
-          },
-          {
-            "name": "feeOwedA",
-            "type": "u64"
-          },
-          {
-            "name": "feeGrowthCheckpointB",
-            "type": "u128"
-          },
-          {
-            "name": "feeOwedB",
-            "type": "u64"
-          },
-          {
-            "name": "rewardInfos",
-            "type": {
-              "array": [
-                {
-                  "defined": "PositionRewardInfo"
-                },
-                3
-              ]
-            }
-          }
-        ]
-      }
+      "discriminator": [170, 188, 143, 228, 122, 64, 247, 208]
     },
     {
       "name": "TickArray",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "startTickIndex",
-            "type": "i32"
-          },
-          {
-            "name": "ticks",
-            "type": {
-              "array": [
-                {
-                  "defined": "Tick"
-                },
-                88
-              ]
-            }
-          },
-          {
-            "name": "whirlpool",
-            "type": "publicKey"
-          }
-        ]
-      }
+      "discriminator": [69, 97, 189, 190, 110, 7, 66, 187]
     },
     {
       "name": "Whirlpool",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "whirlpoolsConfig",
-            "type": "publicKey"
-          },
-          {
-            "name": "whirlpoolBump",
-            "type": {
-              "array": ["u8", 1]
-            }
-          },
-          {
-            "name": "tickSpacing",
-            "type": "u16"
-          },
-          {
-            "name": "tickSpacingSeed",
-            "type": {
-              "array": ["u8", 2]
-            }
-          },
-          {
-            "name": "feeRate",
-            "type": "u16"
-          },
-          {
-            "name": "protocolFeeRate",
-            "type": "u16"
-          },
-          {
-            "name": "liquidity",
-            "type": "u128"
-          },
-          {
-            "name": "sqrtPrice",
-            "type": "u128"
-          },
-          {
-            "name": "tickCurrentIndex",
-            "type": "i32"
-          },
-          {
-            "name": "protocolFeeOwedA",
-            "type": "u64"
-          },
-          {
-            "name": "protocolFeeOwedB",
-            "type": "u64"
-          },
-          {
-            "name": "tokenMintA",
-            "type": "publicKey"
-          },
-          {
-            "name": "tokenVaultA",
-            "type": "publicKey"
-          },
-          {
-            "name": "feeGrowthGlobalA",
-            "type": "u128"
-          },
-          {
-            "name": "tokenMintB",
-            "type": "publicKey"
-          },
-          {
-            "name": "tokenVaultB",
-            "type": "publicKey"
-          },
-          {
-            "name": "feeGrowthGlobalB",
-            "type": "u128"
-          },
-          {
-            "name": "rewardLastUpdatedTimestamp",
-            "type": "u64"
-          },
-          {
-            "name": "rewardInfos",
-            "type": {
-              "array": [
-                {
-                  "defined": "WhirlpoolRewardInfo"
-                },
-                3
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ],
-  "types": [
-    {
-      "name": "OpenPositionBumps",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "positionBump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "OpenPositionWithMetadataBumps",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "positionBump",
-            "type": "u8"
-          },
-          {
-            "name": "metadataBump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "PositionRewardInfo",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "growthInsideCheckpoint",
-            "type": "u128"
-          },
-          {
-            "name": "amountOwed",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Tick",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "initialized",
-            "type": "bool"
-          },
-          {
-            "name": "liquidityNet",
-            "type": "i128"
-          },
-          {
-            "name": "liquidityGross",
-            "type": "u128"
-          },
-          {
-            "name": "feeGrowthOutsideA",
-            "type": "u128"
-          },
-          {
-            "name": "feeGrowthOutsideB",
-            "type": "u128"
-          },
-          {
-            "name": "rewardGrowthsOutside",
-            "type": {
-              "array": ["u128", 3]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "WhirlpoolRewardInfo",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "mint",
-            "type": "publicKey"
-          },
-          {
-            "name": "vault",
-            "type": "publicKey"
-          },
-          {
-            "name": "authority",
-            "type": "publicKey"
-          },
-          {
-            "name": "emissionsPerSecondX64",
-            "type": "u128"
-          },
-          {
-            "name": "growthGlobalX64",
-            "type": "u128"
-          }
-        ]
-      }
-    },
-    {
-      "name": "WhirlpoolBumps",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "whirlpoolBump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "CurrIndex",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Below"
-          },
-          {
-            "name": "Inside"
-          },
-          {
-            "name": "Above"
-          }
-        ]
-      }
-    },
-    {
-      "name": "TickLabel",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Upper"
-          },
-          {
-            "name": "Lower"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Direction",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Left"
-          },
-          {
-            "name": "Right"
-          }
-        ]
-      }
+      "discriminator": [63, 149, 209, 12, 225, 128, 99, 9]
     }
   ],
   "errors": [
@@ -1673,6 +1147,398 @@
       "code": 6040,
       "name": "AmountRemainingOverflow",
       "msg": "Amount remaining overflows"
+    }
+  ],
+  "types": [
+    {
+      "name": "OpenPositionBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OpenPositionWithMetadataBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position_bump",
+            "type": "u8"
+          },
+          {
+            "name": "metadata_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PositionRewardInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "growth_inside_checkpoint",
+            "type": "u128"
+          },
+          {
+            "name": "amount_owed",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tick",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "initialized",
+            "type": "bool"
+          },
+          {
+            "name": "liquidity_net",
+            "type": "i128"
+          },
+          {
+            "name": "liquidity_gross",
+            "type": "u128"
+          },
+          {
+            "name": "fee_growth_outside_a",
+            "type": "u128"
+          },
+          {
+            "name": "fee_growth_outside_b",
+            "type": "u128"
+          },
+          {
+            "name": "reward_growths_outside",
+            "type": {
+              "array": ["u128", 3]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WhirlpoolRewardInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "emissions_per_second_x64",
+            "type": "u128"
+          },
+          {
+            "name": "growth_global_x64",
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WhirlpoolBumps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "whirlpool_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CurrIndex",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Below"
+          },
+          {
+            "name": "Inside"
+          },
+          {
+            "name": "Above"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TickLabel",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Upper"
+          },
+          {
+            "name": "Lower"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Direction",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Left"
+          },
+          {
+            "name": "Right"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WhirlpoolsConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fee_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "collect_protocol_fees_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "reward_emissions_super_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "default_protocol_fee_rate",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeeTier",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "whirlpools_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "tick_spacing",
+            "type": "u16"
+          },
+          {
+            "name": "default_fee_rate",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Position",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "whirlpool",
+            "type": "pubkey"
+          },
+          {
+            "name": "position_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidity",
+            "type": "u128"
+          },
+          {
+            "name": "tick_lower_index",
+            "type": "i32"
+          },
+          {
+            "name": "tick_upper_index",
+            "type": "i32"
+          },
+          {
+            "name": "fee_growth_checkpoint_a",
+            "type": "u128"
+          },
+          {
+            "name": "fee_owed_a",
+            "type": "u64"
+          },
+          {
+            "name": "fee_growth_checkpoint_b",
+            "type": "u128"
+          },
+          {
+            "name": "fee_owed_b",
+            "type": "u64"
+          },
+          {
+            "name": "reward_infos",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "PositionRewardInfo"
+                  }
+                },
+                3
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TickArray",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "start_tick_index",
+            "type": "i32"
+          },
+          {
+            "name": "ticks",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Tick"
+                  }
+                },
+                88
+              ]
+            }
+          },
+          {
+            "name": "whirlpool",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Whirlpool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "whirlpools_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "whirlpool_bump",
+            "type": {
+              "array": ["u8", 1]
+            }
+          },
+          {
+            "name": "tick_spacing",
+            "type": "u16"
+          },
+          {
+            "name": "tick_spacing_seed",
+            "type": {
+              "array": ["u8", 2]
+            }
+          },
+          {
+            "name": "fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "protocol_fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "liquidity",
+            "type": "u128"
+          },
+          {
+            "name": "sqrt_price",
+            "type": "u128"
+          },
+          {
+            "name": "tick_current_index",
+            "type": "i32"
+          },
+          {
+            "name": "protocol_fee_owed_a",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_owed_b",
+            "type": "u64"
+          },
+          {
+            "name": "token_mint_a",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_vault_a",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_growth_global_a",
+            "type": "u128"
+          },
+          {
+            "name": "token_mint_b",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_vault_b",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_growth_global_b",
+            "type": "u128"
+          },
+          {
+            "name": "reward_last_updated_timestamp",
+            "type": "u64"
+          },
+          {
+            "name": "reward_infos",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "WhirlpoolRewardInfo"
+                  }
+                },
+                3
+              ]
+            }
+          }
+        ]
+      }
     }
   ]
 }

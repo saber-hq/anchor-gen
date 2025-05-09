@@ -1,4 +1,4 @@
-use anchor_syn::idl::IdlInstruction;
+use anchor_lang_idl_spec::IdlInstruction;
 use heck::{ToPascalCase, ToSnakeCase};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
@@ -6,7 +6,7 @@ use quote::{format_ident, quote};
 /// Generates a single instruction handler.
 pub fn generate_ix_handler(ix: &IdlInstruction) -> TokenStream {
     let ix_name = format_ident!("{}", ix.name.to_snake_case());
-    let accounts_name = format_ident!("{}", ix.name.to_pascal_case());
+    let accounts_name = format_ident!("{}Instruction", ix.name.to_pascal_case());
 
     let args = ix
         .args
@@ -45,7 +45,7 @@ pub fn generate_ix_handler(ix: &IdlInstruction) -> TokenStream {
 /// Generates instruction context structs.
 pub fn generate_ix_structs(ixs: &[IdlInstruction]) -> TokenStream {
     let defs = ixs.iter().map(|ix| {
-        let accounts_name = format_ident!("{}", ix.name.to_pascal_case());
+        let accounts_name = format_ident!("{}Instruction", ix.name.to_pascal_case());
 
         let (all_structs, all_fields) =
             crate::generate_account_fields(&ix.name.to_pascal_case(), &ix.accounts);

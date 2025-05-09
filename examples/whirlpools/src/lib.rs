@@ -22,5 +22,3 @@ impl Default for state::TickArray {
         }
     }
 }
-
-declare_id!("whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc");
