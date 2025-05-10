@@ -156,7 +156,7 @@ pub fn generate_enum_fields(fields: &[IdlField]) -> TokenStream {
 /// Generates enum tuple types from a list of [IdlType]s.
 pub fn generate_enum_tuple_types(fields: &[IdlType]) -> TokenStream {
     let fields_rendered = fields.iter().map(|arg| {
-        let type_name = crate::ty_to_rust_type(&arg);
+        let type_name = crate::ty_to_rust_type(arg);
         let stream: proc_macro2::TokenStream = type_name.parse().unwrap();
         quote! {
             #stream
@@ -267,13 +267,13 @@ pub fn generate_enum(
         Some(IdlEnumVariant {
             fields: Some(IdlDefinedFields::Named(fields)),
             ..
-        }) if fields.len() > 0 => {
+        }) if !fields.is_empty() => {
             quote! {}
         }
         Some(IdlEnumVariant {
             fields: Some(IdlDefinedFields::Tuple(types)),
             ..
-        }) if types.len() > 0 => {
+        }) if !types.is_empty() => {
             quote! {}
         }
         _ => {
