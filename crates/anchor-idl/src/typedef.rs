@@ -307,16 +307,20 @@ pub fn generate_typedefs(
     struct_opts: &BTreeMap<String, StructOpts>,
 ) -> TokenStream {
     let defined = typedefs.iter().map(|def| {
-        let struct_name = format_ident!("{}", def.name);
-        match &def.ty {
-            anchor_lang_idl_spec::IdlTypeDefTy::Struct { fields } => {
-                let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
-                generate_struct(typedefs, &struct_name, fields, opts)
+        let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
+        if opts.skip {
+            quote! {}
+        } else {
+            let struct_name = format_ident!("{}", def.name);
+            match &def.ty {
+                anchor_lang_idl_spec::IdlTypeDefTy::Struct { fields } => {
+                    generate_struct(typedefs, &struct_name, fields, opts)
+                }
+                anchor_lang_idl_spec::IdlTypeDefTy::Enum { variants } => {
+                    generate_enum(typedefs, &struct_name, variants)
+                }
+                anchor_lang_idl_spec::IdlTypeDefTy::Type { alias: _ } => todo!(),
             }
-            anchor_lang_idl_spec::IdlTypeDefTy::Enum { variants } => {
-                generate_enum(typedefs, &struct_name, variants)
-            }
-            anchor_lang_idl_spec::IdlTypeDefTy::Type { alias: _ } => todo!(),
         }
     });
     quote! {

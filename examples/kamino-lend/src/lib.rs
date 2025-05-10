@@ -9,12 +9,13 @@
 
 #![allow(clippy::too_many_arguments)]
 
-use anchor_lang::zero_copy;
+mod overrides;
+pub use overrides::*;
 
 anchor_gen::generate_cpi_interface!(
     idl_path = "idl.json",
+    skip(UpdateConfigMode),
     zero_copy(
-        UpdateConfigMode,
         UpdateLendingMarketConfigValue,
         UpdateLendingMarketMode,
         LastUpdate,

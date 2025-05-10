@@ -16,6 +16,8 @@ use crate::{
 pub struct GeneratorOptions {
     /// Path to the IDL.
     pub idl_path: String,
+    /// List of types to skip from generation. These should be provided by the caller instead.
+    pub skip: Option<PathList>,
     /// List of zero copy structs.
     pub zero_copy: Option<PathList>,
     /// List of `repr(packed)` structs.
@@ -38,15 +40,23 @@ impl GeneratorOptions {
         let idl_contents = fs::read_to_string(&path).unwrap();
         let idl: anchor_lang_idl_spec::Idl = serde_json::from_str(&idl_contents).unwrap();
 
+        let skip = path_list_to_string(self.skip.as_ref());
         let zero_copy = path_list_to_string(self.zero_copy.as_ref());
         let packed = path_list_to_string(self.packed.as_ref());
 
+        let all_type_names = idl
+            .accounts
+            .iter()
+            .map(|a| a.name.clone())
+            .chain(idl.types.iter().map(|t| t.name.clone()))
+            .collect::<HashSet<_>>();
+
         let mut struct_opts: BTreeMap<String, StructOpts> = BTreeMap::new();
-        let all_structs: HashSet<&String> = zero_copy.union(&packed).collect::<HashSet<_>>();
-        all_structs.into_iter().for_each(|name| {
+        all_type_names.iter().for_each(|name| {
             struct_opts.insert(
                 name.to_string(),
                 StructOpts {
+                    skip: skip.contains(name),
                     zero_copy: zero_copy.contains(name),
                     packed: packed.contains(name),
                 },
@@ -57,8 +67,9 @@ impl GeneratorOptions {
     }
 }
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct StructOpts {
+    pub skip: bool,
     pub packed: bool,
     pub zero_copy: bool,
 }
