@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use anchor_lang_idl_spec::{
     IdlArrayLen, IdlDefinedFields, IdlEnumVariant, IdlField, IdlType, IdlTypeDef,
 };
+use heck::ToSnakeCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 
@@ -137,7 +138,7 @@ pub fn get_type_properties(defs: &[IdlTypeDef], ty: &IdlType) -> FieldListProper
     }
 }
 
-/// Generates struct fields from a list of [IdlField]s.
+/// Generates enum fields from a list of [IdlField]s.
 pub fn generate_enum_fields(fields: &[IdlField]) -> TokenStream {
     let fields_rendered = fields.iter().map(|arg| {
         let name = format_ident!("{}", arg.name.to_snake_case());
@@ -145,6 +146,20 @@ pub fn generate_enum_fields(fields: &[IdlField]) -> TokenStream {
         let stream: proc_macro2::TokenStream = type_name.parse().unwrap();
         quote! {
             #name: #stream
+        }
+    });
+    quote! {
+        #(#fields_rendered),*
+    }
+}
+
+/// Generates enum tuple types from a list of [IdlType]s.
+pub fn generate_enum_tuple_types(fields: &[IdlType]) -> TokenStream {
+    let fields_rendered = fields.iter().map(|arg| {
+        let type_name = crate::ty_to_rust_type(&arg);
+        let stream: proc_macro2::TokenStream = type_name.parse().unwrap();
+        quote! {
+            #stream
         }
     });
     quote! {
@@ -217,12 +232,18 @@ pub fn generate_enum(
     let variant_idents = variants.iter().map(|v| {
         let name = format_ident!("{}", v.name);
         match &v.fields {
-            Some(EnumFields::Named(idl_fields)) => {
+            Some(IdlDefinedFields::Named(idl_fields)) => {
                 let fields = generate_enum_fields(idl_fields);
                 quote! {
                   #name {
                     #fields
                   }
+                }
+            }
+            Some(IdlDefinedFields::Tuple(idl_fields)) => {
+                let types = generate_enum_tuple_types(idl_fields);
+                quote! {
+                  #name(#types)
                 }
             }
             _ => {
@@ -244,9 +265,15 @@ pub fn generate_enum(
 
     let default_impl = match variants.first() {
         Some(IdlEnumVariant {
-            fields: Some(EnumFields::Named(fields)),
+            fields: Some(IdlDefinedFields::Named(fields)),
             ..
         }) if fields.len() > 0 => {
+            quote! {}
+        }
+        Some(IdlEnumVariant {
+            fields: Some(IdlDefinedFields::Tuple(types)),
+            ..
+        }) if types.len() > 0 => {
             quote! {}
         }
         _ => {
@@ -261,7 +288,7 @@ pub fn generate_enum(
         }
     };
 
-    quote! {
+    let result = quote! {
         #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
         #derive_copy
         pub enum #enum_name {
@@ -269,7 +296,9 @@ pub fn generate_enum(
         }
 
         #default_impl
-    }
+    };
+
+    result
 }
 
 /// Generates structs and enums.
