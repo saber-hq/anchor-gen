@@ -43,7 +43,7 @@ pub fn generate_account(
             }
         };
         quote! {
-            #[account(zero_copy)]
+            #[account(zero_copy(unsafe))]
             #repr
         }
     } else {

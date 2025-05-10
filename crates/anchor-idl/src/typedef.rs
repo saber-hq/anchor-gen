@@ -165,7 +165,8 @@ pub fn generate_struct(
             }
         };
         quote! {
-            #[zero_copy]
+            #[derive(::borsh::BorshSerialize, ::borsh::BorshDeserialize)]
+            #[zero_copy(unsafe)]
             #repr
         }
     } else {

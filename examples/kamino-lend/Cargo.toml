@@ -19,3 +19,7 @@ cpi = ["no-entrypoint"]
 [dependencies]
 anchor-gen = { version = "0.4.0", path = "../../crates/anchor-gen" }
 anchor-lang = ">=0.20"
+# Override anchor to use borsh with the const-generics feature
+# Allows to borsh serialize arrays of any length
+borsh = { version = "0.10.3", features = ["const-generics"] }
+bytemuck = { version = "1.23", features = ["derive", "min_const_generics"] }

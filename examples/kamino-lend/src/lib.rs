@@ -9,4 +9,44 @@
 
 #![allow(clippy::too_many_arguments)]
 
-anchor_gen::generate_cpi_interface!(idl_path = "idl.json");
+use anchor_lang::zero_copy;
+
+anchor_gen::generate_cpi_interface!(
+    idl_path = "idl.json",
+    zero_copy(
+        UpdateConfigMode,
+        UpdateLendingMarketConfigValue,
+        UpdateLendingMarketMode,
+        LastUpdate,
+        ElevationGroup,
+        InitObligationArgs,
+        ObligationCollateral,
+        ObligationLiquidity,
+        AssetTier,
+        BigFractionBytes,
+        FeeCalculation,
+        ReserveCollateral,
+        ReserveConfig,
+        ReserveFarmKind,
+        ReserveFees,
+        ReserveLiquidity,
+        ReserveStatus,
+        WithdrawalCaps,
+        PriceHeuristic,
+        PythConfiguration,
+        ScopeConfiguration,
+        SwitchboardConfiguration,
+        TokenInfo,
+        BorrowRateCurve,
+        CurvePoint,
+        UserState,
+        LendingMarket,
+        Obligation,
+        ReferrerState,
+        ReferrerTokenState,
+        UserMetadata,
+        Reserve,
+        Referrer,
+        ReferrerToken,
+    )
+);
