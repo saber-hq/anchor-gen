@@ -127,7 +127,7 @@ dependencies = [
 
 [[package]]
 name = "anchor-gen"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "anchor-generate-cpi-crate",
  "anchor-generate-cpi-interface",
@@ -154,7 +154,7 @@ dependencies = [
 
 [[package]]
 name = "anchor-idl"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "anchor-lang",
  "anchor-lang-idl-spec",
@@ -596,7 +596,7 @@ checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 
 [[package]]
 name = "farms"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "anchor-gen",
  "anchor-lang",
@@ -742,7 +742,7 @@ dependencies = [
 
 [[package]]
 name = "kamino-lend"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "anchor-gen",
  "anchor-lang",
