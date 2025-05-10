@@ -17,6 +17,8 @@ use crate::{
 pub struct GeneratorOptions {
     /// Path to the IDL.
     pub idl_path: String,
+    /// List of types to skip from generation. These should be provided by the caller instead.
+    pub skip: Option<PathList>,
     /// List of zero copy structs.
     pub zero_copy: Option<PathList>,
     /// List of `repr(packed)` structs.
@@ -37,17 +39,25 @@ impl GeneratorOptions {
         let cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
         let path = PathBuf::from(cargo_manifest_dir).join(&self.idl_path);
         let idl_contents = fs::read_to_string(&path).unwrap();
-        let idl: anchor_syn::idl::Idl = serde_json::from_str(&idl_contents).unwrap();
+        let idl: anchor_lang_idl_spec::Idl = serde_json::from_str(&idl_contents).unwrap();
 
+        let skip = path_list_to_string(self.skip.as_ref());
         let zero_copy = path_list_to_string(self.zero_copy.as_ref());
         let packed = path_list_to_string(self.packed.as_ref());
 
+        let all_type_names = idl
+            .accounts
+            .iter()
+            .map(|a| a.name.clone())
+            .chain(idl.types.iter().map(|t| t.name.clone()))
+            .collect::<HashSet<_>>();
+
         let mut struct_opts: BTreeMap<String, StructOpts> = BTreeMap::new();
-        let all_structs: HashSet<&String> = zero_copy.union(&packed).collect::<HashSet<_>>();
-        all_structs.into_iter().for_each(|name| {
+        all_type_names.iter().for_each(|name| {
             struct_opts.insert(
                 name.to_string(),
                 StructOpts {
+                    skip: skip.contains(name),
                     zero_copy: zero_copy.contains(name),
                     packed: packed.contains(name),
                 },
@@ -58,21 +68,22 @@ impl GeneratorOptions {
     }
 }
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct StructOpts {
+    pub skip: bool,
     pub packed: bool,
     pub zero_copy: bool,
 }
 
 pub struct Generator {
-    pub idl: anchor_syn::idl::Idl,
+    pub idl: anchor_lang_idl_spec::Idl,
     pub struct_opts: BTreeMap<String, StructOpts>,
 }
 
 impl Generator {
     pub fn generate_cpi_interface(&self) -> TokenStream {
         let idl = &self.idl;
-        let program_name: Ident = format_ident!("{}", idl.name);
+        let program_name: Ident = format_ident!("{}", idl.metadata.name);
 
         let accounts = generate_accounts(&idl.types, &idl.accounts, &self.struct_opts);
         let events = generate_events(
@@ -86,13 +97,17 @@ impl Generator {
 
         let docs = format!(
         " Anchor CPI crate generated from {} v{} using [anchor-gen](https://crates.io/crates/anchor-gen) v{}.",
-        &idl.name,
-        &idl.version,
+        &idl.metadata.name,
+        &idl.metadata.version,
         &GEN_VERSION.unwrap_or("unknown")
     );
 
+        let address = idl.address.clone();
+
         quote! {
             use anchor_lang::prelude::*;
+
+            declare_id!(#address);
 
             pub mod typedefs {
                 //! User-defined types.

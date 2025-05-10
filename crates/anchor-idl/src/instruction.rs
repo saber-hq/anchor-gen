@@ -1,4 +1,4 @@
-use anchor_syn::idl::IdlInstruction;
+use anchor_lang_idl_spec::IdlInstruction;
 use heck::{ToPascalCase, ToSnakeCase};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
@@ -50,13 +50,25 @@ pub fn generate_ix_structs(ixs: &[IdlInstruction]) -> TokenStream {
         let (all_structs, all_fields) =
             crate::generate_account_fields(&ix.name.to_pascal_case(), &ix.accounts);
 
+        let struct_def = if ix.accounts.is_empty() {
+            quote! {
+                pub struct #accounts_name {
+                    #all_fields
+                }
+            }
+        } else {
+            quote! {
+                pub struct #accounts_name<'info> {
+                    #all_fields
+                }
+            }
+        };
+
         quote! {
             #all_structs
 
             #[derive(Accounts)]
-            pub struct #accounts_name<'info> {
-                #all_fields
-            }
+            #struct_def
         }
     });
     quote! {

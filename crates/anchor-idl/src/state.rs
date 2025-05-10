@@ -1,14 +1,17 @@
 use std::collections::BTreeMap;
 
-use anchor_syn::idl::{IdlField, IdlTypeDefinition};
+use anchor_lang_idl_spec::{IdlAccount, IdlField, IdlTypeDef};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
-use crate::{generate_fields, get_field_list_properties, StructOpts};
+use crate::{
+    fields::{generate_struct_fields_from_slice, get_idl_defined_fields_as_slice},
+    get_field_list_properties, StructOpts,
+};
 
 /// Generates an account state struct.
 pub fn generate_account(
-    defs: &[IdlTypeDefinition],
+    defs: &[IdlTypeDef],
     account_name: &str,
     fields: &[IdlField],
     opts: StructOpts,
@@ -40,7 +43,7 @@ pub fn generate_account(
             }
         };
         quote! {
-            #[account(zero_copy)]
+            #[account(zero_copy(unsafe))]
             #repr
         }
     } else {
@@ -51,7 +54,7 @@ pub fn generate_account(
 
     let doc = format!(" Account: {}", account_name);
     let struct_name = format_ident!("{}", account_name);
-    let fields_rendered = generate_fields(fields);
+    let fields_rendered = generate_struct_fields_from_slice(fields);
     quote! {
         #derive_account
         #[doc = #doc]
@@ -65,19 +68,35 @@ pub fn generate_account(
 
 /// Generates account state structs.
 pub fn generate_accounts(
-    typedefs: &[IdlTypeDefinition],
-    account_defs: &[IdlTypeDefinition],
+    typedefs: &[IdlTypeDef],
+    account_defs: &[IdlAccount],
     struct_opts: &BTreeMap<String, StructOpts>,
 ) -> TokenStream {
-    let defined = account_defs.iter().map(|def| match &def.ty {
-        anchor_syn::idl::IdlTypeDefinitionTy::Struct { fields } => {
-            let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
-            generate_account(typedefs, &def.name, fields, opts)
-        }
-        anchor_syn::idl::IdlTypeDefinitionTy::Enum { .. } => {
-            panic!("unexpected enum account");
-        }
-    });
+    let defined = account_defs
+        .iter()
+        .map(|account| {
+            typedefs
+                .iter()
+                .find(|type_def| type_def.name == account.name)
+                .unwrap()
+        })
+        .map(|def| match &def.ty {
+            anchor_lang_idl_spec::IdlTypeDefTy::Struct { fields } => {
+                let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
+                generate_account(
+                    typedefs,
+                    &def.name,
+                    get_idl_defined_fields_as_slice(fields),
+                    opts,
+                )
+            }
+            anchor_lang_idl_spec::IdlTypeDefTy::Enum { .. } => {
+                panic!("unexpected enum account");
+            }
+            anchor_lang_idl_spec::IdlTypeDefTy::Type { alias: _ } => {
+                panic!("unexpected type account")
+            }
+        });
     quote! {
         #(#defined)*
     }

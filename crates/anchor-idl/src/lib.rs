@@ -1,9 +1,10 @@
 //! Generates Rust code from an Anchor IDL.
 
-pub use anchor_syn::idl::*;
+pub use anchor_lang_idl_spec::*;
 
 mod account;
 mod event;
+mod fields;
 mod instruction;
 mod program;
 mod state;
@@ -37,10 +38,21 @@ pub fn ty_to_rust_type(ty: &IdlType) -> String {
         IdlType::I128 => "i128".to_string(),
         IdlType::Bytes => "Vec<u8>".to_string(),
         IdlType::String => "String".to_string(),
-        IdlType::PublicKey => "Pubkey".to_string(),
+        IdlType::Pubkey => "Pubkey".to_string(),
         IdlType::Option(inner) => format!("Option<{}>", ty_to_rust_type(inner)),
         IdlType::Vec(inner) => format!("Vec<{}>", ty_to_rust_type(inner)),
-        IdlType::Array(ty, size) => format!("[{}; {}]", ty_to_rust_type(ty), size),
-        IdlType::Defined(name) => name.to_string(),
+        IdlType::Array(ty, size) => match size {
+            IdlArrayLen::Generic(name) => {
+                format!("[{}; {}]", ty_to_rust_type(ty), *name)
+            }
+            IdlArrayLen::Value(size) => {
+                format!("[{}; {}]", ty_to_rust_type(ty), *size)
+            }
+        },
+        IdlType::Defined { name, generics: _ } => name.to_string(),
+        IdlType::U256 => todo!(),
+        IdlType::I256 => todo!(),
+        IdlType::Generic(_) => todo!(),
+        _ => todo!(),
     }
 }

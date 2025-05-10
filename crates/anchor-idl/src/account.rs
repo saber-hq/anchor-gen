@@ -1,4 +1,4 @@
-pub use anchor_syn::idl::*;
+pub use anchor_lang_idl_spec::*;
 use heck::{ToPascalCase, ToSnakeCase};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
@@ -6,20 +6,20 @@ use quote::{format_ident, quote};
 /// Generates a list of [IdlAccountItem]s as a [TokenStream].
 pub fn generate_account_fields(
     name: &str,
-    accounts: &[IdlAccountItem],
+    accounts: &[IdlInstructionAccountItem],
 ) -> (TokenStream, TokenStream) {
     let mut all_structs: Vec<TokenStream> = vec![];
     let all_fields = accounts
         .iter()
         .map(|account| match account {
-            anchor_syn::idl::IdlAccountItem::IdlAccount(info) => {
+            IdlInstructionAccountItem::Single(info) => {
                 let acc_name = format_ident!("{}", info.name.to_snake_case());
-                let annotation = if info.is_mut {
+                let annotation = if info.writable {
                     quote! { #[account(mut)] }
                 } else {
                     quote! {}
                 };
-                let ty = if info.is_signer {
+                let ty = if info.signer {
                     quote! { Signer<'info> }
                 } else {
                     quote! { AccountInfo<'info> }
@@ -29,7 +29,7 @@ pub fn generate_account_fields(
                    pub #acc_name: #ty
                 }
             }
-            anchor_syn::idl::IdlAccountItem::IdlAccounts(inner) => {
+            IdlInstructionAccountItem::Composite(inner) => {
                 let field_name = format_ident!("{}{}", name, inner.name.to_snake_case());
                 let sub_name = format!("{}{}", name, inner.name.to_pascal_case());
                 let sub_ident = format_ident!("{}", &sub_name);
