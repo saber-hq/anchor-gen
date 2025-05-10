@@ -2,14 +2,14 @@
 
 Generates a crate for cross-program invocations to an Anchor program from a JSON IDL.
 
+Now updated for Anchor 0.31.1!
+
 ## Usage
 
 In a new crate, write:
 
 ```skip
 anchor_gen::generate_cpi_crate!("../../examples/govern-cpi/idl.json");
-
-declare_id!("GjphYQcbP1m3FuDyCTUJf2mUMxKPE3j6feWU1rxvC7Ps");
 ```
 
 This will generate a fully functional Rust CPI client for your IDL.
