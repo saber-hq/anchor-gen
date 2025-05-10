@@ -418,6 +418,9 @@ name = "bytemuck"
 version = "1.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9134a6ef01ce4b366b50689c94f82c14bc72bc5d0386829828a2e2752ef7958c"
+dependencies = [
+ "bytemuck_derive",
+]
 
 [[package]]
 name = "bytemuck_derive"
@@ -432,9 +435,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.21"
+version = "1.2.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8691782945451c1c383942c4874dbe63814f61cb57ef773cda2972682b7bb3c0"
+checksum = "32db95edf998450acc7881c932f94cd9b05c87b4b2599e8bab064753da4acfd1"
 dependencies = [
  "shlex",
 ]
@@ -734,6 +737,8 @@ version = "0.4.0"
 dependencies = [
  "anchor-gen",
  "anchor-lang",
+ "borsh 0.10.4",
+ "bytemuck",
 ]
 
 [[package]]
