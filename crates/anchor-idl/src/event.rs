@@ -1,59 +1,61 @@
-use std::collections::BTreeMap;
-
-use anchor_syn::idl::{IdlEvent, IdlField, IdlTypeDefinition};
+use crate::{
+    fields::{generate_struct_fields, get_idl_defined_fields_as_slice},
+    get_field_list_properties, StructOpts,
+};
+use anchor_lang_idl_spec::{IdlDefinedFields, IdlEvent, IdlTypeDef};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
-use sha2::{Digest, Sha256};
+use std::collections::BTreeMap;
+use syn::Ident;
 
-use crate::{generate_struct, StructOpts};
+/// Generates a struct.
+pub fn generate_event(
+    defs: &[IdlTypeDef],
+    struct_name: &Ident,
+    fields: &Option<IdlDefinedFields>,
+) -> TokenStream {
+    let fields_rendered = generate_struct_fields(fields);
+    let props = get_field_list_properties(defs, get_idl_defined_fields_as_slice(fields));
+
+    let derive_default = if props.can_derive_default {
+        quote! {
+            #[derive(Default)]
+        }
+    } else {
+        quote! {}
+    };
+
+    quote! {
+        #[event]
+        #[derive(Debug)]
+        #derive_default
+        pub struct #struct_name {
+            #fields_rendered
+        }
+    }
+}
 
 /// Generates event structs.
 pub fn generate_events(
-    events: Option<&[IdlEvent]>,
-    typedefs: &[IdlTypeDefinition],
+    events: &[IdlEvent],
+    typedefs: &[IdlTypeDef],
     struct_opts: &BTreeMap<String, StructOpts>,
 ) -> TokenStream {
-    match events {
-        Some(events) => {
-            let defined = events.iter().map(|def| {
-                let struct_name = format_ident!("{}", def.name);
-                let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
-
-                let discriminator: proc_macro2::TokenStream = {
-                    let discriminator_preimage = format!("event:{}", struct_name);
-                    let mut discriminator = [0u8; 8];
-                    let mut hash = Sha256::default();
-                    hash.update(discriminator_preimage.as_bytes());
-                    discriminator.copy_from_slice(&hash.finalize()[..8]);
-                    format!("{:?}", discriminator).parse().unwrap()
-                };
-
-                let fields = def
-                    .fields
-                    .iter()
-                    .map(|f| IdlField {
-                        name: f.name.clone(),
-                        ty: f.ty.clone(),
-                    })
-                    .collect::<Vec<_>>();
-
-                let struct_ts = generate_struct(&typedefs, &struct_name, &fields, opts);
-
-                quote! {
-                    #struct_ts
-
-                    impl anchor_lang::Discriminator for #struct_name {
-                        const DISCRIMINATOR: [u8; 8] = #discriminator;
-                        fn discriminator() -> [u8; 8] {
-                            #discriminator
-                        }
-                    }
-                }
-            });
-            quote! {
-                #(#defined)*
+    let defined = events.iter().map(|def| {
+        let struct_name = format_ident!("{}", def.name);
+        let opts = struct_opts.get(&def.name).copied().unwrap_or_default();
+        if opts.skip {
+            quote! {}
+        } else {
+            let typedef = typedefs.iter().find(|d| d.name == def.name).unwrap();
+            if let anchor_lang_idl_spec::IdlTypeDefTy::Struct { fields } = &typedef.ty {
+                generate_event(typedefs, &struct_name, fields)
+            } else {
+                quote! {}
             }
         }
-        None => quote!(),
+    });
+    quote! {
+        #(#defined)*
     }
 }

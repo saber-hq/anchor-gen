@@ -86,11 +86,7 @@ impl Generator {
         let program_name: Ident = format_ident!("{}", idl.metadata.name);
 
         let accounts = generate_accounts(&idl.types, &idl.accounts, &self.struct_opts);
-        let events = generate_events(
-            idl.events.as_ref().map(|x| &x[..]),
-            &idl.types,
-            &self.struct_opts,
-        );
+        let events = generate_events(&idl.events, &idl.types, &self.struct_opts);
         let typedefs = generate_typedefs(&idl.types, &self.struct_opts);
         let ix_handlers = generate_ix_handlers(&idl.instructions);
         let ix_structs = generate_ix_structs(&idl.instructions);

@@ -17,7 +17,6 @@ darling = "0.14"
 heck = "0.4.1"
 proc-macro2 = "1"
 quote = "1"
-sha2 = "0.9.2"
 serde_json = "1.0.108"
 syn = { version = "1", features = ["full"] }
 
