@@ -137,6 +137,21 @@ pub fn get_type_properties(defs: &[IdlTypeDef], ty: &IdlType) -> FieldListProper
     }
 }
 
+/// Generates struct fields from a list of [IdlField]s.
+pub fn generate_enum_fields(fields: &[IdlField]) -> TokenStream {
+    let fields_rendered = fields.iter().map(|arg| {
+        let name = format_ident!("{}", arg.name.to_snake_case());
+        let type_name = crate::ty_to_rust_type(&arg.ty);
+        let stream: proc_macro2::TokenStream = type_name.parse().unwrap();
+        quote! {
+            #name: #stream
+        }
+    });
+    quote! {
+        #(#fields_rendered),*
+    }
+}
+
 /// Generates a struct.
 pub fn generate_struct(
     defs: &[IdlTypeDef],
@@ -199,7 +214,24 @@ pub fn generate_enum(
     enum_name: &Ident,
     variants: &[IdlEnumVariant],
 ) -> TokenStream {
-    let variant_idents = variants.iter().map(|v| format_ident!("{}", v.name));
+    let variant_idents = variants.iter().map(|v| {
+        let name = format_ident!("{}", v.name);
+        match &v.fields {
+            Some(EnumFields::Named(idl_fields)) => {
+                let fields = generate_enum_fields(idl_fields);
+                quote! {
+                  #name {
+                    #fields
+                  }
+                }
+            }
+            _ => {
+                quote! {
+                  #name
+                }
+            }
+        }
+    });
     let props = get_variant_list_properties(defs, variants);
 
     let derive_copy = if props.can_copy {
@@ -210,7 +242,24 @@ pub fn generate_enum(
         quote! {}
     };
 
-    let default_variant = format_ident!("{}", variants.first().unwrap().name);
+    let default_impl = match variants.first() {
+        Some(IdlEnumVariant {
+            fields: Some(EnumFields::Named(fields)),
+            ..
+        }) if fields.len() > 0 => {
+            quote! {}
+        }
+        _ => {
+            let default_variant = format_ident!("{}", variants.first().unwrap().name);
+            quote! {
+              impl Default for #enum_name {
+                  fn default() -> Self {
+                      Self::#default_variant
+                  }
+              }
+            }
+        }
+    };
 
     quote! {
         #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
@@ -219,11 +268,7 @@ pub fn generate_enum(
             #(#variant_idents),*
         }
 
-        impl Default for #enum_name {
-            fn default() -> Self {
-                Self::#default_variant
-            }
-        }
+        #default_impl
     }
 }
 
