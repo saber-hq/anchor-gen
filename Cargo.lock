@@ -139,7 +139,7 @@ version = "0.4.0"
 dependencies = [
  "anchor-idl",
  "anchor-lang",
- "syn 1.0.109",
+ "syn 2.0.101",
 ]
 
 [[package]]
@@ -149,7 +149,7 @@ dependencies = [
  "anchor-idl",
  "anchor-lang",
  "darling",
- "syn 1.0.109",
+ "syn 2.0.101",
 ]
 
 [[package]]
@@ -163,7 +163,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde_json",
- "syn 1.0.109",
+ "syn 2.0.101",
 ]
 
 [[package]]
