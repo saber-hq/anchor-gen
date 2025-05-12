@@ -14,7 +14,7 @@ compat-program-result = []
 [dependencies]
 anchor-lang-idl-spec = "0.1.0"
 darling = "0.14"
-heck = "0.4.1"
+heck = "0.5.0"
 proc-macro2 = "1"
 quote = "1"
 serde_json = "1.0.108"
