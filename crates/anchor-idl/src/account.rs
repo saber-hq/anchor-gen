@@ -21,6 +21,8 @@ pub fn generate_account_fields(
                 };
                 let ty = if info.signer {
                     quote! { Signer<'info> }
+                } else if info.optional {
+                    quote! { Option<AccountInfo<'info>> }
                 } else {
                     quote! { AccountInfo<'info> }
                 };
