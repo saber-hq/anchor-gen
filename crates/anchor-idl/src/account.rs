@@ -19,12 +19,18 @@ pub fn generate_account_fields(
                 } else {
                     quote! {}
                 };
-                let ty = if info.signer {
-                    quote! { Signer<'info> }
-                } else if info.optional {
-                    quote! { Option<AccountInfo<'info>> }
-                } else {
-                    quote! { AccountInfo<'info> }
+                let ty = {
+                    let acc_type = if info.signer {
+                        quote! { Signer<'info> }
+                    } else {
+                        quote! { AccountInfo<'info> }
+                    };
+
+                    if info.optional {
+                        quote! { Option<#acc_type>}
+                    } else {
+                        acc_type
+                    }
                 };
                 quote! {
                    #annotation
