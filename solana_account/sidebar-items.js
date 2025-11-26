@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DUMMY_INHERITABLE_ACCOUNT_FIELDS","PROGRAM_OWNERS"],"fn":["accounts_equal","create_is_signer_account_infos"],"struct":["Account","AccountSharedData"],"trait":["ReadableAccount","WritableAccount"],"type":["InheritableAccountFields"]};

@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_fee_calculator", 0, "Calculation of transaction fees.\ncalculate unburned fee from a fee total, returns …\ncreate a FeeCalculator based on current cluster signature …\nReturns the argument unchanged.\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nCalls <code>U::from(self)</code>.\nThe current cost of a signature.")

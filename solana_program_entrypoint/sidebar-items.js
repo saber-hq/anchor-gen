@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BPF_ALIGN_OF_U128","HEAP_LENGTH","HEAP_START_ADDRESS","MAX_PERMITTED_DATA_INCREASE","NON_DUP_MARKER","SUCCESS"],"fn":["deserialize","deserialize_into"],"macro":["__msg","custom_heap_default","custom_panic_default","entrypoint","entrypoint_no_alloc"],"struct":["BumpAllocator"],"type":["ProcessInstruction","ProgramResult"]};

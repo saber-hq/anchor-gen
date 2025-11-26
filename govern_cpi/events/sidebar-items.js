@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["GovernorCreateEvent","GovernorSetElectorateEvent","GovernorSetParamsEvent","ProposalActivateEvent","ProposalCancelEvent","ProposalCreateEvent","ProposalMetaCreateEvent","ProposalQueueEvent","VoteSetEvent"]};

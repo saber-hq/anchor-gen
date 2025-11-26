@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Executes the given access control method before running the decorated instruction handler. Any method in scope of the attribute can be invoked with any arguments from the associated instruction handler."><title>access_control in anchor_lang - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="anchor_lang" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc attr"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../anchor_lang/index.html">anchor_<wbr>lang</a><span class="version">0.31.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">access_<wbr>control</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example" title="Example">Example</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate anchor_<wbr>lang</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">anchor_lang</a></div><h1>Attribute Macro <span class="attr">access_control</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/anchor_attribute_access_control/lib.rs.html#49-52">Source</a> </span></div><pre class="rust item-decl"><code>#[access_control]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Executes the given access control method before running the decorated
+instruction handler. Any method in scope of the attribute can be invoked
+with any arguments from the associated instruction handler.</p>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>anchor_lang::prelude::<span class="kw-2">*</span>;
+
+<span class="attr">#[program]
+</span><span class="kw">mod </span>errors {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+    <span class="attr">#[access_control(Create::accounts(<span class="kw-2">&amp;</span>ctx, bump_seed))]
+    </span><span class="kw">pub fn </span>create(ctx: Context&lt;Create&gt;, bump_seed: u8) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+      <span class="kw">let </span>my_account = <span class="kw-2">&amp;mut </span>ctx.accounts.my_account;
+      my_account.bump_seed = bump_seed;
+    }
+}
+
+<span class="attr">#[derive(Accounts)]
+</span><span class="kw">pub struct </span>Create {
+  <span class="attr">#[account(init)]
+  </span>my_account: Account&lt;<span class="lifetime">'info</span>, MyAccount&gt;,
+}
+
+<span class="kw">impl </span>Create {
+  <span class="kw">pub fn </span>accounts(ctx: <span class="kw-2">&amp;</span>Context&lt;Create&gt;, bump_seed: u8) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>seeds = <span class="kw-2">&amp;</span>[ctx.accounts.my_account.to_account_info().key.as_ref(), <span class="kw-2">&amp;</span>[bump_seed]];
+    Pubkey::create_program_address(seeds, ctx.program_id)
+      .map_err(|<span class="kw">_</span>| ErrorCode::InvalidNonce)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
+  }
+}</code></pre></div>
+<p>This example demonstrates a useful pattern. Not only can you use
+<code>#[access_control]</code> to ensure any invariants or preconditions hold prior to
+executing an instruction, but also it can be used to finish any validation
+on the <code>Accounts</code> struct, particularly when instruction arguments are
+needed. Here, we use the given <code>bump_seed</code> to verify it creates a valid
+program-derived address.</p>
+</div></details></section></div></main></body></html>

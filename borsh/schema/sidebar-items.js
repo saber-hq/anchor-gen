@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Definition","Fields","SchemaContainerValidateError","SchemaMaxSerializedSizeError"],"fn":["add_definition"],"mod":["hashes"],"struct":["BorshSchemaContainer"],"trait":["BorshSchema"],"type":["Declaration","DiscriminantValue","FieldName","VariantName"]};

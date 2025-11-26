@@ -1,0 +1,9 @@
+(function() {
+    var type_impls = Object.fromEntries([["blake3",[["<details class=\"toggle implementors-toggle\" open><summary><section id=\"impl-From%3CHash%3E-for-%5Bu8;+OUT_LEN%5D\" class=\"impl\"><a class=\"src rightside\" href=\"src/blake3/lib.rs.html#320-325\">Source</a><a href=\"#impl-From%3CHash%3E-for-%5Bu8;+OUT_LEN%5D\" class=\"anchor\">§</a><h3 class=\"code-header\">impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.86.0/core/convert/trait.From.html\" title=\"trait core::convert::From\">From</a>&lt;<a class=\"struct\" href=\"blake3/struct.Hash.html\" title=\"struct blake3::Hash\">Hash</a>&gt; for [<a class=\"primitive\" href=\"https://doc.rust-lang.org/1.86.0/std/primitive.u8.html\">u8</a>; <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.86.0/std/primitive.array.html\">32</a>]</h3></section></summary><div class=\"impl-items\"><details class=\"toggle method-toggle\" open><summary><section id=\"method.from\" class=\"method trait-impl\"><a class=\"src rightside\" href=\"src/blake3/lib.rs.html#322-324\">Source</a><a href=\"#method.from\" class=\"anchor\">§</a><h4 class=\"code-header\">fn <a href=\"https://doc.rust-lang.org/1.86.0/core/convert/trait.From.html#tymethod.from\" class=\"fn\">from</a>(hash: <a class=\"struct\" href=\"blake3/struct.Hash.html\" title=\"struct blake3::Hash\">Hash</a>) -&gt; Self</h4></section></summary><div class='docblock'>Converts to this type from the input type.</div></details></div></details>","From<Hash>","blake3::hazmat::ChainingValue","blake3::hazmat::ContextKey"]]]]);
+    if (window.register_type_impls) {
+        window.register_type_impls(type_impls);
+    } else {
+        window.pending_type_impls = type_impls;
+    }
+})()
+//{"start":55,"fragment_lengths":[1496]}

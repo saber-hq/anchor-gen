@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_example_mocks", 0, "Mock types for use in examples.")

@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Invoke a cross-program instruction with program signatures."><title>invoke_signed in solana_cpi - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="solana_cpi" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../solana_cpi/index.html">solana_<wbr>cpi</a><span class="version">2.2.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">invoke_<wbr>signed</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#examples" title="Examples">Examples</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate solana_<wbr>cpi</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">solana_cpi</a></div><h1>Function <span class="fn">invoke_signed</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/solana_cpi/lib.rs.html#251-273">Source</a> </span></div><pre class="rust item-decl"><code>pub fn invoke_signed(
+    instruction: &amp;<a class="struct" href="../solana_instruction/struct.Instruction.html" title="struct solana_instruction::Instruction">Instruction</a>,
+    account_infos: &amp;[<a class="struct" href="../solana_account_info/struct.AccountInfo.html" title="struct solana_account_info::AccountInfo">AccountInfo</a>&lt;'_&gt;],
+    signers_seeds: &amp;[&amp;[&amp;[<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>]]],
+) -&gt; <a class="type" href="../solana_program_error/type.ProgramResult.html" title="type solana_program_error::ProgramResult">ProgramResult</a></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Invoke a cross-program instruction with program signatures.</p>
+<p>This function is like <a href="fn.invoke.html" title="fn solana_cpi::invoke"><code>invoke</code></a> with the additional ability to virtually
+sign an invocation on behalf of one or more <a href="https://solana.com/docs/core/cpi#program-derived-addresses">program derived addresses</a> (PDAs)
+controlled by the calling program, allowing the callee to mutate them, or
+otherwise confirm that a PDA program key has authorized the actions of the
+callee.</p>
+<p>There is no cryptographic signing involved — PDA signing is a runtime
+construct that allows the calling program to control accounts as if it could
+cryptographically sign for them; and the callee to treat the account as if it
+was cryptographically signed.</p>
+<p>The <code>signer_seeds</code> parameter is a slice of <code>u8</code> slices where the inner
+slices represent the seeds plus the <em>bump seed</em> used to derive (with
+<a href="https://docs.rs/solana-pubkey/latest/solana_pubkey/struct.Pubkey.html#method.find_program_address"><code>Pubkey::find_program_address</code></a>) one of the PDAs within the <code>account_infos</code>
+slice of <code>AccountInfo</code>s. During invocation, the runtime will re-derive the
+PDA from the seeds and the calling program’s ID, and if it matches one of
+the accounts in <code>account_info</code>, will consider that account “signed”.</p>
+<p>See the documentation for <a href="https://docs.rs/solana-pubkey/latest/solana_pubkey/struct.Pubkey.html#method.find_program_address"><code>Pubkey::find_program_address</code></a> for more
+about program derived addresses.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>A simple example of creating an account for a PDA:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_cpi::invoke_signed;
+<span class="kw">use </span>solana_account_info::{next_account_info, AccountInfo};
+<span class="kw">use </span>solana_program_entrypoint::entrypoint;
+<span class="kw">use </span>solana_program_error::ProgramResult;
+<span class="kw">use </span>solana_pubkey::Pubkey;
+<span class="kw">use </span>solana_sdk_ids::system_program;
+<span class="kw">use </span>solana_system_interface::instruction <span class="kw">as </span>system_instruction;
+
+<span class="macro">entrypoint!</span>(process_instruction);
+
+<span class="kw">fn </span>process_instruction(
+    program_id: <span class="kw-2">&amp;</span>Pubkey,
+    accounts: <span class="kw-2">&amp;</span>[AccountInfo],
+    instruction_data: <span class="kw-2">&amp;</span>[u8],
+) -&gt; ProgramResult {
+    <span class="kw">let </span>account_info_iter = <span class="kw-2">&amp;mut </span>accounts.iter();
+    <span class="kw">let </span>payer = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+    <span class="kw">let </span>vault_pda = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+    <span class="kw">let </span>system_program = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+
+    <span class="macro">assert!</span>(payer.is_writable);
+    <span class="macro">assert!</span>(payer.is_signer);
+    <span class="macro">assert!</span>(vault_pda.is_writable);
+    <span class="macro">assert_eq!</span>(vault_pda.owner, <span class="kw-2">&amp;</span>system_program::ID);
+    <span class="macro">assert!</span>(system_program::check_id(system_program.key));
+
+    <span class="kw">let </span>vault_bump_seed = instruction_data[<span class="number">0</span>];
+    <span class="kw">let </span>vault_seeds = <span class="kw-2">&amp;</span>[<span class="string">b"vault"</span>, payer.key.as_ref(), <span class="kw-2">&amp;</span>[vault_bump_seed]];
+    <span class="kw">let </span>expected_vault_pda = Pubkey::create_program_address(vault_seeds, program_id)<span class="question-mark">?</span>;
+
+    <span class="macro">assert_eq!</span>(vault_pda.key, <span class="kw-2">&amp;</span>expected_vault_pda);
+
+    <span class="kw">let </span>lamports = <span class="number">10000000</span>;
+    <span class="kw">let </span>vault_size = <span class="number">16</span>;
+
+    invoke_signed(
+        <span class="kw-2">&amp;</span>system_instruction::create_account(
+            <span class="kw-2">&amp;</span>payer.key,
+            <span class="kw-2">&amp;</span>vault_pda.key,
+            lamports,
+            vault_size,
+            <span class="kw-2">&amp;</span>program_id,
+        ),
+        <span class="kw-2">&amp;</span>[
+            payer.clone(),
+            vault_pda.clone(),
+        ],
+        <span class="kw-2">&amp;</span>[
+            <span class="kw-2">&amp;</span>[
+                <span class="string">b"vault"</span>,
+                payer.key.as_ref(),
+                <span class="kw-2">&amp;</span>[vault_bump_seed],
+            ],
+        ]
+    )<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Declare the program entrypoint and set up global handlers."><title>entrypoint in solana_program_entrypoint - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="solana_program_entrypoint" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../solana_program_entrypoint/index.html">solana_<wbr>program_<wbr>entrypoint</a><span class="version">2.2.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">entrypoint</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#cargo-features" title="Cargo features">Cargo features</a></li><li><a href="#examples" title="Examples">Examples</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate solana_<wbr>program_<wbr>entrypoint</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">solana_program_entrypoint</a></div><h1>Macro <span class="macro">entrypoint</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/solana_program_entrypoint/lib.rs.html#126-140">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! entrypoint {
+    ($process_instruction:ident) =&gt; { ... };
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Declare the program entrypoint and set up global handlers.</p>
+<p>This macro emits the common boilerplate necessary to begin program
+execution, calling a provided function to process the program instruction
+supplied by the runtime, and reporting its result to the runtime.</p>
+<p>It also sets up a <a href="https://doc.rust-lang.org/stable/std/alloc/trait.GlobalAlloc.html">global allocator</a> and <a href="https://doc.rust-lang.org/nomicon/panic-handler.html">panic handler</a>, using the
+<a href="macro.custom_heap_default.html" title="macro solana_program_entrypoint::custom_heap_default"><code>custom_heap_default</code></a> and <a href="macro.custom_panic_default.html" title="macro solana_program_entrypoint::custom_panic_default"><code>custom_panic_default</code></a> macros.</p>
+<p>The argument is the name of a function with this type signature:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>process_instruction(
+    program_id: <span class="kw-2">&amp;</span>Pubkey,      <span class="comment">// Public key of the account the program was loaded into
+    </span>accounts: <span class="kw-2">&amp;</span>[AccountInfo], <span class="comment">// All accounts required to process the instruction
+    </span>instruction_data: <span class="kw-2">&amp;</span>[u8],  <span class="comment">// Serialized instruction-specific data
+</span>) -&gt; ProgramResult;</code></pre></div>
+<h2 id="cargo-features"><a class="doc-anchor" href="#cargo-features">§</a>Cargo features</h2>
+<p>This macro emits symbols and definitions that may only be defined once
+globally. As such, if linked to other Rust crates it will cause compiler
+errors. To avoid this, it is common for Solana programs to define an
+optional <a href="https://doc.rust-lang.org/cargo/reference/features.html">Cargo feature</a> called <code>no-entrypoint</code>, and use it to conditionally
+disable the <code>entrypoint</code> macro invocation, as well as the
+<code>process_instruction</code> function. See a typical pattern for this in the
+example below.</p>
+<p>The code emitted by this macro can be customized by adding cargo features
+<em>to your own crate</em> (the one that calls this macro) and enabling them:</p>
+<ul>
+<li>
+<p>If the <code>custom-heap</code> feature is defined then the macro will not set up the
+global allocator, allowing <code>entrypoint</code> to be used with your own
+allocator. See documentation for the <a href="macro.custom_heap_default.html" title="macro solana_program_entrypoint::custom_heap_default"><code>custom_heap_default</code></a> macro for
+details of customizing the global allocator.</p>
+</li>
+<li>
+<p>If the <code>custom-panic</code> feature is defined then the macro will not define a
+panic handler, allowing <code>entrypoint</code> to be used with your own panic
+handler. See documentation for the <a href="macro.custom_panic_default.html" title="macro solana_program_entrypoint::custom_panic_default"><code>custom_panic_default</code></a> macro for
+details of customizing the panic handler.</p>
+</li>
+</ul>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>Defining an entrypoint and making it conditional on the <code>no-entrypoint</code>
+feature. Although the <code>entrypoint</code> module is written inline in this example,
+it is common to put it into its own file.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[cfg(not(feature = <span class="string">"no-entrypoint"</span>))]
+</span><span class="kw">pub mod </span>entrypoint {
+
+    <span class="kw">use </span>solana_account_info::AccountInfo;
+    <span class="kw">use </span>solana_program_entrypoint::entrypoint;
+    <span class="kw">use </span>solana_program_entrypoint::ProgramResult;
+    <span class="kw">use </span>solana_msg::msg;
+    <span class="kw">use </span>solana_pubkey::Pubkey;
+
+    <span class="macro">entrypoint!</span>(process_instruction);
+
+    <span class="kw">pub fn </span>process_instruction(
+        program_id: <span class="kw-2">&amp;</span>Pubkey,
+        accounts: <span class="kw-2">&amp;</span>[AccountInfo],
+        instruction_data: <span class="kw-2">&amp;</span>[u8],
+    ) -&gt; ProgramResult {
+        <span class="macro">msg!</span>(<span class="string">"Hello world"</span>);
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+}</code></pre></div>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ACCOUNT_STORAGE_OVERHEAD","DEFAULT_BURN_PERCENT","DEFAULT_EXEMPTION_THRESHOLD","DEFAULT_LAMPORTS_PER_BYTE_YEAR"],"enum":["RentDue"],"mod":["sysvar"],"struct":["Rent"]};

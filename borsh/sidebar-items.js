@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["BorshDeserialize","BorshSchema","BorshSerialize"],"fn":["max_serialized_size","object_length","schema_container_of","to_vec","to_writer","try_from_slice_with_schema","try_to_vec_with_schema"],"mod":["de","error","io","schema","ser"]};

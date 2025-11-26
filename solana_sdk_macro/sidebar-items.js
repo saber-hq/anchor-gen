@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["CloneZeroed"],"macro":["declare_deprecated_id","declare_id","program_declare_deprecated_id","program_declare_id","program_pubkey","pubkey","pubkeys"]};

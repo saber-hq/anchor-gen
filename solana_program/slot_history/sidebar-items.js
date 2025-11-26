@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_ENTRIES"],"enum":["Check"],"mod":["sysvar"],"struct":["SlotHistory"],"type":["Slot"]};

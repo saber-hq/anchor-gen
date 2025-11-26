@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["extend_and_hash","hash","hashv"],"struct":["Hasher"]};

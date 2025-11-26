@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Create an account containing a durable transaction nonce."><title>create_nonce_account in solana_program::system_instruction - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="solana_program" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../solana_program/index.html">solana_<wbr>program</a><span class="version">2.2.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">create_<wbr>nonce_<wbr>account</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#required-signers" title="Required signers">Required signers</a></li><li><a href="#examples" title="Examples">Examples</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In solana_<wbr>program::<wbr>system_<wbr>instruction</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">solana_program</a>::<wbr><a href="index.html">system_instruction</a></div><h1>Function <span class="fn">create_nonce_account</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/solana_system_interface/instruction.rs.html#1328-1333">Source</a> </span></div><pre class="rust item-decl"><code>pub fn create_nonce_account(
+    from_pubkey: &amp;<a class="struct" href="../../solana_pubkey/struct.Pubkey.html" title="struct solana_pubkey::Pubkey">Pubkey</a>,
+    nonce_pubkey: &amp;<a class="struct" href="../../solana_pubkey/struct.Pubkey.html" title="struct solana_pubkey::Pubkey">Pubkey</a>,
+    authority: &amp;<a class="struct" href="../../solana_pubkey/struct.Pubkey.html" title="struct solana_pubkey::Pubkey">Pubkey</a>,
+    lamports: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u64.html">u64</a>,
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.86.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../instruction/struct.Instruction.html" title="struct solana_program::instruction::Instruction">Instruction</a>&gt;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Create an account containing a durable transaction nonce.</p>
+<p>This function produces a vector of <a href="../instruction/struct.Instruction.html" title="struct solana_program::instruction::Instruction"><code>Instruction</code></a>s which must be submitted
+in a <a href="https://docs.rs/solana-sdk/latest/solana_sdk/transaction/struct.Transaction.html"><code>Transaction</code></a> or <a href="https://docs.rs/solana-cpi/latest/solana_cpi/fn.invoke.html">invoked</a> to take effect, containing a serialized
+<a href="enum.SystemInstruction.html#variant.CreateAccount" title="variant solana_program::system_instruction::SystemInstruction::CreateAccount"><code>SystemInstruction::CreateAccount</code></a> and
+<a href="enum.SystemInstruction.html#variant.InitializeNonceAccount" title="variant solana_program::system_instruction::SystemInstruction::InitializeNonceAccount"><code>SystemInstruction::InitializeNonceAccount</code></a>.</p>
+<p>A <a href="https://docs.solanalabs.com/implemented-proposals/durable-tx-nonces">durable transaction nonce</a> is a special account that enables
+execution of transactions that have been signed in the past.</p>
+<p>Standard Solana transactions include a <a href="https://docs.rs/solana-program/latest/solana_program/message/legacy/struct.Message.html#structfield.recent_blockhash">recent blockhash</a> (sometimes
+referred to as a <em><a href="https://en.wikipedia.org/wiki/Cryptographic_nonce">nonce</a></em>). During execution the Solana runtime verifies
+the recent blockhash is approximately less than two minutes old, and that in
+those two minutes no other identical transaction with the same blockhash has
+been executed. These checks prevent accidental replay of transactions.
+Consequently, it is not possible to sign a transaction, wait more than two
+minutes, then successfully execute that transaction.</p>
+<p>Durable transaction nonces are an alternative to the standard recent
+blockhash nonce. They are stored in accounts on chain, and every time they
+are used their value is changed to a new value for their next use. The
+runtime verifies that each durable nonce value is only used once, and there
+are no restrictions on how “old” the nonce is. Because they are stored on
+chain and require additional instructions to use, transacting with durable
+transaction nonces is more expensive than with standard transactions.</p>
+<p>The value of the durable nonce is itself a blockhash and is accessible via
+the <a href="https://docs.rs/solana-program/latest/solana_program/message/legacy/struct.Message.html#structfield.recent_blockhash"><code>blockhash</code></a> field of <a href="https://docs.rs/solana-nonce/latest/solana_nonce/state/struct.Data.html"><code>nonce::state::Data</code></a>, which is deserialized
+from the nonce account data.</p>
+<p>The basic durable transaction nonce lifecycle is</p>
+<ol>
+<li>Create the nonce account with the <code>create_nonce_account</code> instruction.</li>
+<li>Submit specially-formed transactions that include the
+<a href="fn.advance_nonce_account.html" title="fn solana_program::system_instruction::advance_nonce_account"><code>advance_nonce_account</code></a> instruction.</li>
+<li>Destroy the nonce account by withdrawing its lamports with the
+<a href="fn.withdraw_nonce_account.html" title="fn solana_program::system_instruction::withdraw_nonce_account"><code>withdraw_nonce_account</code></a> instruction.</li>
+</ol>
+<p>Nonce accounts have an associated <em>authority</em> account, which is stored in
+their account data, and can be changed with the <a href="fn.authorize_nonce_account.html" title="fn solana_program::system_instruction::authorize_nonce_account"><code>authorize_nonce_account</code></a>
+instruction. The authority must sign transactions that include the
+<code>advance_nonce_account</code>, <code>authorize_nonce_account</code> and
+<code>withdraw_nonce_account</code> instructions.</p>
+<p>Nonce accounts are owned by the system program.</p>
+<p>This constructor creates a <a href="enum.SystemInstruction.html#variant.CreateAccount" title="variant solana_program::system_instruction::SystemInstruction::CreateAccount"><code>SystemInstruction::CreateAccount</code></a> instruction
+and a <a href="enum.SystemInstruction.html#variant.InitializeNonceAccount" title="variant solana_program::system_instruction::SystemInstruction::InitializeNonceAccount"><code>SystemInstruction::InitializeNonceAccount</code></a> instruction.</p>
+<h2 id="required-signers"><a class="doc-anchor" href="#required-signers">§</a>Required signers</h2>
+<p>The <code>from_pubkey</code> and <code>nonce_pubkey</code> signers must sign the transaction.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>Create a nonce account from an off-chain client:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_rpc_client::rpc_client::RpcClient;
+<span class="kw">use </span>solana_sdk::{
+    signature::{Keypair, Signer},
+    transaction::Transaction,
+    nonce::State,
+};
+<span class="kw">use </span>solana_system_interface::instruction;
+<span class="kw">use </span>anyhow::Result;
+
+<span class="kw">fn </span>submit_create_nonce_account_tx(
+    client: <span class="kw-2">&amp;</span>RpcClient,
+    payer: <span class="kw-2">&amp;</span>Keypair,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+
+    <span class="kw">let </span>nonce_account = Keypair::new();
+
+    <span class="kw">let </span>nonce_rent = client.get_minimum_balance_for_rent_exemption(State::size())<span class="question-mark">?</span>;
+    <span class="kw">let </span>instr = instruction::create_nonce_account(
+        <span class="kw-2">&amp;</span>payer.pubkey(),
+        <span class="kw-2">&amp;</span>nonce_account.pubkey(),
+        <span class="kw-2">&amp;</span>payer.pubkey(), <span class="comment">// Make the fee payer the nonce account authority
+        </span>nonce_rent,
+    );
+
+    <span class="kw">let </span><span class="kw-2">mut </span>tx = Transaction::new_with_payer(<span class="kw-2">&amp;</span>instr, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>payer.pubkey()));
+
+    <span class="kw">let </span>blockhash = client.get_latest_blockhash()<span class="question-mark">?</span>;
+    tx.try_sign(<span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>nonce_account, payer], blockhash)<span class="question-mark">?</span>;
+
+    client.send_and_confirm_transaction(<span class="kw-2">&amp;</span>tx)<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+</div></details></section></div></main></body></html>

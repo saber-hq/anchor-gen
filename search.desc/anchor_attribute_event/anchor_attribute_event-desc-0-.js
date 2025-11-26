@@ -1,0 +1,1 @@
+searchState.loadedDescShard("anchor_attribute_event", 0, "Logs an event that can be subscribed to by clients. Uses …\nThe event attribute allows a struct to be used with emit! …")

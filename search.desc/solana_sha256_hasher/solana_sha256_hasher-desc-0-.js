@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_sha256_hasher", 0, "Return the hash of the given hash extended with the given …\nReturns the argument unchanged.\nReturn a Sha256 hash for the given data.\nReturn a Sha256 hash for the given data.\nCalls <code>U::from(self)</code>.")

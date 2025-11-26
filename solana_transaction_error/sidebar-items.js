@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AddressLoaderError","SanitizeMessageError","TransactionError","TransportError"],"type":["TransactionResult","TransportResult"]};

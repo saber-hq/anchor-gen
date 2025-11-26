@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_serialize_utils", 0, "Helpers for reading and writing bytes.")

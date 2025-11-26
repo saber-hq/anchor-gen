@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["LoaderV4Instruction"],"fn":["copy","create_buffer","deploy","deploy_from_source","finalize","is_copy_instruction","is_deploy_instruction","is_finalize_instruction","is_retract_instruction","is_set_program_length_instruction","is_transfer_authority_instruction","is_write_instruction","retract","set_program_length","transfer_authority","write"]};

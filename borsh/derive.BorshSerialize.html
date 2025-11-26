@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Derive macro available if borsh is built with `features = [&#34;derive&#34;]`."><title>BorshSerialize in borsh - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="borsh" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc derive"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../borsh/index.html">borsh</a><span class="version">1.5.7</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Borsh<wbr>Serialize</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#derive-proc-macro-for-borshserialize-trait" title="derive proc-macro for `BorshSerialize` trait">derive proc-macro for <code>BorshSerialize</code> trait</a><ul><li><a href="#bounds" title="Bounds">Bounds</a></li><li><a href="#attributes" title="Attributes">Attributes</a></li></ul></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate borsh</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">borsh</a></div><h1>Derive Macro <span class="derive">BorshSerialize</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"></span></div><pre class="rust item-decl"><code>#[derive(BorshSerialize)]
+{
+    <span class="comment">// Attributes available to this derive:</span>
+    #[borsh]
+}
+</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Derive macro available if borsh is built with <code>features = ["derive"]</code>.</p>
+<h2 id="derive-proc-macro-for-borshserialize-trait"><a class="doc-anchor" href="#derive-proc-macro-for-borshserialize-trait">§</a>derive proc-macro for <a href="ser/trait.BorshSerialize.html" title="trait borsh::ser::BorshSerialize"><code>BorshSerialize</code></a> trait</h2><h3 id="bounds"><a class="doc-anchor" href="#bounds">§</a>Bounds</h3>
+<p>Generally, <code>BorshSerialize</code> adds <code>borsh::ser::BorshSerialize</code> bound to any type parameter
+found in item’s fields.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+
+<span class="doccomment">/// impl&lt;U, V&gt; borsh::ser::BorshSerialize for A&lt;U, V&gt;
+/// where
+///     U: borsh::ser::BorshSerialize,
+///     V: borsh::ser::BorshSerialize,
+</span><span class="attr">#[derive(BorshSerialize)]
+</span><span class="kw">struct </span>A&lt;U, V&gt; {
+    x: U,
+    y: V,
+}</code></pre></div>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+
+<span class="doccomment">/// impl&lt;U, V&gt; borsh::ser::BorshSerialize for A&lt;U, V&gt;
+/// where
+///     U: borsh::ser::BorshSerialize,
+</span><span class="attr">#[derive(BorshSerialize)]
+</span><span class="kw">struct </span>A&lt;U, V&gt; {
+    x: U,
+    <span class="attr">#[borsh(skip)]
+    </span>y: V,
+}</code></pre></div>
+<h3 id="attributes"><a class="doc-anchor" href="#attributes">§</a>Attributes</h3><h4 id="1-borshcrate--pathtoborsh-item-level-attribute"><a class="doc-anchor" href="#1-borshcrate--pathtoborsh-item-level-attribute">§</a>1. <code>#[borsh(crate = "path::to::borsh")]</code> (item level attribute)</h4><h6 id="syntax"><a class="doc-anchor" href="#syntax">§</a>syntax</h6>
+<p>Attribute takes literal string value, which is the syn’s <a href="https://docs.rs/syn/2.0.92/syn/struct.Path.html">Path</a> to <code>borsh</code> crate used.</p>
+<h6 id="usage"><a class="doc-anchor" href="#usage">§</a>usage</h6>
+<p>Attribute is optional.</p>
+<ol>
+<li>If the attribute is not provided, <a href="https://docs.rs/proc-macro-crate/3.2.0/proc_macro_crate/fn.crate_name.html">crate_name</a> is used to find a version of <code>borsh</code>
+in <code>[dependencies]</code> of the relevant <code>Cargo.toml</code>. If there is no match, a compilation error, similar to the following, is raised:</li>
+</ol>
+<div class="example-wrap"><pre class="language-bash"><code> 1  error: proc-macro derive panicked
+   --&gt; path/to/file.rs:27:10
+    |
+ 27 | #[derive(BorshSerialize, BorshDeserialize)]
+    |          ^^^^^^^^^^^^^^
+    |
+    = help: message: called `Result::unwrap()` on an `Err` value: CrateNotFound { crate_name: &quot;borsh&quot;, path: &quot;/path/to/Cargo.toml&quot; }</code></pre></div>
+<ol start="2">
+<li>If the attribute is provided, the check for <code>borsh</code> in <code>[dependencies]</code> of the relevant <code>Cargo.toml</code> is skipped.</li>
+</ol>
+<p>Examples of usage:</p>
+<p>(example is not tested, as there’s usually no <code>reexporter</code> crate during doc build)</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>reexporter::borsh::BorshSerialize;
+
+<span class="comment">// specifying the attribute removes need for a direct import of `borsh` into `[dependencies]`
+</span><span class="attr">#[derive(BorshSerialize)]
+#[borsh(<span class="kw">crate </span>= <span class="string">"reexporter::borsh"</span>)]
+</span><span class="kw">struct </span>B {
+    x: u64,
+    y: i32,
+    c: String,
+}</code></pre></div>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>reexporter::borsh::{<span class="self">self</span>, BorshSerialize};
+
+<span class="comment">// specifying the attribute removes need for a direct import of `borsh` into `[dependencies]`
+</span><span class="attr">#[derive(BorshSerialize)]
+#[borsh(<span class="kw">crate </span>= <span class="string">"borsh"</span>)]
+</span><span class="kw">struct </span>B {
+    x: u64,
+    y: i32,
+    c: String,
+}</code></pre></div>
+<h4 id="2-borshuse_discriminantbool-item-level-attribute"><a class="doc-anchor" href="#2-borshuse_discriminantbool-item-level-attribute">§</a>2. <code>borsh(use_discriminant=&lt;bool&gt;)</code> (item level attribute)</h4>
+<p>This attribute is only applicable to enums.
+<code>use_discriminant</code> allows to override the default behavior of serialization of enums with explicit discriminant.
+<code>use_discriminant</code> is <code>false</code> behaves like version of borsh of 0.10.3.
+You must specify <code>use_discriminant</code> for all enums with explicit discriminants in your project.</p>
+<p>This is equivalent of borsh version 0.10.3 (explicit discriminant is ignored and this enum is equivalent to <code>A</code> without explicit discriminant):</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+
+<span class="attr">#[derive(BorshSerialize)]
+#[borsh(use_discriminant = <span class="bool-val">false</span>)]
+</span><span class="kw">enum </span>A {
+    A,
+    B = <span class="number">10</span>,
+}</code></pre></div>
+<p>To have explicit discriminant value serialized as is, you must specify <code>borsh(use_discriminant=true)</code> for enum.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+
+<span class="attr">#[derive(BorshSerialize)]
+#[borsh(use_discriminant = <span class="bool-val">true</span>)]
+</span><span class="kw">enum </span>B {
+    A,
+    B = <span class="number">10</span>,
+}</code></pre></div>
+<h6 id="borsh-expressions-evaluating-to-isize-as-discriminant"><a class="doc-anchor" href="#borsh-expressions-evaluating-to-isize-as-discriminant">§</a>borsh, expressions, evaluating to <code>isize</code>, as discriminant</h6>
+<p>This case is not supported:</p>
+
+<div class="example-wrap compile_fail"><a href="#" class="tooltip" title="This example deliberately fails to compile">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">const fn </span>discrim() -&gt; isize {
+    <span class="number">0x14
+</span>}
+
+<span class="attr">#[derive(BorshSerialize)]
+#[borsh(use_discriminant = <span class="bool-val">true</span>)]
+</span><span class="kw">enum </span>X {
+    A,
+    B = discrim(), <span class="comment">// expressions, evaluating to `isize`, which are allowed outside of `borsh` context
+    </span>C,
+    D,
+    E = <span class="number">10</span>,
+    F,
+}</code></pre></div>
+<h6 id="borsh-explicit-discriminant-does-not-support-literal-values-outside-of-u8-range"><a class="doc-anchor" href="#borsh-explicit-discriminant-does-not-support-literal-values-outside-of-u8-range">§</a>borsh explicit discriminant does not support literal values outside of u8 range</h6>
+<p>This is not supported:</p>
+
+<div class="example-wrap compile_fail"><a href="#" class="tooltip" title="This example deliberately fails to compile">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(BorshSerialize)]
+#[borsh(use_discriminant = <span class="bool-val">true</span>)]
+</span><span class="kw">enum </span>X {
+    A,
+    B = <span class="number">0x100</span>, <span class="comment">// literal values outside of `u8` range
+    </span>C,
+    D,
+    E = <span class="number">10</span>,
+    F,
+}</code></pre></div>
+<h4 id="3-borshskip-field-level-attribute"><a class="doc-anchor" href="#3-borshskip-field-level-attribute">§</a>3. <code>#[borsh(skip)]</code> (field level attribute)</h4>
+<p><code>#[borsh(skip)]</code> makes derive skip serializing annotated field.</p>
+<p><code>#[borsh(skip)]</code> makes derive skip adding any type parameters, present in the field, to parameters bound by <code>borsh::ser::BorshSerialize</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+
+<span class="attr">#[derive(BorshSerialize)]
+</span><span class="kw">struct </span>A {
+    x: u64,
+    <span class="attr">#[borsh(skip)]
+    </span>y: f32,
+}</code></pre></div>
+<h4 id="4-borshboundserialize---field-level-attribute"><a class="doc-anchor" href="#4-borshboundserialize---field-level-attribute">§</a>4. <code>#[borsh(bound(serialize = ...))]</code> (field level attribute)</h4><h6 id="syntax-1"><a class="doc-anchor" href="#syntax-1">§</a>syntax</h6>
+<p>Attribute takes literal string value, which is a comma-separated list of syn’s <a href="https://docs.rs/syn/latest/syn/enum.WherePredicate.html">WherePredicate</a>-s, which may be empty.</p>
+<h6 id="usage-1"><a class="doc-anchor" href="#usage-1">§</a>usage</h6>
+<p>Attribute adds possibility to override bounds for <code>BorshSerialize</code> in order to enable:</p>
+<ol>
+<li>removal of bounds on type parameters from struct/enum definition itself and moving them to the trait’s implementation block.</li>
+<li>fixing complex cases, when derive hasn’t figured out the right bounds on type parameters automatically.</li>
+</ol>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+<span class="attr">#[cfg(feature = <span class="string">"hashbrown"</span>)]
+</span><span class="kw">use </span>hashbrown::HashMap;
+<span class="attr">#[cfg(feature = <span class="string">"std"</span>)]
+</span><span class="kw">use </span>std::collections::HashMap;
+<span class="doccomment">/// additional bound `T: Ord` (required by `HashMap`) is injected into
+/// derived trait implementation via attribute to avoid adding the bounds on the struct itself
+</span><span class="attr">#[cfg(any(feature = <span class="string">"hashbrown"</span>, feature = <span class="string">"std"</span>))]
+#[derive(BorshSerialize)]
+</span><span class="kw">struct </span>A&lt;T, U&gt; {
+    a: String,
+    <span class="attr">#[borsh(bound(serialize =
+        <span class="string">"T: borsh::ser::BorshSerialize + Ord,
+         U: borsh::ser::BorshSerialize"</span>))]
+    </span>b: HashMap&lt;T, U&gt;,
+}</code></pre></div>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+<span class="kw">trait </span>TraitName {
+    <span class="kw">type </span>Associated;
+    <span class="kw">fn </span>method(<span class="kw-2">&amp;</span><span class="self">self</span>);
+}
+<span class="doccomment">/// derive here figures the bound erroneously as `T: borsh::ser::BorshSerialize`
+</span><span class="attr">#[derive(BorshSerialize)]
+</span><span class="kw">struct </span>A&lt;T, V&gt;
+<span class="kw">where
+    </span>T: TraitName,
+{
+    <span class="attr">#[borsh(bound(serialize = <span class="string">"&lt;T as TraitName&gt;::Associated: borsh::ser::BorshSerialize"</span>))]
+    </span>field: &lt;T <span class="kw">as </span>TraitName&gt;::Associated,
+    another: V,
+}</code></pre></div>
+<h6 id="interaction-with-borshskip"><a class="doc-anchor" href="#interaction-with-borshskip">§</a>interaction with <code>#[borsh(skip)]</code></h6>
+<p><code>#[borsh(bound(serialize = ...))]</code> replaces bounds, which are derived automatically,
+irrelevant of whether <code>#[borsh(skip)]</code> attribute is present.</p>
+<h4 id="5-borshserialize_with---field-level-attribute"><a class="doc-anchor" href="#5-borshserialize_with---field-level-attribute">§</a>5. <code>#[borsh(serialize_with = ...)]</code> (field level attribute)</h4><h6 id="syntax-2"><a class="doc-anchor" href="#syntax-2">§</a>syntax</h6>
+<p>Attribute takes literal string value, which is a syn’s <a href="https://docs.rs/syn/latest/syn/struct.ExprPath.html">ExprPath</a>.</p>
+<h6 id="usage-2"><a class="doc-anchor" href="#usage-2">§</a>usage</h6>
+<p>Attribute adds possibility to specify full path of function, optionally qualified with generics,
+with which to serialize the annotated field.</p>
+<p>It may be used when <code>BorshSerialize</code> cannot be implemented for field’s type, if it’s from foreign crate.</p>
+<p>It may be used to override the implementation of serialization for some other reason.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshSerialize;
+<span class="kw">use </span>indexmap::IndexMap;
+
+<span class="doccomment">/// this a stub module, representing a 3rd party crate `indexmap`
+</span><span class="kw">mod </span>indexmap {
+    <span class="doccomment">/// this a stub struct, representing a 3rd party `indexmap::IndexMap`
+    /// or some local type we want to override trait implementation for
+    </span><span class="kw">pub struct </span>IndexMap&lt;K, V&gt; {
+        <span class="kw">pub</span>(<span class="kw">crate</span>) tuples: Vec&lt;(K, V)&gt;,
+    }
+    
+}
+
+<span class="kw">mod </span>index_map_impl {
+    <span class="kw">use </span><span class="kw">super</span>::indexmap::IndexMap;
+
+    <span class="kw">pub fn </span>serialize_index_map&lt;
+        K: borsh::ser::BorshSerialize,
+        V: borsh::ser::BorshSerialize,
+        W: borsh::io::Write,
+    &gt;(
+        obj: <span class="kw-2">&amp;</span>IndexMap&lt;K, V&gt;,
+        writer: <span class="kw-2">&amp;mut </span>W,
+    ) -&gt; ::core::result::Result&lt;(), borsh::io::Error&gt; {
+        <span class="comment">// the line of implementation for type from real `indexmap` crate
+        // let key_value_tuples = obj.iter().collect::&lt;Vec&lt;_&gt;&gt;();
+        </span><span class="kw">let </span>key_value_tuples = obj.tuples.iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        borsh::BorshSerialize::serialize(<span class="kw-2">&amp;</span>key_value_tuples, writer)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="attr">#[derive(BorshSerialize)]
+</span><span class="kw">struct </span>B&lt;K, V&gt; {
+    <span class="attr">#[borsh(
+        serialize_with = <span class="string">"index_map_impl::serialize_index_map"</span>,
+    )]
+    </span>x: IndexMap&lt;K, V&gt;,
+    y: String,
+}
+</code></pre></div>
+<h6 id="usage-comprehensive-example"><a class="doc-anchor" href="#usage-comprehensive-example">§</a>usage (comprehensive example)</h6>
+<p><a href="https://github.com/near/borsh-rs/blob/master/borsh/examples/serde_json_value.rs">borsh/examples/serde_json_value.rs</a> is
+a more complex example of how the attribute may be used.</p>
+<h6 id="interaction-with-borshskip-1"><a class="doc-anchor" href="#interaction-with-borshskip-1">§</a>interaction with <code>#[borsh(skip)]</code></h6>
+<p><code>#[borsh(serialize_with = ...)]</code> is not allowed to be used simultaneously with <code>#[borsh(skip)]</code>.</p>
+<hr />
+<p>moved to docs of <strong>Derive Macro</strong> <code>BorshSerialize</code> in <code>borsh</code> crate</p>
+</div></details></section></div></main></body></html>

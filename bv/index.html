@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The main type exported by the library, `BitVec`, is a packed, growable bit-vector. Its API mirrors that of `Vec` where reasonable."><title>bv - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="bv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../bv/index.html">bv</a><span class="version">0.11.1</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#examples" title="Examples">Examples</a></li><li><a href="#usage" title="Usage">Usage</a></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#macros" title="Macros">Macros</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#traits" title="Traits">Traits</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>bv</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/bv/lib.rs.html#1-132">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The main type exported by the library, <a href="struct.BitVec.html"><code>BitVec</code></a>, is a packed,
+growable bit-vector. Its API mirrors that of <code>Vec</code> where reasonable.</p>
+<p>The library also defines slice operations that return
+<a href="struct.BitSlice.html"><code>BitSlice</code></a> or <a href="struct.BitSliceMut.html"><code>BitSliceMut</code></a>, akin to Rust’s array slices but for
+bit-vectors. A common API to bit-vectors and bit-slices is provided by the <a href="trait.Bits.html"><code>Bits</code></a>,
+<a href="trait.BitsMut.html"><code>BitsMut</code></a>, and <a href="trait.BitsPush.html"><code>BitsPush</code></a> traits. These traits also allow treating a variety
+of other types as bit vectors:</p>
+<ul>
+<li>all primitive unsigned integer types (<em>e.g.,</em> <code>u64</code>, <code>u32</code>),</li>
+<li>vectors and slices thereof (<em>e.g.</em>, <code>Vec&lt;usize&gt;</code>, <code>&amp;[u8]</code>, <code>[u16; 4]</code>), and</li>
+<li>unpacked vectors and arrays of <code>bool</code> (<em>e.g.</em>, <code>[bool; 15]</code>).</li>
+</ul>
+<p>Additionally, the <a href="trait.BitsExt.html"><code>BitsExt</code></a> trait provides adapter methods including
+bit-wise logic and concatenation. These adapters work for all types that implement
+<a href="trait.Bits.html"><code>Bits</code></a>.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>A first example with <a href="struct.BitVec.html"><code>BitVec</code></a>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bv::BitVec;
+
+<span class="kw">let </span><span class="kw-2">mut </span>bv1: BitVec = BitVec::new_fill(<span class="bool-val">false</span>, <span class="number">50</span>);
+<span class="kw">let </span><span class="kw-2">mut </span>bv2: BitVec = BitVec::new_fill(<span class="bool-val">false</span>, <span class="number">50</span>);
+
+<span class="macro">assert_eq!</span>(bv1, bv2);
+
+bv1.set(<span class="number">49</span>, <span class="bool-val">true</span>);
+<span class="macro">assert_ne!</span>(bv1, bv2);
+
+<span class="macro">assert_eq!</span>(bv1.pop(), <span class="prelude-val">Some</span>(<span class="bool-val">true</span>));
+<span class="macro">assert_eq!</span>(bv2.pop(), <span class="prelude-val">Some</span>(<span class="bool-val">false</span>));
+<span class="macro">assert_eq!</span>(bv1, bv2);</code></pre></div>
+<p>Adapters, from <a href="trait.BitsExt.html"><code>BitsExt</code></a> and <a href="adapter/index.html"><code>adapter</code></a>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bv::<span class="kw-2">*</span>;
+<span class="kw">use </span>bv::adapter::BoolAdapter;
+
+<span class="comment">// Here, we use an `&amp;[u16]` as a bit vector, and we adapt a
+// `Vec&lt;bool&gt;` as well.
+</span><span class="kw">let </span>array = <span class="kw-2">&amp;</span>[<span class="number">0b1100u16</span>];
+<span class="kw">let </span>vec   = BoolAdapter::new(<span class="macro">vec!</span>[<span class="bool-val">false</span>, <span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>]);
+
+<span class="comment">// `xor` is not a `BitVec`, but a lazy adapter, thus, we can index
+// it or efficiently compare it to another bit vector, without
+// allocating.
+</span><span class="kw">let </span>xor   = array.bit_xor(<span class="kw-2">&amp;</span>vec);
+<span class="macro">assert_eq!</span>( xor, <span class="macro">bit_vec!</span>[<span class="bool-val">false</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>, <span class="bool-val">false</span>] );</code></pre></div>
+<p>This function performs a three-way <em>or</em>, returning a <code>BitVec</code> without
+allocating an intermediate result:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bv::{Bits, BitsExt, BitVec};
+
+<span class="kw">fn </span>three_way_or&lt;T, U, V&gt;(bv1: T, bv2: U, bv3: V) -&gt; BitVec&lt;T::Block&gt;
+    <span class="kw">where </span>T: Bits,
+          U: Bits&lt;Block = T::Block&gt;,
+          V: Bits&lt;Block = T::Block&gt; {
+
+    bv1.into_bit_or(bv2).into_bit_or(bv3).to_bit_vec()
+}</code></pre></div>
+<h2 id="usage"><a class="doc-anchor" href="#usage">§</a>Usage</h2>
+<p>It’s <a href="https://crates.io/crates/bv">on crates.io</a>, so you can add</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+bv = &quot;0.11.1&quot;</code></pre></div>
+<p>to your <code>Cargo.toml</code> and</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">extern crate </span>bv;</code></pre></div>
+<p>to your crate root.</p>
+<p>This crate supports Rust version 1.31 and newer.</p>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="adapter/index.html" title="mod bv::adapter">adapter</a></dt><dd>Lazy bit vector adapters.</dd></dl><h2 id="macros" class="section-header">Macros<a href="#macros" class="anchor">§</a></h2><dl class="item-table"><dt><a class="macro" href="macro.bit_vec.html" title="macro bv::bit_vec">bit_vec</a></dt><dd>Like <code>vec!</code> but for <a href="struct.BitVec.html"><code>BitVec</code></a>.</dd></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.BitSlice.html" title="struct bv::BitSlice">BitSlice</a></dt><dd>A slice of a bit-vector; akin to <code>&amp;'a [bool]</code> but packed.</dd><dt><a class="struct" href="struct.BitSliceMut.html" title="struct bv::BitSliceMut">BitSlice<wbr>Mut</a></dt><dd>A mutable slice of a bit-vector; akin to <code>&amp;'a mut [bool]</code> but packed.</dd><dt><a class="struct" href="struct.BitVec.html" title="struct bv::BitVec">BitVec</a></dt><dd>A bit-vector, akin to <code>Vec&lt;bool&gt;</code> but packed.</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.BitSliceable.html" title="trait bv::BitSliceable">BitSliceable</a></dt><dd>Types that support slicing by ranges.</dd><dt><a class="trait" href="trait.BitSliceableMut.html" title="trait bv::BitSliceableMut">BitSliceable<wbr>Mut</a></dt><dd>Types that produce mutable slices.</dd><dt><a class="trait" href="trait.Bits.html" title="trait bv::Bits">Bits</a></dt><dd>Read-only bit vector operations.</dd><dt><a class="trait" href="trait.BitsExt.html" title="trait bv::BitsExt">BitsExt</a></dt><dd>Extension trait for adapter operations on bit slices.</dd><dt><a class="trait" href="trait.BitsMut.html" title="trait bv::BitsMut">BitsMut</a></dt><dd>Mutable bit vector operations that don’t affect the length.</dd><dt><a class="trait" href="trait.BitsMutExt.html" title="trait bv::BitsMutExt">Bits<wbr>MutExt</a></dt><dd>Extension trait for mutable operations on bit slices.</dd><dt><a class="trait" href="trait.BitsPush.html" title="trait bv::BitsPush">Bits<wbr>Push</a></dt><dd>Bit vector operations that change the length.</dd><dt><a class="trait" href="trait.BlockType.html" title="trait bv::BlockType">Block<wbr>Type</a></dt><dd>Interface to primitive bit storage.</dd></dl></section></div></main></body></html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Define the default global panic handler."><title>custom_panic_default in solana_program - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="solana_program" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../solana_program/index.html">solana_<wbr>program</a><span class="version">2.2.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">custom_<wbr>panic_<wbr>default</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#cargo-features" title="Cargo features">Cargo features</a></li><li><a href="#defining-a-panic-handler-for-solana" title="Defining a panic handler for Solana">Defining a panic handler for Solana</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate solana_<wbr>program</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">solana_program</a></div><h1>Macro <span class="macro">custom_panic_default</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/solana_program_entrypoint/lib.rs.html#271">Source</a> </span></div><pre class="rust item-decl"><code>macro_rules! custom_panic_default {
+    () =&gt; { ... };
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Define the default global panic handler.</p>
+<p>This must be used if the <a href="macro.entrypoint.html" title="macro solana_program::entrypoint"><code>entrypoint</code></a> macro is not used, and no other
+panic handler has been defined; otherwise compilation will fail with a
+missing <code>custom_panic</code> symbol.</p>
+<p>The default global allocator is enabled only if the calling crate has not
+disabled it using <a href="https://doc.rust-lang.org/cargo/reference/features.html">Cargo features</a> as described below. It is only defined
+for <a href="https://solana.com/docs/programs/faq#berkeley-packet-filter-bpf">BPF</a> targets.</p>
+<h2 id="cargo-features"><a class="doc-anchor" href="#cargo-features">§</a>Cargo features</h2>
+<p>A crate that calls this macro can provide its own custom panic handler, or
+allow others to provide their own custom panic handler, by adding a
+<code>custom-panic</code> feature to its <code>Cargo.toml</code>. After enabling the feature, one
+may define their own panic handler.</p>
+<p>A good way to reduce the final size of the program is to provide a
+<code>custom_panic</code> implementation that does nothing. Doing so will cut ~25kb
+from a noop program. That number goes down the more the programs pulls in
+Rust’s standard library for other purposes.</p>
+<h2 id="defining-a-panic-handler-for-solana"><a class="doc-anchor" href="#defining-a-panic-handler-for-solana">§</a>Defining a panic handler for Solana</h2>
+<p><em>The mechanism for defining a Solana panic handler is different <a href="https://doc.rust-lang.org/nomicon/panic-handler.html">from most
+Rust programs</a>.</em></p>
+<p>To define a panic handler one must define a <code>custom_panic</code> function
+with the <code>#[no_mangle]</code> attribute, as below:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[cfg(all(feature = <span class="string">"custom-panic"</span>, target_os = <span class="string">"solana"</span>))]
+#[no_mangle]
+</span><span class="kw">fn </span>custom_panic(info: <span class="kw-2">&amp;</span>core::panic::PanicInfo&lt;<span class="lifetime">'_</span>&gt;) {
+    <span class="macro-nonterminal">$</span><span class="macro">crate::msg!</span>(<span class="string">"{}"</span>, <span class="macro-nonterminal">info</span>);
+}</code></pre></div>
+<p>The above is how Solana defines the default panic handler.</p>
+</div></details></section></div></main></body></html>

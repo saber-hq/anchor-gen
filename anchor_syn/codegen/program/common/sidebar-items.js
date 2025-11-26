@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SIGHASH_GLOBAL_NAMESPACE"],"fn":["gen_discriminator","generate_ix_variant","generate_ix_variant_name","sighash"]};

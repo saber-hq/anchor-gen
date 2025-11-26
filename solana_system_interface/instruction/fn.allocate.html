@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Allocate space for an account."><title>allocate in solana_system_interface::instruction - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="solana_system_interface" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../solana_system_interface/index.html">solana_<wbr>system_<wbr>interface</a><span class="version">1.0.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">allocate</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#required-signers" title="Required signers">Required signers</a></li><li><a href="#examples" title="Examples">Examples</a></li><li><a href="#example-client-side-rpc" title="Example: client-side RPC">Example: client-side RPC</a><ul><li><a href="#example-on-chain-program" title="Example: on-chain program">Example: on-chain program</a></li></ul></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In solana_<wbr>system_<wbr>interface::<wbr>instruction</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">solana_system_interface</a>::<wbr><a href="index.html">instruction</a></div><h1>Function <span class="fn">allocate</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/solana_system_interface/instruction.rs.html#1013-1016">Source</a> </span></div><pre class="rust item-decl"><code>pub fn allocate(pubkey: &amp;<a class="struct" href="../../solana_pubkey/struct.Pubkey.html" title="struct solana_pubkey::Pubkey">Pubkey</a>, space: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="../../solana_instruction/struct.Instruction.html" title="struct solana_instruction::Instruction">Instruction</a></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Allocate space for an account.</p>
+<p>This function produces an <a href="../../solana_instruction/struct.Instruction.html" title="struct solana_instruction::Instruction"><code>Instruction</code></a> which must be submitted in a
+<a href="https://docs.rs/solana-sdk/latest/solana_sdk/transaction/struct.Transaction.html"><code>Transaction</code></a> or <a href="https://docs.rs/solana-cpi/latest/solana_cpi/fn.invoke.html">invoked</a> to take effect, containing a serialized
+<a href="enum.SystemInstruction.html#variant.Allocate" title="variant solana_system_interface::instruction::SystemInstruction::Allocate"><code>SystemInstruction::Allocate</code></a>.</p>
+<p>The transaction will fail if the account already has size greater than 0,
+or if the requested size is greater than <a href="../constant.MAX_PERMITTED_DATA_LENGTH.html" title="constant solana_system_interface::MAX_PERMITTED_DATA_LENGTH"><code>super::MAX_PERMITTED_DATA_LENGTH</code></a>.</p>
+<h2 id="required-signers"><a class="doc-anchor" href="#required-signers">§</a>Required signers</h2>
+<p>The <code>pubkey</code> signer must sign the transaction.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>These examples allocate space for an account, transfer it the minimum
+balance for rent exemption, and assign the account to a program.</p>
+<h2 id="example-client-side-rpc"><a class="doc-anchor" href="#example-client-side-rpc">§</a>Example: client-side RPC</h2>
+<p>This example submits the instructions from an RPC client.
+It assigns the account to a provided program account.
+The <code>payer</code> and <code>new_account</code> are signers.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_rpc_client::rpc_client::RpcClient;
+<span class="kw">use </span>solana_pubkey::Pubkey;
+<span class="kw">use </span>solana_sdk::{
+    signature::{Keypair, Signer},
+    transaction::Transaction,
+};
+<span class="kw">use </span>solana_system_interface::instruction;
+<span class="kw">use </span>anyhow::Result;
+
+<span class="kw">fn </span>create_account(
+    client: <span class="kw-2">&amp;</span>RpcClient,
+    payer: <span class="kw-2">&amp;</span>Keypair,
+    new_account: <span class="kw-2">&amp;</span>Keypair,
+    owning_program: <span class="kw-2">&amp;</span>Pubkey,
+    space: u64,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>rent = client.get_minimum_balance_for_rent_exemption(space.try_into()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>transfer_instr = instruction::transfer(
+        <span class="kw-2">&amp;</span>payer.pubkey(),
+        <span class="kw-2">&amp;</span>new_account.pubkey(),
+        rent,
+    );
+
+    <span class="kw">let </span>allocate_instr = instruction::allocate(
+        <span class="kw-2">&amp;</span>new_account.pubkey(),
+        space,
+    );
+
+    <span class="kw">let </span>assign_instr = instruction::assign(
+        <span class="kw-2">&amp;</span>new_account.pubkey(),
+        owning_program,
+    );
+
+    <span class="kw">let </span>blockhash = client.get_latest_blockhash()<span class="question-mark">?</span>;
+    <span class="kw">let </span>tx = Transaction::new_signed_with_payer(
+        <span class="kw-2">&amp;</span>[transfer_instr, allocate_instr, assign_instr],
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>payer.pubkey()),
+        <span class="kw-2">&amp;</span>[payer, new_account],
+        blockhash,
+    );
+
+    <span class="kw">let </span>_sig = client.send_and_confirm_transaction(<span class="kw-2">&amp;</span>tx)<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h3 id="example-on-chain-program"><a class="doc-anchor" href="#example-on-chain-program">§</a>Example: on-chain program</h3>
+<p>This example submits the instructions from an on-chain Solana program. The
+created account is a <a href="https://docs.rs/solana-pubkey/latest/solana_pubkey/struct.Pubkey.html#method.find_program_address">program derived address</a>, funded by <code>payer</code>, and
+assigned to the running program. The <code>payer</code> and <code>new_account_pda</code> are
+signers, with <code>new_account_pda</code> being signed for virtually by the program
+itself via <a href="https://docs.rs/solana-cpi/latest/solana_cpi/fn.invoke_signed.html"><code>invoke_signed</code></a>, <code>payer</code> being signed for by the client that
+submitted the transaction.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::{BorshDeserialize, BorshSerialize};
+<span class="kw">use </span>solana_account_info::{next_account_info, AccountInfo};
+<span class="kw">use </span>solana_cpi::invoke_signed;
+<span class="kw">use </span>solana_program::sysvar::{rent::Rent, Sysvar};
+<span class="kw">use </span>solana_program_entrypoint::entrypoint;
+<span class="kw">use </span>solana_program_error::ProgramResult;
+<span class="kw">use </span>solana_pubkey::Pubkey;
+<span class="kw">use </span>solana_system_interface::{instruction, program};
+
+<span class="attr">#[derive(BorshSerialize, BorshDeserialize, Debug)]
+</span><span class="kw">pub struct </span>CreateAccountInstruction {
+    <span class="doccomment">/// The PDA seed used to distinguish the new account from other PDAs
+    </span><span class="kw">pub </span>new_account_seed: [u8; <span class="number">16</span>],
+    <span class="doccomment">/// The PDA bump seed
+    </span><span class="kw">pub </span>new_account_bump_seed: u8,
+    <span class="doccomment">/// The amount of space to allocate for `new_account_pda`
+    </span><span class="kw">pub </span>space: u64,
+}
+
+<span class="macro">entrypoint!</span>(process_instruction);
+
+<span class="kw">fn </span>process_instruction(
+    program_id: <span class="kw-2">&amp;</span>Pubkey,
+    accounts: <span class="kw-2">&amp;</span>[AccountInfo],
+    instruction_data: <span class="kw-2">&amp;</span>[u8],
+) -&gt; ProgramResult {
+    <span class="kw">let </span>instr = CreateAccountInstruction::deserialize(<span class="kw-2">&amp;mut &amp;</span>instruction_data[..])<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>account_info_iter = <span class="kw-2">&amp;mut </span>accounts.iter();
+
+    <span class="kw">let </span>payer = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_account_pda = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+    <span class="kw">let </span>system_account = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+
+    <span class="macro">assert!</span>(payer.is_signer);
+    <span class="macro">assert!</span>(payer.is_writable);
+    <span class="comment">// Note that `new_account_pda` is not a signer yet.
+    // This program will sign for it via `invoke_signed`.
+    </span><span class="macro">assert!</span>(!new_account_pda.is_signer);
+    <span class="macro">assert!</span>(new_account_pda.is_writable);
+    <span class="macro">assert!</span>(program::check_id(system_account.key));
+
+    <span class="kw">let </span>new_account_seed = <span class="kw-2">&amp;</span>instr.new_account_seed;
+    <span class="kw">let </span>new_account_bump_seed = instr.new_account_bump_seed;
+
+    <span class="kw">let </span>rent = Rent::get()<span class="question-mark">?
+        </span>.minimum_balance(instr.space.try_into().expect(<span class="string">"overflow"</span>));
+
+    invoke_signed(
+        <span class="kw-2">&amp;</span>instruction::create_account(
+            payer.key,
+            new_account_pda.key,
+            rent,
+            instr.space,
+            <span class="kw-2">&amp;</span>program::ID
+        ),
+        <span class="kw-2">&amp;</span>[payer.clone(), new_account_pda.clone()],
+        <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[
+            payer.key.as_ref(),
+            new_account_seed,
+            <span class="kw-2">&amp;</span>[new_account_bump_seed],
+        ]],
+    )<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+</div></details></section></div></main></body></html>

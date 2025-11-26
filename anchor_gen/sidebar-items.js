@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["generate_cpi_crate","generate_cpi_interface"]};

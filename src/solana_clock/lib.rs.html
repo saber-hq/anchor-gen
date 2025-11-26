@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-clock-2.2.1/src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="solana_clock" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="../../static.files/src-script-b8d3f215.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">solana_clock/</div>lib.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Information about the network's clock, ticks, slots, etc.
+<a href=#2 id=2 data-nosnippet>2</a>//!
+<a href=#3 id=3 data-nosnippet>3</a>//! Time in Solana is marked primarily by _slots_, which occur approximately every
+<a href=#4 id=4 data-nosnippet>4</a>//! 400 milliseconds, and are numbered sequentially. For every slot, a leader is
+<a href=#5 id=5 data-nosnippet>5</a>//! chosen from the validator set, and that leader is expected to produce a new
+<a href=#6 id=6 data-nosnippet>6</a>//! block, though sometimes leaders may fail to do so. Blocks can be identified
+<a href=#7 id=7 data-nosnippet>7</a>//! by their slot number, and some slots do not contain a block.
+<a href=#8 id=8 data-nosnippet>8</a>//!
+<a href=#9 id=9 data-nosnippet>9</a>//! An approximation of the passage of real-world time can be calculated by
+<a href=#10 id=10 data-nosnippet>10</a>//! multiplying a number of slots by [`DEFAULT_MS_PER_SLOT`], which is a constant target
+<a href=#11 id=11 data-nosnippet>11</a>//! time for the network to produce slots. Note though that this method suffers
+<a href=#12 id=12 data-nosnippet>12</a>//! a variable amount of drift, as the network does not produce slots at exactly
+<a href=#13 id=13 data-nosnippet>13</a>//! the target rate, and the greater number of slots being calculated for, the
+<a href=#14 id=14 data-nosnippet>14</a>//! greater the drift. Epochs cannot be used this way as they contain variable
+<a href=#15 id=15 data-nosnippet>15</a>//! numbers of slots.
+<a href=#16 id=16 data-nosnippet>16</a>//!
+<a href=#17 id=17 data-nosnippet>17</a>//! The network's current view of the real-world time can always be accessed via
+<a href=#18 id=18 data-nosnippet>18</a>//! [`Clock::unix_timestamp`], which is produced by an [oracle derived from the
+<a href=#19 id=19 data-nosnippet>19</a>//! validator set][oracle].
+<a href=#20 id=20 data-nosnippet>20</a>//!
+<a href=#21 id=21 data-nosnippet>21</a>//! [oracle]: https://docs.solanalabs.com/implemented-proposals/validator-timestamp-oracle
+<a href=#22 id=22 data-nosnippet>22</a></span><span class="attr">#![no_std]
+<a href=#23 id=23 data-nosnippet>23</a>#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+<a href=#24 id=24 data-nosnippet>24</a>
+<a href=#25 id=25 data-nosnippet>25</a>#[cfg(feature = <span class="string">"sysvar"</span>)]
+<a href=#26 id=26 data-nosnippet>26</a></span><span class="kw">pub mod </span>sysvar;
+<a href=#27 id=27 data-nosnippet>27</a>
+<a href=#28 id=28 data-nosnippet>28</a><span class="attr">#[cfg(feature = <span class="string">"serde"</span>)]
+<a href=#29 id=29 data-nosnippet>29</a></span><span class="kw">use </span>serde_derive::{Deserialize, Serialize};
+<a href=#30 id=30 data-nosnippet>30</a><span class="kw">use </span>solana_sdk_macro::CloneZeroed;
+<a href=#31 id=31 data-nosnippet>31</a>
+<a href=#32 id=32 data-nosnippet>32</a><span class="doccomment">/// The default tick rate that the cluster attempts to achieve (160 per second).
+<a href=#33 id=33 data-nosnippet>33</a>///
+<a href=#34 id=34 data-nosnippet>34</a>/// Note that the actual tick rate at any given time should be expected to drift.
+<a href=#35 id=35 data-nosnippet>35</a></span><span class="kw">pub const </span>DEFAULT_TICKS_PER_SECOND: u64 = <span class="number">160</span>;
+<a href=#36 id=36 data-nosnippet>36</a>
+<a href=#37 id=37 data-nosnippet>37</a><span class="attr">#[cfg(test)]
+<a href=#38 id=38 data-nosnippet>38</a></span><span class="macro">static_assertions::const_assert_eq!</span>(MS_PER_TICK, <span class="number">6</span>);
+<a href=#39 id=39 data-nosnippet>39</a>
+<a href=#40 id=40 data-nosnippet>40</a><span class="doccomment">/// The number of milliseconds per tick (6).
+<a href=#41 id=41 data-nosnippet>41</a></span><span class="kw">pub const </span>MS_PER_TICK: u64 = <span class="number">1000 </span>/ DEFAULT_TICKS_PER_SECOND;
+<a href=#42 id=42 data-nosnippet>42</a>
+<a href=#43 id=43 data-nosnippet>43</a><span class="comment">// At 160 ticks/s, 64 ticks per slot implies that leader rotation and voting will happen
+<a href=#44 id=44 data-nosnippet>44</a>// every 400 ms. A fast voting cadence ensures faster finality and convergence
+<a href=#45 id=45 data-nosnippet>45</a></span><span class="kw">pub const </span>DEFAULT_TICKS_PER_SLOT: u64 = <span class="number">64</span>;
+<a href=#46 id=46 data-nosnippet>46</a>
+<a href=#47 id=47 data-nosnippet>47</a><span class="comment">// GCP n1-standard hardware and also a xeon e5-2520 v4 are about this rate of hashes/s
+<a href=#48 id=48 data-nosnippet>48</a></span><span class="kw">pub const </span>DEFAULT_HASHES_PER_SECOND: u64 = <span class="number">2_000_000</span>;
+<a href=#49 id=49 data-nosnippet>49</a>
+<a href=#50 id=50 data-nosnippet>50</a><span class="comment">// Empirical sampling of mainnet validator hash rate showed the following stake
+<a href=#51 id=51 data-nosnippet>51</a>// percentages can exceed the designated hash rates as of July 2023:
+<a href=#52 id=52 data-nosnippet>52</a>// 97.6%
+<a href=#53 id=53 data-nosnippet>53</a></span><span class="kw">pub const </span>UPDATED_HASHES_PER_SECOND_2: u64 = <span class="number">2_800_000</span>;
+<a href=#54 id=54 data-nosnippet>54</a><span class="comment">// 96.2%
+<a href=#55 id=55 data-nosnippet>55</a></span><span class="kw">pub const </span>UPDATED_HASHES_PER_SECOND_3: u64 = <span class="number">4_400_000</span>;
+<a href=#56 id=56 data-nosnippet>56</a><span class="comment">// 96.2%
+<a href=#57 id=57 data-nosnippet>57</a></span><span class="kw">pub const </span>UPDATED_HASHES_PER_SECOND_4: u64 = <span class="number">7_600_000</span>;
+<a href=#58 id=58 data-nosnippet>58</a><span class="comment">// 96.2%
+<a href=#59 id=59 data-nosnippet>59</a></span><span class="kw">pub const </span>UPDATED_HASHES_PER_SECOND_5: u64 = <span class="number">9_200_000</span>;
+<a href=#60 id=60 data-nosnippet>60</a><span class="comment">// 96.2%
+<a href=#61 id=61 data-nosnippet>61</a></span><span class="kw">pub const </span>UPDATED_HASHES_PER_SECOND_6: u64 = <span class="number">10_000_000</span>;
+<a href=#62 id=62 data-nosnippet>62</a>
+<a href=#63 id=63 data-nosnippet>63</a><span class="attr">#[cfg(test)]
+<a href=#64 id=64 data-nosnippet>64</a></span><span class="macro">static_assertions::const_assert_eq!</span>(DEFAULT_HASHES_PER_TICK, <span class="number">12_500</span>);
+<a href=#65 id=65 data-nosnippet>65</a><span class="kw">pub const </span>DEFAULT_HASHES_PER_TICK: u64 = DEFAULT_HASHES_PER_SECOND / DEFAULT_TICKS_PER_SECOND;
+<a href=#66 id=66 data-nosnippet>66</a>
+<a href=#67 id=67 data-nosnippet>67</a><span class="attr">#[cfg(test)]
+<a href=#68 id=68 data-nosnippet>68</a></span><span class="macro">static_assertions::const_assert_eq!</span>(UPDATED_HASHES_PER_TICK2, <span class="number">17_500</span>);
+<a href=#69 id=69 data-nosnippet>69</a><span class="kw">pub const </span>UPDATED_HASHES_PER_TICK2: u64 = UPDATED_HASHES_PER_SECOND_2 / DEFAULT_TICKS_PER_SECOND;
+<a href=#70 id=70 data-nosnippet>70</a>
+<a href=#71 id=71 data-nosnippet>71</a><span class="attr">#[cfg(test)]
+<a href=#72 id=72 data-nosnippet>72</a></span><span class="macro">static_assertions::const_assert_eq!</span>(UPDATED_HASHES_PER_TICK3, <span class="number">27_500</span>);
+<a href=#73 id=73 data-nosnippet>73</a><span class="kw">pub const </span>UPDATED_HASHES_PER_TICK3: u64 = UPDATED_HASHES_PER_SECOND_3 / DEFAULT_TICKS_PER_SECOND;
+<a href=#74 id=74 data-nosnippet>74</a>
+<a href=#75 id=75 data-nosnippet>75</a><span class="attr">#[cfg(test)]
+<a href=#76 id=76 data-nosnippet>76</a></span><span class="macro">static_assertions::const_assert_eq!</span>(UPDATED_HASHES_PER_TICK4, <span class="number">47_500</span>);
+<a href=#77 id=77 data-nosnippet>77</a><span class="kw">pub const </span>UPDATED_HASHES_PER_TICK4: u64 = UPDATED_HASHES_PER_SECOND_4 / DEFAULT_TICKS_PER_SECOND;
+<a href=#78 id=78 data-nosnippet>78</a>
+<a href=#79 id=79 data-nosnippet>79</a><span class="attr">#[cfg(test)]
+<a href=#80 id=80 data-nosnippet>80</a></span><span class="macro">static_assertions::const_assert_eq!</span>(UPDATED_HASHES_PER_TICK5, <span class="number">57_500</span>);
+<a href=#81 id=81 data-nosnippet>81</a><span class="kw">pub const </span>UPDATED_HASHES_PER_TICK5: u64 = UPDATED_HASHES_PER_SECOND_5 / DEFAULT_TICKS_PER_SECOND;
+<a href=#82 id=82 data-nosnippet>82</a>
+<a href=#83 id=83 data-nosnippet>83</a><span class="attr">#[cfg(test)]
+<a href=#84 id=84 data-nosnippet>84</a></span><span class="macro">static_assertions::const_assert_eq!</span>(UPDATED_HASHES_PER_TICK6, <span class="number">62_500</span>);
+<a href=#85 id=85 data-nosnippet>85</a><span class="kw">pub const </span>UPDATED_HASHES_PER_TICK6: u64 = UPDATED_HASHES_PER_SECOND_6 / DEFAULT_TICKS_PER_SECOND;
+<a href=#86 id=86 data-nosnippet>86</a>
+<a href=#87 id=87 data-nosnippet>87</a><span class="comment">// 1 Dev Epoch = 400 ms * 8192 ~= 55 minutes
+<a href=#88 id=88 data-nosnippet>88</a></span><span class="kw">pub const </span>DEFAULT_DEV_SLOTS_PER_EPOCH: u64 = <span class="number">8192</span>;
+<a href=#89 id=89 data-nosnippet>89</a>
+<a href=#90 id=90 data-nosnippet>90</a><span class="attr">#[cfg(test)]
+<a href=#91 id=91 data-nosnippet>91</a></span><span class="macro">static_assertions::const_assert_eq!</span>(SECONDS_PER_DAY, <span class="number">86_400</span>);
+<a href=#92 id=92 data-nosnippet>92</a><span class="kw">pub const </span>SECONDS_PER_DAY: u64 = <span class="number">24 </span>* <span class="number">60 </span>* <span class="number">60</span>;
+<a href=#93 id=93 data-nosnippet>93</a>
+<a href=#94 id=94 data-nosnippet>94</a><span class="attr">#[cfg(test)]
+<a href=#95 id=95 data-nosnippet>95</a></span><span class="macro">static_assertions::const_assert_eq!</span>(TICKS_PER_DAY, <span class="number">13_824_000</span>);
+<a href=#96 id=96 data-nosnippet>96</a><span class="kw">pub const </span>TICKS_PER_DAY: u64 = DEFAULT_TICKS_PER_SECOND * SECONDS_PER_DAY;
+<a href=#97 id=97 data-nosnippet>97</a>
+<a href=#98 id=98 data-nosnippet>98</a><span class="attr">#[cfg(test)]
+<a href=#99 id=99 data-nosnippet>99</a></span><span class="macro">static_assertions::const_assert_eq!</span>(DEFAULT_SLOTS_PER_EPOCH, <span class="number">432_000</span>);
+<a href=#100 id=100 data-nosnippet>100</a>
+<a href=#101 id=101 data-nosnippet>101</a><span class="doccomment">/// The number of slots per epoch after initial network warmup.
+<a href=#102 id=102 data-nosnippet>102</a>///
+<a href=#103 id=103 data-nosnippet>103</a>/// 1 Epoch ~= 2 days.
+<a href=#104 id=104 data-nosnippet>104</a></span><span class="kw">pub const </span>DEFAULT_SLOTS_PER_EPOCH: u64 = <span class="number">2 </span>* TICKS_PER_DAY / DEFAULT_TICKS_PER_SLOT;
+<a href=#105 id=105 data-nosnippet>105</a>
+<a href=#106 id=106 data-nosnippet>106</a><span class="comment">// leader schedule is governed by this
+<a href=#107 id=107 data-nosnippet>107</a></span><span class="kw">pub const </span>NUM_CONSECUTIVE_LEADER_SLOTS: u64 = <span class="number">4</span>;
+<a href=#108 id=108 data-nosnippet>108</a>
+<a href=#109 id=109 data-nosnippet>109</a><span class="attr">#[cfg(test)]
+<a href=#110 id=110 data-nosnippet>110</a></span><span class="macro">static_assertions::const_assert_eq!</span>(DEFAULT_MS_PER_SLOT, <span class="number">400</span>);
+<a href=#111 id=111 data-nosnippet>111</a><span class="doccomment">/// The expected duration of a slot (400 milliseconds).
+<a href=#112 id=112 data-nosnippet>112</a></span><span class="kw">pub const </span>DEFAULT_MS_PER_SLOT: u64 = <span class="number">1_000 </span>* DEFAULT_TICKS_PER_SLOT / DEFAULT_TICKS_PER_SECOND;
+<a href=#113 id=113 data-nosnippet>113</a><span class="kw">pub const </span>DEFAULT_S_PER_SLOT: f64 = DEFAULT_TICKS_PER_SLOT <span class="kw">as </span>f64 / DEFAULT_TICKS_PER_SECOND <span class="kw">as </span>f64;
+<a href=#114 id=114 data-nosnippet>114</a>
+<a href=#115 id=115 data-nosnippet>115</a><span class="doccomment">/// The time window of recent block hash values over which the bank will track
+<a href=#116 id=116 data-nosnippet>116</a>/// signatures.
+<a href=#117 id=117 data-nosnippet>117</a>///
+<a href=#118 id=118 data-nosnippet>118</a>/// Once the bank discards a block hash, it will reject any transactions that
+<a href=#119 id=119 data-nosnippet>119</a>/// use that `recent_blockhash` in a transaction. Lowering this value reduces
+<a href=#120 id=120 data-nosnippet>120</a>/// memory consumption, but requires a client to update its `recent_blockhash`
+<a href=#121 id=121 data-nosnippet>121</a>/// more frequently. Raising the value lengthens the time a client must wait to
+<a href=#122 id=122 data-nosnippet>122</a>/// be certain a missing transaction will not be processed by the network.
+<a href=#123 id=123 data-nosnippet>123</a></span><span class="kw">pub const </span>MAX_HASH_AGE_IN_SECONDS: usize = <span class="number">120</span>;
+<a href=#124 id=124 data-nosnippet>124</a>
+<a href=#125 id=125 data-nosnippet>125</a><span class="attr">#[cfg(test)]
+<a href=#126 id=126 data-nosnippet>126</a></span><span class="macro">static_assertions::const_assert_eq!</span>(MAX_RECENT_BLOCKHASHES, <span class="number">300</span>);
+<a href=#127 id=127 data-nosnippet>127</a><span class="comment">// Number of maximum recent blockhashes (one blockhash per non-skipped slot)
+<a href=#128 id=128 data-nosnippet>128</a></span><span class="kw">pub const </span>MAX_RECENT_BLOCKHASHES: usize =
+<a href=#129 id=129 data-nosnippet>129</a>    MAX_HASH_AGE_IN_SECONDS * DEFAULT_TICKS_PER_SECOND <span class="kw">as </span>usize / DEFAULT_TICKS_PER_SLOT <span class="kw">as </span>usize;
+<a href=#130 id=130 data-nosnippet>130</a>
+<a href=#131 id=131 data-nosnippet>131</a><span class="attr">#[cfg(test)]
+<a href=#132 id=132 data-nosnippet>132</a></span><span class="macro">static_assertions::const_assert_eq!</span>(MAX_PROCESSING_AGE, <span class="number">150</span>);
+<a href=#133 id=133 data-nosnippet>133</a><span class="comment">// The maximum age of a blockhash that will be accepted by the leader
+<a href=#134 id=134 data-nosnippet>134</a></span><span class="kw">pub const </span>MAX_PROCESSING_AGE: usize = MAX_RECENT_BLOCKHASHES / <span class="number">2</span>;
+<a href=#135 id=135 data-nosnippet>135</a>
+<a href=#136 id=136 data-nosnippet>136</a><span class="doccomment">/// This is maximum time consumed in forwarding a transaction from one node to next, before
+<a href=#137 id=137 data-nosnippet>137</a>/// it can be processed in the target node
+<a href=#138 id=138 data-nosnippet>138</a></span><span class="kw">pub const </span>MAX_TRANSACTION_FORWARDING_DELAY_GPU: usize = <span class="number">2</span>;
+<a href=#139 id=139 data-nosnippet>139</a>
+<a href=#140 id=140 data-nosnippet>140</a><span class="doccomment">/// More delay is expected if CUDA is not enabled (as signature verification takes longer)
+<a href=#141 id=141 data-nosnippet>141</a></span><span class="kw">pub const </span>MAX_TRANSACTION_FORWARDING_DELAY: usize = <span class="number">6</span>;
+<a href=#142 id=142 data-nosnippet>142</a>
+<a href=#143 id=143 data-nosnippet>143</a><span class="doccomment">/// Transaction forwarding, which leader to forward to and how long to hold
+<a href=#144 id=144 data-nosnippet>144</a></span><span class="kw">pub const </span>FORWARD_TRANSACTIONS_TO_LEADER_AT_SLOT_OFFSET: u64 = <span class="number">2</span>;
+<a href=#145 id=145 data-nosnippet>145</a><span class="kw">pub const </span>HOLD_TRANSACTIONS_SLOT_OFFSET: u64 = <span class="number">20</span>;
+<a href=#146 id=146 data-nosnippet>146</a>
+<a href=#147 id=147 data-nosnippet>147</a><span class="doccomment">/// The unit of time given to a leader for encoding a block.
+<a href=#148 id=148 data-nosnippet>148</a>///
+<a href=#149 id=149 data-nosnippet>149</a>/// It is some some number of _ticks_ long.
+<a href=#150 id=150 data-nosnippet>150</a></span><span class="kw">pub type </span>Slot = u64;
+<a href=#151 id=151 data-nosnippet>151</a>
+<a href=#152 id=152 data-nosnippet>152</a><span class="doccomment">/// Uniquely distinguishes every version of a slot.
+<a href=#153 id=153 data-nosnippet>153</a>///
+<a href=#154 id=154 data-nosnippet>154</a>/// The `BankId` is unique even if the slot number of two different slots is the
+<a href=#155 id=155 data-nosnippet>155</a>/// same. This can happen in the case of e.g. duplicate slots.
+<a href=#156 id=156 data-nosnippet>156</a></span><span class="kw">pub type </span>BankId = u64;
+<a href=#157 id=157 data-nosnippet>157</a>
+<a href=#158 id=158 data-nosnippet>158</a><span class="doccomment">/// The unit of time a given leader schedule is honored.
+<a href=#159 id=159 data-nosnippet>159</a>///
+<a href=#160 id=160 data-nosnippet>160</a>/// It lasts for some number of [`Slot`]s.
+<a href=#161 id=161 data-nosnippet>161</a></span><span class="kw">pub type </span>Epoch = u64;
+<a href=#162 id=162 data-nosnippet>162</a>
+<a href=#163 id=163 data-nosnippet>163</a><span class="kw">pub const </span>GENESIS_EPOCH: Epoch = <span class="number">0</span>;
+<a href=#164 id=164 data-nosnippet>164</a><span class="comment">// must be sync with Account::rent_epoch::default()
+<a href=#165 id=165 data-nosnippet>165</a></span><span class="kw">pub const </span>INITIAL_RENT_EPOCH: Epoch = <span class="number">0</span>;
+<a href=#166 id=166 data-nosnippet>166</a>
+<a href=#167 id=167 data-nosnippet>167</a><span class="doccomment">/// An index to the slots of a epoch.
+<a href=#168 id=168 data-nosnippet>168</a></span><span class="kw">pub type </span>SlotIndex = u64;
+<a href=#169 id=169 data-nosnippet>169</a>
+<a href=#170 id=170 data-nosnippet>170</a><span class="doccomment">/// The number of slots in a epoch.
+<a href=#171 id=171 data-nosnippet>171</a></span><span class="kw">pub type </span>SlotCount = u64;
+<a href=#172 id=172 data-nosnippet>172</a>
+<a href=#173 id=173 data-nosnippet>173</a><span class="doccomment">/// An approximate measure of real-world time.
+<a href=#174 id=174 data-nosnippet>174</a>///
+<a href=#175 id=175 data-nosnippet>175</a>/// Expressed as Unix time (i.e. seconds since the Unix epoch).
+<a href=#176 id=176 data-nosnippet>176</a></span><span class="kw">pub type </span>UnixTimestamp = i64;
+<a href=#177 id=177 data-nosnippet>177</a>
+<a href=#178 id=178 data-nosnippet>178</a><span class="doccomment">/// A representation of network time.
+<a href=#179 id=179 data-nosnippet>179</a>///
+<a href=#180 id=180 data-nosnippet>180</a>/// All members of `Clock` start from 0 upon network boot.
+<a href=#181 id=181 data-nosnippet>181</a></span><span class="attr">#[repr(C)]
+<a href=#182 id=182 data-nosnippet>182</a>#[cfg_attr(feature = <span class="string">"serde"</span>, derive(Serialize, Deserialize))]
+<a href=#183 id=183 data-nosnippet>183</a>#[derive(Debug, CloneZeroed, Default, PartialEq, Eq)]
+<a href=#184 id=184 data-nosnippet>184</a></span><span class="kw">pub struct </span>Clock {
+<a href=#185 id=185 data-nosnippet>185</a>    <span class="doccomment">/// The current `Slot`.
+<a href=#186 id=186 data-nosnippet>186</a>    </span><span class="kw">pub </span>slot: Slot,
+<a href=#187 id=187 data-nosnippet>187</a>    <span class="doccomment">/// The timestamp of the first `Slot` in this `Epoch`.
+<a href=#188 id=188 data-nosnippet>188</a>    </span><span class="kw">pub </span>epoch_start_timestamp: UnixTimestamp,
+<a href=#189 id=189 data-nosnippet>189</a>    <span class="doccomment">/// The current `Epoch`.
+<a href=#190 id=190 data-nosnippet>190</a>    </span><span class="kw">pub </span>epoch: Epoch,
+<a href=#191 id=191 data-nosnippet>191</a>    <span class="doccomment">/// The future `Epoch` for which the leader schedule has
+<a href=#192 id=192 data-nosnippet>192</a>    /// most recently been calculated.
+<a href=#193 id=193 data-nosnippet>193</a>    </span><span class="kw">pub </span>leader_schedule_epoch: Epoch,
+<a href=#194 id=194 data-nosnippet>194</a>    <span class="doccomment">/// The approximate real world time of the current slot.
+<a href=#195 id=195 data-nosnippet>195</a>    ///
+<a href=#196 id=196 data-nosnippet>196</a>    /// This value was originally computed from genesis creation time and
+<a href=#197 id=197 data-nosnippet>197</a>    /// network time in slots, incurring a lot of drift. Following activation of
+<a href=#198 id=198 data-nosnippet>198</a>    /// the [`timestamp_correction` and `timestamp_bounding`][tsc] features it
+<a href=#199 id=199 data-nosnippet>199</a>    /// is calculated using a [validator timestamp oracle][oracle].
+<a href=#200 id=200 data-nosnippet>200</a>    ///
+<a href=#201 id=201 data-nosnippet>201</a>    /// [tsc]: https://docs.solanalabs.com/implemented-proposals/bank-timestamp-correction
+<a href=#202 id=202 data-nosnippet>202</a>    /// [oracle]: https://docs.solanalabs.com/implemented-proposals/validator-timestamp-oracle
+<a href=#203 id=203 data-nosnippet>203</a>    </span><span class="kw">pub </span>unix_timestamp: UnixTimestamp,
+<a href=#204 id=204 data-nosnippet>204</a>}
+<a href=#205 id=205 data-nosnippet>205</a>
+<a href=#206 id=206 data-nosnippet>206</a><span class="attr">#[cfg(test)]
+<a href=#207 id=207 data-nosnippet>207</a></span><span class="kw">mod </span>tests {
+<a href=#208 id=208 data-nosnippet>208</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#209 id=209 data-nosnippet>209</a>
+<a href=#210 id=210 data-nosnippet>210</a>    <span class="attr">#[test]
+<a href=#211 id=211 data-nosnippet>211</a>    </span><span class="kw">fn </span>test_clone() {
+<a href=#212 id=212 data-nosnippet>212</a>        <span class="kw">let </span>clock = Clock {
+<a href=#213 id=213 data-nosnippet>213</a>            slot: <span class="number">1</span>,
+<a href=#214 id=214 data-nosnippet>214</a>            epoch_start_timestamp: <span class="number">2</span>,
+<a href=#215 id=215 data-nosnippet>215</a>            epoch: <span class="number">3</span>,
+<a href=#216 id=216 data-nosnippet>216</a>            leader_schedule_epoch: <span class="number">4</span>,
+<a href=#217 id=217 data-nosnippet>217</a>            unix_timestamp: <span class="number">5</span>,
+<a href=#218 id=218 data-nosnippet>218</a>        };
+<a href=#219 id=219 data-nosnippet>219</a>        <span class="kw">let </span>cloned_clock = clock.clone();
+<a href=#220 id=220 data-nosnippet>220</a>        <span class="macro">assert_eq!</span>(cloned_clock, clock);
+<a href=#221 id=221 data-nosnippet>221</a>    }
+<a href=#222 id=222 data-nosnippet>222</a>}</code></pre></div></section></main></body></html>

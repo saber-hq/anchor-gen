@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_loader_v2_interface", 0, "Instructions for the non-upgradable BPF loader.\nFinalize an account loaded with program data for execution\nWrite program data into an account\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nSerialized program data\nOffset at which to write the given bytes")

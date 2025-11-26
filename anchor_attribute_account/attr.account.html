@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="An attribute for a data structure representing a Solana account."><title>account in anchor_attribute_account - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="anchor_attribute_account" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc attr"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../anchor_attribute_account/index.html">anchor_<wbr>attribute_<wbr>account</a><span class="version">0.31.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">account</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#arguments" title="Arguments">Arguments</a></li><li><a href="#zero-copy-deserialization" title="Zero Copy Deserialization">Zero Copy Deserialization</a><ul><li><a href="#usage" title="Usage">Usage</a></li></ul></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate anchor_<wbr>attribute_<wbr>account</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">anchor_attribute_account</a></div><h1>Attribute Macro <span class="attr">account</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/anchor_attribute_account/lib.rs.html#97-273">Source</a> </span></div><pre class="rust item-decl"><code>#[account]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>An attribute for a data structure representing a Solana account.</p>
+<p><code>#[account]</code> generates trait implementations for the following traits:</p>
+<ul>
+<li><a href="./trait.AccountSerialize.html"><code>AccountSerialize</code></a></li>
+<li><a href="./trait.AccountDeserialize.html"><code>AccountDeserialize</code></a></li>
+<li><a href="./trait.AnchorSerialize.html"><code>AnchorSerialize</code></a></li>
+<li><a href="./trait.AnchorDeserialize.html"><code>AnchorDeserialize</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/clone/trait.Clone.html"><code>Clone</code></a></li>
+<li><a href="./trait.Discriminator.html"><code>Discriminator</code></a></li>
+<li><a href="./trait.Owner.html"><code>Owner</code></a></li>
+</ul>
+<p>When implementing account serialization traits the first 8 bytes are
+reserved for a unique account discriminator by default, self described by
+the first 8 bytes of the SHA256 of the account’s Rust ident. This is unless
+the discriminator was overridden with the <code>discriminator</code> argument (see
+<a href="#arguments">Arguments</a>).</p>
+<p>As a result, any calls to <code>AccountDeserialize</code>’s <code>try_deserialize</code> will
+check this discriminator. If it doesn’t match, an invalid account was given,
+and the account deserialization will exit with an error.</p>
+<h2 id="arguments"><a class="doc-anchor" href="#arguments">§</a>Arguments</h2>
+<ul>
+<li>
+<p><code>discriminator</code>: Override the default 8-byte discriminator</p>
+<p><strong>Usage:</strong> <code>discriminator = &lt;CONST_EXPR&gt;</code></p>
+<p>All constant expressions are supported.</p>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><code>discriminator = 1</code> (shortcut for <code>[1]</code>)</li>
+<li><code>discriminator = [1, 2, 3, 4]</code></li>
+<li><code>discriminator = b"hi"</code></li>
+<li><code>discriminator = MY_DISC</code></li>
+<li><code>discriminator = get_disc(...)</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="zero-copy-deserialization"><a class="doc-anchor" href="#zero-copy-deserialization">§</a>Zero Copy Deserialization</h2>
+<p><strong>WARNING</strong>: Zero copy deserialization is an experimental feature. It’s
+recommended to use it only when necessary, i.e., when you have extremely
+large accounts that cannot be Borsh deserialized without hitting stack or
+heap limits.</p>
+<h3 id="usage"><a class="doc-anchor" href="#usage">§</a>Usage</h3>
+<p>To enable zero-copy-deserialization, one can pass in the <code>zero_copy</code>
+argument to the macro as follows:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[account(zero_copy)]</span></code></pre></div>
+<p>This can be used to conveniently implement
+<a href="./trait.ZeroCopy.html"><code>ZeroCopy</code></a> so that the account can be used
+with <a href="./accounts/account_loader/struct.AccountLoader.html"><code>AccountLoader</code></a>.</p>
+<p>Other than being more efficient, the most salient benefit this provides is
+the ability to define account types larger than the max stack or heap size.
+When using borsh, the account has to be copied and deserialized into a new
+data structure and thus is constrained by stack and heap limits imposed by
+the BPF VM. With zero copy deserialization, all bytes from the account’s
+backing <code>RefCell&lt;&amp;mut [u8]&gt;</code> are simply re-interpreted as a reference to
+the data structure. No allocations or copies necessary. Hence the ability
+to get around stack and heap limitations.</p>
+<p>To facilitate this, all fields in an account must be constrained to be
+“plain old  data”, i.e., they must implement
+<a href="https://docs.rs/bytemuck/latest/bytemuck/trait.Pod.html"><code>Pod</code></a>. Please review the
+<a href="https://docs.rs/bytemuck/latest/bytemuck/trait.Pod.html#safety"><code>safety</code></a>
+section before using.</p>
+<p>Using <code>zero_copy</code> requires adding the following dependency to your <code>Cargo.toml</code> file:</p>
+<div class="example-wrap"><pre class="language-toml"><code>bytemuck = { version = &quot;1.17&quot;, features = [&quot;derive&quot;, &quot;min_const_generics&quot;] }</code></pre></div></div></details></section></div></main></body></html>

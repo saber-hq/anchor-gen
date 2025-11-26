@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The Anchor codegen exposes a programming model where a user defines a set of methods inside of a `#[program]` module in a way similar to writing RPC request handlers. The macro then generates a bunch of code wrapping these user defined methods into something that can be executed on Solana."><title>entry in govern_cpi - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="govern_cpi" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../govern_cpi/index.html">govern_<wbr>cpi</a><span class="version">0.4.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">govern_cpi</a></div><h1>Function <span class="fn">entry</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/govern_cpi/lib.rs.html#1">Source</a> </span></div><pre class="rust item-decl"><code>pub fn entry&lt;'info&gt;(
+    program_id: &amp;<a class="struct" href="../solana_pubkey/struct.Pubkey.html" title="struct solana_pubkey::Pubkey">Pubkey</a>,
+    accounts: &amp;'info [<a class="struct" href="../solana_account_info/struct.AccountInfo.html" title="struct solana_account_info::AccountInfo">AccountInfo</a>&lt;'info&gt;],
+    data: &amp;[<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>],
+) -&gt; <a class="type" href="../solana_program_error/type.ProgramResult.html" title="type solana_program_error::ProgramResult">ProgramResult</a></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The Anchor codegen exposes a programming model where a user defines
+a set of methods inside of a <code>#[program]</code> module in a way similar
+to writing RPC request handlers. The macro then generates a bunch of
+code wrapping these user defined methods into something that can be
+executed on Solana.</p>
+<p>These methods fall into one category for now.</p>
+<p>Global methods - regular methods inside of the <code>#[program]</code>.</p>
+<p>Care must be taken by the codegen to prevent collisions between
+methods in these different namespaces. For this reason, Anchor uses
+a variant of sighash to perform method dispatch, rather than
+something like a simple enum variant discriminator.</p>
+<p>The execution flow of the generated code can be roughly outlined:</p>
+<ul>
+<li>Start program via the entrypoint.</li>
+<li>Check whether the declared program id matches the input program
+id. If it’s not, return an error.</li>
+<li>Find and invoke the method based on whether the instruction data
+starts with the method’s discriminator.</li>
+<li>Run the method handler wrapper. This wraps the code the user
+actually wrote, deserializing the accounts, constructing the
+context, invoking the user’s code, and finally running the exit
+routine, which typically persists account changes.</li>
+</ul>
+<p>The <code>entry</code> function here, defines the standard entry to a Solana
+program, where execution begins.</p>
+</div></details></section></div></main></body></html>

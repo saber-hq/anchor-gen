@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BitAnd","BitConcat","BitFill","BitNot","BitOr","BitSliceAdapter","BitXor","BitZip","BoolAdapter"]};

@@ -1,0 +1,1 @@
+searchState.loadedDescShard("anchor_attribute_constant", 0, "A marker attribute used to mark const values that should …")

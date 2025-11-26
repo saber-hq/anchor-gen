@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_LEADER_SCHEDULE_SLOT_OFFSET","MAX_LEADER_SCHEDULE_EPOCH_OFFSET","MINIMUM_SLOTS_PER_EPOCH"],"mod":["sysvar"],"struct":["EpochSchedule"]};

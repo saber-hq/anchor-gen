@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Recover the public key from a secp256k1 ECDSA signature and cryptographically-hashed message."><title>secp256k1_recover in solana_secp256k1_recover - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="solana_secp256k1_recover" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../solana_secp256k1_recover/index.html">solana_<wbr>secp256k1_<wbr>recover</a><span class="version">2.2.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">secp256k1_<wbr>recover</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#hashing-messages" title="Hashing messages">Hashing messages</a></li><li><a href="#signature-malleability" title="Signature malleability">Signature malleability</a></li><li><a href="#errors" title="Errors">Errors</a></li><li><a href="#sbf-specific-behavior" title="SBF-specific behavior">SBF-specific behavior</a></li><li><a href="#examples" title="Examples">Examples</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate solana_<wbr>secp256k1_<wbr>recover</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">solana_secp256k1_recover</a></div><h1>Function <span class="fn">secp256k1_recover</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/solana_secp256k1_recover/lib.rs.html#397-432">Source</a> </span></div><pre class="rust item-decl"><code>pub fn secp256k1_recover(
+    hash: &amp;[<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>],
+    recovery_id: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>,
+    signature: &amp;[<a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>],
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.86.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Secp256k1Pubkey.html" title="struct solana_secp256k1_recover::Secp256k1Pubkey">Secp256k1Pubkey</a>, <a class="enum" href="enum.Secp256k1RecoverError.html" title="enum solana_secp256k1_recover::Secp256k1RecoverError">Secp256k1RecoverError</a>&gt;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Recover the public key from a <a href="https://en.bitcoin.it/wiki/Secp256k1">secp256k1</a> ECDSA signature and
+cryptographically-hashed message.</p>
+<p>This function is specifically intended for efficiently implementing
+Ethereum’s <a href="https://docs.soliditylang.org/en/v0.8.14/units-and-global-variables.html?highlight=ecrecover#mathematical-and-cryptographic-functions"><code>ecrecover</code></a> builtin contract, for use by Ethereum integrators.
+It may be useful for other purposes.</p>
+<p><code>hash</code> is the 32-byte cryptographic hash (typically <a href="https://docs.rs/solana-program/latest/solana_program/keccak/"><code>keccak</code></a>) of an
+arbitrary message, signed by some public key.</p>
+<p>The recovery ID is a value in the range [0, 3] that is generated during
+signing, and allows the recovery process to be more efficient. Note that the
+<code>recovery_id</code> here does not directly correspond to an Ethereum recovery ID
+as used in <code>ecrecover</code>. This function accepts recovery IDs in the range of
+[0, 3], while Ethereum’s recovery IDs have a value of 27 or 28. To convert
+an Ethereum recovery ID to a value this function will accept subtract 27
+from it, checking for underflow. In practice this function will not succeed
+if given a recovery ID of 2 or 3, as these values represent an
+“overflowing” signature, and this function returns an error when parsing
+overflowing signatures.</p>
+<p>On success this function returns a <a href="struct.Secp256k1Pubkey.html" title="struct solana_secp256k1_recover::Secp256k1Pubkey"><code>Secp256k1Pubkey</code></a>, a wrapper around a
+64-byte secp256k1 public key. This public key corresponds to the secret key
+that previously signed the message <code>hash</code> to produce the provided
+<code>signature</code>.</p>
+<p>While <code>secp256k1_recover</code> can be used to verify secp256k1 signatures by
+comparing the recovered key against an expected key, Solana also provides
+the <a href="https://docs.rs/solana-program/latest/solana_program/secp256k1_program/">secp256k1 program</a>, which is more flexible, has lower CPU cost, and
+can validate many signatures at once.</p>
+<p>The <code>secp256k1_recover</code> syscall is implemented with the <a href="https://docs.rs/libsecp256k1/latest/libsecp256k1"><code>libsecp256k1</code></a>
+crate, which clients may also want to use.</p>
+<h2 id="hashing-messages"><a class="doc-anchor" href="#hashing-messages">§</a>Hashing messages</h2>
+<p>In ECDSA signing and key recovery the signed “message” is always a
+cryptographic hash, not the original message itself. If not a cryptographic
+hash, then an adversary can craft signatures that recover to arbitrary
+public keys. This means the caller of this function generally must hash the
+original message themselves and not rely on another party to provide the
+hash.</p>
+<p>Ethereum uses the <a href="https://docs.rs/solana-program/latest/solana_program/keccak/"><code>keccak</code></a> hash.</p>
+<h2 id="signature-malleability"><a class="doc-anchor" href="#signature-malleability">§</a>Signature malleability</h2>
+<p>With the ECDSA signature algorithm it is possible for any party, given a
+valid signature of some message, to create a second signature that is
+equally valid. This is known as <em>signature malleability</em>. In many cases this
+is not a concern, but in cases where applications rely on signatures to have
+a unique representation this can be the source of bugs, potentially with
+security implications.</p>
+<p><strong>The solana <code>secp256k1_recover</code> function does not prevent signature
+malleability</strong>. This is in contrast to the Bitcoin secp256k1 library, which
+does prevent malleability by default. Solana accepts signatures with <code>S</code>
+values that are either in the <em>high order</em> or in the <em>low order</em>, and it
+is trivial to produce one from the other.</p>
+<p>To prevent signature malleability, it is common for secp256k1 signature
+validators to only accept signatures with low-order <code>S</code> values, and reject
+signatures with high-order <code>S</code> values. The following code will accomplish
+this:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>signature = libsecp256k1::Signature::parse_standard_slice(<span class="kw-2">&amp;</span>signature_bytes)
+    .map_err(|<span class="kw">_</span>| ProgramError::InvalidArgument)<span class="question-mark">?</span>;
+
+<span class="kw">if </span>signature.s.is_high() {
+    <span class="kw">return </span><span class="prelude-val">Err</span>(ProgramError::InvalidArgument);
+}</code></pre></div>
+<p>This has the downside that the program must link to the <a href="https://docs.rs/libsecp256k1/latest/libsecp256k1"><code>libsecp256k1</code></a>
+crate and parse the signature just for this check. Note that <code>libsecp256k1</code>
+version 0.7.0 or greater is required for running on the Solana SBF target.</p>
+<p>For the most accurate description of signature malleability, and its
+prevention in secp256k1, refer to comments in <a href="https://github.com/bitcoin-core/secp256k1/blob/44c2452fd387f7ca604ab42d73746e7d3a44d8a2/include/secp256k1.h"><code>secp256k1.h</code></a> in the Bitcoin
+Core secp256k1 library, the documentation of the <a href="https://docs.openzeppelin.com/contracts/2.x/api/cryptography#ECDSA-recover-bytes32-bytes-">OpenZeppelin <code>recover</code>
+method for Solidity</a>, and <a href="https://bitcoin.stackexchange.com/questions/81115/if-someone-wanted-to-pretend-to-be-satoshi-by-posting-a-fake-signature-to-defrau/81116#81116">this description of the problem on
+StackExchange</a>.</p>
+<h2 id="errors"><a class="doc-anchor" href="#errors">§</a>Errors</h2>
+<p>If <code>hash</code> is not 32 bytes in length this function returns
+<a href="enum.Secp256k1RecoverError.html#variant.InvalidHash" title="variant solana_secp256k1_recover::Secp256k1RecoverError::InvalidHash"><code>Secp256k1RecoverError::InvalidHash</code></a>, though see notes
+on SBF-specific behavior below.</p>
+<p>If <code>recovery_id</code> is not in the range [0, 3] this function returns
+<a href="enum.Secp256k1RecoverError.html#variant.InvalidRecoveryId" title="variant solana_secp256k1_recover::Secp256k1RecoverError::InvalidRecoveryId"><code>Secp256k1RecoverError::InvalidRecoveryId</code></a>.</p>
+<p>If <code>signature</code> is not 64 bytes in length this function returns
+<a href="enum.Secp256k1RecoverError.html#variant.InvalidSignature" title="variant solana_secp256k1_recover::Secp256k1RecoverError::InvalidSignature"><code>Secp256k1RecoverError::InvalidSignature</code></a>, though see notes
+on SBF-specific behavior below.</p>
+<p>If <code>signature</code> represents an “overflowing” signature this function returns
+<a href="enum.Secp256k1RecoverError.html#variant.InvalidSignature" title="variant solana_secp256k1_recover::Secp256k1RecoverError::InvalidSignature"><code>Secp256k1RecoverError::InvalidSignature</code></a>. Overflowing signatures are
+non-standard and should not be encountered in practice.</p>
+<p>If <code>signature</code> is otherwise invalid this function returns
+<a href="enum.Secp256k1RecoverError.html#variant.InvalidSignature" title="variant solana_secp256k1_recover::Secp256k1RecoverError::InvalidSignature"><code>Secp256k1RecoverError::InvalidSignature</code></a>.</p>
+<h2 id="sbf-specific-behavior"><a class="doc-anchor" href="#sbf-specific-behavior">§</a>SBF-specific behavior</h2>
+<p>When calling this function on-chain the caller must verify the correct
+lengths of <code>hash</code> and <code>signature</code> beforehand.</p>
+<p>When run on-chain this function will not directly validate the lengths of
+<code>hash</code> and <code>signature</code>. It will assume they are the correct lengths and
+pass their pointers to the runtime, which will interpret them as 32-byte and
+64-byte buffers. If the provided slices are too short, the runtime will read
+invalid data and attempt to interpret it, most likely returning an error,
+though in some scenarios it may be possible to incorrectly return
+successfully, or the transaction will abort if the syscall reads data
+outside of the program’s memory space. If the provided slices are too long
+then they may be used to “smuggle” uninterpreted data.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<p>This example demonstrates recovering a public key and using it to verify a
+signature with the <code>secp256k1_recover</code> syscall. It has three parts: a Solana
+program, an RPC client to call the program, and common definitions shared
+between the two.</p>
+<p>Common definitions:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::{BorshDeserialize, BorshSerialize};
+
+<span class="attr">#[derive(BorshSerialize, BorshDeserialize, Debug)]
+</span><span class="kw">pub struct </span>DemoSecp256k1RecoverInstruction {
+    <span class="kw">pub </span>message: Vec&lt;u8&gt;,
+    <span class="kw">pub </span>signature: [u8; <span class="number">64</span>],
+    <span class="kw">pub </span>recovery_id: u8,
+}</code></pre></div>
+<p>The Solana program. Note that it uses <code>libsecp256k1</code> version 0.7.0 to parse
+the secp256k1 signature to prevent malleability.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_program::{
+    entrypoint::ProgramResult,
+    keccak, msg,
+    program_error::ProgramError,
+};
+<span class="kw">use </span>solana_secp256k1_recover::secp256k1_recover;
+
+<span class="doccomment">/// The key we expect to sign secp256k1 messages,
+/// as serialized by `libsecp256k1::PublicKey::serialize`.
+</span><span class="kw">const </span>AUTHORIZED_PUBLIC_KEY: [u8; <span class="number">64</span>] = [
+    <span class="number">0x8C</span>, <span class="number">0xD6</span>, <span class="number">0x47</span>, <span class="number">0xF8</span>, <span class="number">0xA5</span>, <span class="number">0xBF</span>, <span class="number">0x59</span>, <span class="number">0xA0</span>, <span class="number">0x4F</span>, <span class="number">0x77</span>, <span class="number">0xFA</span>, <span class="number">0xFA</span>, <span class="number">0x6C</span>, <span class="number">0xA0</span>, <span class="number">0xE6</span>, <span class="number">0x4D</span>,
+    <span class="number">0x94</span>, <span class="number">0x5B</span>, <span class="number">0x46</span>, <span class="number">0x55</span>, <span class="number">0xA6</span>, <span class="number">0x2B</span>, <span class="number">0xB0</span>, <span class="number">0x6F</span>, <span class="number">0x10</span>, <span class="number">0x4C</span>, <span class="number">0x9E</span>, <span class="number">0x2C</span>, <span class="number">0x6F</span>, <span class="number">0x42</span>, <span class="number">0x0A</span>, <span class="number">0xBE</span>,
+    <span class="number">0x18</span>, <span class="number">0xDF</span>, <span class="number">0x0B</span>, <span class="number">0xF0</span>, <span class="number">0x87</span>, <span class="number">0x42</span>, <span class="number">0xBA</span>, <span class="number">0x88</span>, <span class="number">0xB4</span>, <span class="number">0xCF</span>, <span class="number">0x87</span>, <span class="number">0x5A</span>, <span class="number">0x35</span>, <span class="number">0x27</span>, <span class="number">0xBE</span>, <span class="number">0x0F</span>,
+    <span class="number">0x45</span>, <span class="number">0xAE</span>, <span class="number">0xFC</span>, <span class="number">0x66</span>, <span class="number">0x9C</span>, <span class="number">0x2C</span>, <span class="number">0x6B</span>, <span class="number">0xF3</span>, <span class="number">0xEF</span>, <span class="number">0xCA</span>, <span class="number">0x5C</span>, <span class="number">0x32</span>, <span class="number">0x11</span>, <span class="number">0xF7</span>, <span class="number">0x2A</span>, <span class="number">0xC7</span>,
+];
+
+<span class="kw">pub fn </span>process_secp256k1_recover(
+    instruction: DemoSecp256k1RecoverInstruction,
+) -&gt; ProgramResult {
+    <span class="comment">// The secp256k1 recovery operation accepts a cryptographically-hashed
+    // message only. Passing it anything else is insecure and allows signatures
+    // to be forged.
+    //
+    // This means that the code calling `secp256k1_recover` must perform the hash
+    // itself, and not assume that data passed to it has been properly hashed.
+    </span><span class="kw">let </span>message_hash = {
+        <span class="kw">let </span><span class="kw-2">mut </span>hasher = keccak::Hasher::default();
+        hasher.hash(<span class="kw-2">&amp;</span>instruction.message);
+        hasher.result()
+    };
+
+    <span class="comment">// Reject high-s value signatures to prevent malleability.
+    // Solana does not do this itself.
+    // This may or may not be necessary depending on use case.
+    </span>{
+        <span class="kw">let </span>signature = libsecp256k1::Signature::parse_standard_slice(<span class="kw-2">&amp;</span>instruction.signature)
+            .map_err(|<span class="kw">_</span>| ProgramError::InvalidArgument)<span class="question-mark">?</span>;
+
+        <span class="kw">if </span>signature.s.is_high() {
+            <span class="macro">msg!</span>(<span class="string">"signature with high-s value"</span>);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ProgramError::InvalidArgument);
+        }
+    }
+
+    <span class="kw">let </span>recovered_pubkey = secp256k1_recover(
+        <span class="kw-2">&amp;</span>message_hash.<span class="number">0</span>,
+        instruction.recovery_id,
+        <span class="kw-2">&amp;</span>instruction.signature,
+    )
+    .map_err(|<span class="kw">_</span>| ProgramError::InvalidArgument)<span class="question-mark">?</span>;
+
+    <span class="comment">// If we're using this function for signature verification then we
+    // need to check the pubkey is an expected value.
+    // Here we are checking the secp256k1 pubkey against a known authorized pubkey.
+    </span><span class="kw">if </span>recovered_pubkey.<span class="number">0 </span>!= AUTHORIZED_PUBLIC_KEY {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(ProgramError::InvalidArgument);
+    }
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>The RPC client program:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>anyhow::Result;
+<span class="kw">use </span>solana_rpc_client::rpc_client::RpcClient;
+<span class="kw">use </span>solana_sdk::{
+    instruction::Instruction,
+    keccak,
+    pubkey::Pubkey,
+    signature::{Keypair, Signer},
+    transaction::Transaction,
+};
+
+<span class="kw">pub fn </span>demo_secp256k1_recover(
+    payer_keypair: <span class="kw-2">&amp;</span>Keypair,
+    secp256k1_secret_key: <span class="kw-2">&amp;</span>libsecp256k1::SecretKey,
+    client: <span class="kw-2">&amp;</span>RpcClient,
+    program_keypair: <span class="kw-2">&amp;</span>Keypair,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>message = <span class="string">b"hello world"</span>;
+    <span class="kw">let </span>message_hash = {
+        <span class="kw">let </span><span class="kw-2">mut </span>hasher = keccak::Hasher::default();
+        hasher.hash(message);
+        hasher.result()
+    };
+
+    <span class="kw">let </span>secp_message = libsecp256k1::Message::parse(<span class="kw-2">&amp;</span>message_hash.<span class="number">0</span>);
+    <span class="kw">let </span>(signature, recovery_id) = libsecp256k1::sign(<span class="kw-2">&amp;</span>secp_message, <span class="kw-2">&amp;</span>secp256k1_secret_key);
+
+    <span class="kw">let </span>signature = signature.serialize();
+
+    <span class="kw">let </span>instr = DemoSecp256k1RecoverInstruction {
+        message: message.to_vec(),
+        signature,
+        recovery_id: recovery_id.serialize(),
+    };
+    <span class="kw">let </span>instr = Instruction::new_with_borsh(
+        program_keypair.pubkey(),
+        <span class="kw-2">&amp;</span>instr,
+        <span class="macro">vec!</span>[],
+    );
+
+    <span class="kw">let </span>blockhash = client.get_latest_blockhash()<span class="question-mark">?</span>;
+    <span class="kw">let </span>tx = Transaction::new_signed_with_payer(
+        <span class="kw-2">&amp;</span>[instr],
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>payer_keypair.pubkey()),
+        <span class="kw-2">&amp;</span>[payer_keypair],
+        blockhash,
+    );
+
+    client.send_and_confirm_transaction(<span class="kw-2">&amp;</span>tx)<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CURVE_B"],"static":["AFFINE_G"],"struct":["Affine","AffineStorage","ECMultContext","ECMultGenContext","Field","FieldStorage","Jacobian","Scalar"]};

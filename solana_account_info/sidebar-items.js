@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_PERMITTED_DATA_INCREASE"],"fn":["next_account_info","next_account_infos"],"mod":["debug_account_data"],"struct":["AccountInfo"],"trait":["Account","IntoAccountInfo"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ID","MAX_ENTRIES"],"fn":["check_id","id"],"struct":["StakeHistory","StakeHistoryEntry","StakeHistorySysvar"],"trait":["StakeHistoryGetEntry"]};

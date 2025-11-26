@@ -1,0 +1,1 @@
+searchState.loadedDescShard("anchor_gen", 0, "Generates a crate for cross-program invocations to an …\nGenerates an Anchor CPI crate from a JSON file.\nGenerates an Anchor CPI crate from a JSON file.")

@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_hash", 0, "Size of a hash in bytes.\nA hash; the 32-byte output of a hashing algorithm.\nMaximum string length of a base58 encoded hash.\nReturns the argument unchanged.\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nCalls <code>U::from(self)</code>.\nunique Hash for tests and benchmarks.")

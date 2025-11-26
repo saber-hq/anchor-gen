@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SystemInstruction"],"fn":["advance_nonce_account","allocate","allocate_with_seed","assign","assign_with_seed","authorize_nonce_account","create_account","create_account_with_seed","create_nonce_account","create_nonce_account_with_seed","transfer","transfer_many","transfer_with_seed","upgrade_nonce_account","withdraw_nonce_account"]};

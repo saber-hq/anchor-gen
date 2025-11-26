@@ -1,0 +1,29 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Implements a `Space` trait on the given struct or enum."><title>InitSpace in anchor_lang - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="anchor_lang" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc derive"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../anchor_lang/index.html">anchor_<wbr>lang</a><span class="version">0.31.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Init<wbr>Space</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example" title="Example">Example</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate anchor_<wbr>lang</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">anchor_lang</a></div><h1>Derive Macro <span class="derive">InitSpace</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/anchor_derive_space/lib.rs.html#39">Source</a> </span></div><pre class="rust item-decl"><code>#[derive(InitSpace)]
+{
+    <span class="comment">// Attributes available to this derive:</span>
+    #[max_len]
+}
+</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Implements a <a href="./trait.Space.html"><code>Space</code></a> trait on the given
+struct or enum.</p>
+<p>For types that have a variable size like String and Vec, it is necessary to indicate the size by the <code>max_len</code> attribute.
+For nested types, it is necessary to specify a size for each variable type (see example).</p>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[account]
+#[derive(InitSpace)]
+</span><span class="kw">pub struct </span>ExampleAccount {
+    <span class="kw">pub </span>data: u64,
+    <span class="attr">#[max_len(<span class="number">50</span>)]
+    </span><span class="kw">pub </span>string_one: String,
+    <span class="attr">#[max_len(<span class="number">10</span>, <span class="number">5</span>)]
+    </span><span class="kw">pub </span>nested: Vec&lt;Vec&lt;u8&gt;&gt;,
+}
+
+<span class="attr">#[derive(Accounts)]
+</span><span class="kw">pub struct </span>Initialize&lt;<span class="lifetime">'info</span>&gt; {
+   <span class="attr">#[account(<span class="kw-2">mut</span>)]
+   </span><span class="kw">pub </span>payer: Signer&lt;<span class="lifetime">'info</span>&gt;,
+   <span class="kw">pub </span>system_program: Program&lt;<span class="lifetime">'info</span>, System&gt;,
+   <span class="attr">#[account(init, payer = payer, space = <span class="number">8 </span>+ ExampleAccount::INIT_SPACE)]
+   </span><span class="kw">pub </span>data: Account&lt;<span class="lifetime">'info</span>, ExampleAccount&gt;,
+}</code></pre></div>
+</div></details></section></div></main></body></html>

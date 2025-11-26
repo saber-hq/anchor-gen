@@ -1,0 +1,9 @@
+(function() {
+    var implementors = Object.fromEntries([["anchor_syn",[["impl <a class=\"trait\" href=\"https://docs.rs/syn/1.0.109/syn/parse/trait.Parse.html\" title=\"trait syn::parse::Parse\">Parse</a> for <a class=\"enum\" href=\"anchor_syn/enum.ConstraintToken.html\" title=\"enum anchor_syn::ConstraintToken\">ConstraintToken</a>"],["impl <a class=\"trait\" href=\"https://docs.rs/syn/1.0.109/syn/parse/trait.Parse.html\" title=\"trait syn::parse::Parse\">Parse</a> for <a class=\"struct\" href=\"anchor_syn/parser/error/struct.ErrorInput.html\" title=\"struct anchor_syn::parser::error::ErrorInput\">ErrorInput</a>"],["impl <a class=\"trait\" href=\"https://docs.rs/syn/1.0.109/syn/parse/trait.Parse.html\" title=\"trait syn::parse::Parse\">Parse</a> for <a class=\"struct\" href=\"anchor_syn/struct.AccountsStruct.html\" title=\"struct anchor_syn::AccountsStruct\">AccountsStruct</a>"],["impl <a class=\"trait\" href=\"https://docs.rs/syn/1.0.109/syn/parse/trait.Parse.html\" title=\"trait syn::parse::Parse\">Parse</a> for <a class=\"struct\" href=\"anchor_syn/struct.ErrorArgs.html\" title=\"struct anchor_syn::ErrorArgs\">ErrorArgs</a>"],["impl <a class=\"trait\" href=\"https://docs.rs/syn/1.0.109/syn/parse/trait.Parse.html\" title=\"trait syn::parse::Parse\">Parse</a> for <a class=\"struct\" href=\"anchor_syn/struct.Overrides.html\" title=\"struct anchor_syn::Overrides\">Overrides</a>"],["impl <a class=\"trait\" href=\"https://docs.rs/syn/1.0.109/syn/parse/trait.Parse.html\" title=\"trait syn::parse::Parse\">Parse</a> for <a class=\"struct\" href=\"anchor_syn/struct.Program.html\" title=\"struct anchor_syn::Program\">Program</a>"]]],["syn",[]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[1598,11]}

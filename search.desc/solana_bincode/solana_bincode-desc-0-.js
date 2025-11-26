@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_bincode", 0, "Contains a single utility function for deserializing from …\nDeserialize with a limit based the maximum amount of data …")

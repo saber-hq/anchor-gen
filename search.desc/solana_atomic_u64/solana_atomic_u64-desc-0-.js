@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_atomic_u64", 0, "Returns the argument unchanged.\nCalls <code>U::from(self)</code>.")

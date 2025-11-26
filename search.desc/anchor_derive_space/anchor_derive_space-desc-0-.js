@@ -1,0 +1,1 @@
+searchState.loadedDescShard("anchor_derive_space", 0, "Implements a <code>Space</code> trait on the given struct or enum.")

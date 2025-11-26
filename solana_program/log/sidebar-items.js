@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["sol_log","sol_log_64","sol_log_compute_units","sol_log_data","sol_log_params","sol_log_slice"],"macro":["msg"]};

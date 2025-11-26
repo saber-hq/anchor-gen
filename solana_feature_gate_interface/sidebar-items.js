@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ID"],"fn":["activate","activate_with_lamports","check_id","create_account","from_account","id","to_account"],"struct":["Feature"]};

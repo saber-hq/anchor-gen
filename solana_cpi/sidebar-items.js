@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_RETURN_DATA"],"fn":["get_return_data","invoke","invoke_signed","invoke_signed_unchecked","invoke_unchecked","set_return_data"]};

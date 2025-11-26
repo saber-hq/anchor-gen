@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["VoteState1_14_11"]};

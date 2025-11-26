@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_serde_varint", 0, "Integers that serialize to variable size.")

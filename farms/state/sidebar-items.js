@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["FarmState","GlobalConfig","OraclePrices","UserState"]};

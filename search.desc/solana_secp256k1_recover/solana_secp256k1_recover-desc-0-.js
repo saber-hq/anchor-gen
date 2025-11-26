@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_secp256k1_recover", 0, "Public key recovery from secp256k1 ECDSA signatures.\nReturns the argument unchanged.\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nCalls <code>U::from(self)</code>.\nRecover the public key from a secp256k1 ECDSA signature and")

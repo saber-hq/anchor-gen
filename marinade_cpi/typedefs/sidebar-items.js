@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ChangeAuthorityData","ConfigMarinadeParams","Fee","InitializeData","LiqPool","LiqPoolInitializeData","List","StakeRecord","StakeSystem","State","TicketAccountData","ValidatorRecord","ValidatorSystem"]};

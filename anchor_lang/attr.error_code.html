@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Generates `Error` and `type Result&#60;T&#62; = Result&#60;T, Error&#62;` types to be used as return types from Anchor instruction handlers. Importantly, the attribute implements `From` on the `ErrorCode` to support converting from the user defined error enum into the generated `Error`."><title>error_code in anchor_lang - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="anchor_lang" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc attr"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../anchor_lang/index.html">anchor_<wbr>lang</a><span class="version">0.31.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">error_<wbr>code</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example" title="Example">Example</a></li><li><a href="#msg" title="Msg">Msg</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate anchor_<wbr>lang</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">anchor_lang</a></div><h1>Attribute Macro <span class="attr">error_code</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/anchor_attribute_error/lib.rs.html#53-56">Source</a> </span></div><pre class="rust item-decl"><code>#[error_code]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Generates <code>Error</code> and <code>type Result&lt;T&gt; = Result&lt;T, Error&gt;</code> types to be
+used as return types from Anchor instruction handlers. Importantly, the
+attribute implements
+<a href="https://doc.rust-lang.org/std/convert/trait.From.html"><code>From</code></a> on the
+<code>ErrorCode</code> to support converting from the user defined error enum <em>into</em>
+the generated <code>Error</code>.</p>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>anchor_lang::prelude::<span class="kw-2">*</span>;
+
+<span class="attr">#[program]
+</span><span class="kw">mod </span>errors {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">pub fn </span>hello(_ctx: Context&lt;Hello&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="prelude-val">Err</span>(<span class="macro">error!</span>(MyError::Hello))
+    }
+}
+
+<span class="attr">#[derive(Accounts)]
+</span><span class="kw">pub struct </span>Hello {}
+
+<span class="attr">#[error_code]
+</span><span class="kw">pub enum </span>MyError {
+    <span class="attr">#[msg(<span class="string">"This is an error message clients will automatically display"</span>)]
+    </span>Hello,
+}</code></pre></div>
+<p>Note that we generate a new <code>Error</code> type so that we can return either the
+user defined error enum <em>or</em> a
+<a href="../solana_program/enum.ProgramError.html"><code>ProgramError</code></a>, which is used
+pervasively, throughout solana program crates. The generated <code>Error</code> type
+should almost never be used directly, as the user defined error is
+preferred. In the example above, <code>error!(MyError::Hello)</code>.</p>
+<h2 id="msg"><a class="doc-anchor" href="#msg">§</a>Msg</h2>
+<p>The <code>#[msg(..)]</code> attribute is inert, and is used only as a marker so that
+parsers  and IDLs can map error codes to error messages.</p>
+</div></details></section></div></main></body></html>

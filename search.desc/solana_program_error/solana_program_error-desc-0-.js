@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_program_error", 0, "The <code>ProgramError</code> type and related definitions.\nAllows on-chain programs to implement program-specific …\nContains the error value\nContains the success value\nReasons the program may fail\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.")

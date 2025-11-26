@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["set_syscall_stubs","sol_get_epoch_stake","sol_get_processed_sibling_instruction","sol_get_return_data","sol_get_stack_height","sol_invoke_signed","sol_log","sol_log_64","sol_log_compute_units","sol_log_data","sol_remaining_compute_units","sol_set_return_data"],"trait":["SyscallStubs"]};

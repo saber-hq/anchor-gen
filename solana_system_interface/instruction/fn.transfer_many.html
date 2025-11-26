@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Transfer lamports from an account owned by the system program to multiple accounts."><title>transfer_many in solana_system_interface::instruction - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="solana_system_interface" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../solana_system_interface/index.html">solana_<wbr>system_<wbr>interface</a><span class="version">1.0.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">transfer_<wbr>many</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#required-signers" title="Required signers">Required signers</a></li><li><a href="#examples" title="Examples">Examples</a><ul><li><a href="#example-client-side-rpc" title="Example: client-side RPC">Example: client-side RPC</a></li><li><a href="#example-on-chain-program" title="Example: on-chain program">Example: on-chain program</a></li></ul></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In solana_<wbr>system_<wbr>interface::<wbr>instruction</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">solana_system_interface</a>::<wbr><a href="index.html">instruction</a></div><h1>Function <span class="fn">transfer_many</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/solana_system_interface/instruction.rs.html#1178-1183">Source</a> </span></div><pre class="rust item-decl"><code>pub fn transfer_many(
+    from_pubkey: &amp;<a class="struct" href="../../solana_pubkey/struct.Pubkey.html" title="struct solana_pubkey::Pubkey">Pubkey</a>,
+    to_lamports: &amp;[(<a class="struct" href="../../solana_pubkey/struct.Pubkey.html" title="struct solana_pubkey::Pubkey">Pubkey</a>, <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u64.html">u64</a>)],
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.86.0/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../../solana_instruction/struct.Instruction.html" title="struct solana_instruction::Instruction">Instruction</a>&gt;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Transfer lamports from an account owned by the system program to multiple accounts.</p>
+<p>This function produces a vector of <a href="../../solana_instruction/struct.Instruction.html" title="struct solana_instruction::Instruction"><code>Instruction</code></a>s which must be submitted
+in a <a href="https://docs.rs/solana-sdk/latest/solana_sdk/transaction/struct.Transaction.html"><code>Transaction</code></a> or <a href="https://docs.rs/solana-cpi/latest/solana_cpi/fn.invoke.html">invoked</a> to take effect, containing serialized
+<a href="enum.SystemInstruction.html#variant.Transfer" title="variant solana_system_interface::instruction::SystemInstruction::Transfer"><code>SystemInstruction::Transfer</code></a>s.</p>
+<h2 id="required-signers"><a class="doc-anchor" href="#required-signers">§</a>Required signers</h2>
+<p>The <code>from_pubkey</code> signer must sign the transaction.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2><h3 id="example-client-side-rpc"><a class="doc-anchor" href="#example-client-side-rpc">§</a>Example: client-side RPC</h3>
+<p>This example performs multiple transfers in a single transaction.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_rpc_client::rpc_client::RpcClient;
+<span class="kw">use </span>solana_pubkey::Pubkey;
+<span class="kw">use </span>solana_sdk::{
+    signature::{Keypair, Signer},
+    transaction::Transaction,
+};
+<span class="kw">use </span>solana_system_interface::instruction;
+<span class="kw">use </span>anyhow::Result;
+
+<span class="kw">fn </span>transfer_lamports_to_many(
+    client: <span class="kw-2">&amp;</span>RpcClient,
+    from: <span class="kw-2">&amp;</span>Keypair,
+    to_and_amount: <span class="kw-2">&amp;</span>[(Pubkey, u64)],
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>instrs = instruction::transfer_many(<span class="kw-2">&amp;</span>from.pubkey(), to_and_amount);
+
+    <span class="kw">let </span>blockhash = client.get_latest_blockhash()<span class="question-mark">?</span>;
+    <span class="kw">let </span>tx = Transaction::new_signed_with_payer(
+        <span class="kw-2">&amp;</span>instrs,
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>from.pubkey()),
+        <span class="kw-2">&amp;</span>[from],
+        blockhash,
+    );
+
+    <span class="kw">let </span>_sig = client.send_and_confirm_transaction(<span class="kw-2">&amp;</span>tx)<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<h3 id="example-on-chain-program"><a class="doc-anchor" href="#example-on-chain-program">§</a>Example: on-chain program</h3>
+<p>This example makes multiple transfers out of a “bank” account,
+a <a href="https://docs.rs/solana-pubkey/latest/solana_pubkey/struct.Pubkey.html#method.find_program_address">program derived address</a> owned by the calling program.
+This example submits the instructions from an on-chain Solana program. The
+created account is a <a href="https://docs.rs/solana-pubkey/latest/solana_pubkey/struct.Pubkey.html#method.find_program_address">program derived address</a>, and it is assigned to
+the running program. The <code>payer</code> and <code>new_account_pda</code> are signers, with
+<code>new_account_pda</code> being signed for virtually by the program itself via
+<a href="https://docs.rs/solana-cpi/latest/solana_cpi/fn.invoke_signed.html"><code>invoke_signed</code></a>, <code>payer</code> being signed for by the client that submitted the
+transaction.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_account_info::{next_account_info, next_account_infos, AccountInfo};
+<span class="kw">use </span>solana_cpi::invoke_signed;
+<span class="kw">use </span>solana_program_entrypoint::entrypoint;
+<span class="kw">use </span>solana_program_error::ProgramResult;
+<span class="kw">use </span>solana_pubkey::Pubkey;
+<span class="kw">use </span>solana_system_interface::{instruction, program};
+
+<span class="doccomment">/// # Accounts
+///
+/// - 0: bank_pda - writable
+/// - 1: system_program - executable
+/// - *: to - writable
+</span><span class="kw">pub struct </span>TransferLamportsToManyInstruction {
+    <span class="kw">pub </span>bank_pda_bump_seed: u8,
+    <span class="kw">pub </span>amount_list: Vec&lt;u64&gt;,
+}
+
+<span class="macro">entrypoint!</span>(process_instruction);
+
+<span class="kw">fn </span>process_instruction(
+    program_id: <span class="kw-2">&amp;</span>Pubkey,
+    accounts: <span class="kw-2">&amp;</span>[AccountInfo],
+    instruction_data: <span class="kw-2">&amp;</span>[u8],
+) -&gt; ProgramResult {
+    <span class="kw">let </span>instr = TransferLamportsToManyInstruction::deserialize(<span class="kw-2">&amp;mut &amp;</span>instruction_data[..])<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>account_info_iter = <span class="kw-2">&amp;mut </span>accounts.iter();
+
+    <span class="kw">let </span>bank_pda = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+    <span class="kw">let </span>bank_pda_bump_seed = instr.bank_pda_bump_seed;
+    <span class="kw">let </span>system_account = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+
+    <span class="macro">assert!</span>(program::check_id(system_account.key));
+
+    <span class="kw">let </span>to_accounts = next_account_infos(account_info_iter, account_info_iter.len())<span class="question-mark">?</span>;
+
+    <span class="kw">for </span>to_account <span class="kw">in </span>to_accounts {
+         <span class="macro">assert!</span>(to_account.is_writable);
+         <span class="comment">// ... do other verification ...
+    </span>}
+
+    <span class="kw">let </span>to_and_amount = to_accounts
+        .iter()
+        .zip(instr.amount_list.iter())
+        .map(|(to, amount)| (<span class="kw-2">*</span>to.key, <span class="kw-2">*</span>amount))
+        .collect::&lt;Vec&lt;(Pubkey, u64)&gt;&gt;();
+
+    <span class="kw">let </span>instrs = instruction::transfer_many(bank_pda.key, to_and_amount.as_ref());
+
+    <span class="kw">for </span>instr <span class="kw">in </span>instrs {
+        invoke_signed(<span class="kw-2">&amp;</span>instr, accounts, <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[<span class="string">b"bank"</span>, <span class="kw-2">&amp;</span>[bank_pda_bump_seed]]])<span class="question-mark">?</span>;
+    }
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+</div></details></section></div></main></body></html>

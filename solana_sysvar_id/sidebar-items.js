@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ID"],"fn":["check_id","id"],"macro":["declare_deprecated_id","declare_deprecated_sysvar_id","declare_id","declare_sysvar_id","impl_deprecated_sysvar_id","impl_sysvar_id"],"struct":["Pubkey"],"trait":["SysvarId"]};

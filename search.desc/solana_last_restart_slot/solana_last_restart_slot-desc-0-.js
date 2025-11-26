@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_last_restart_slot", 0, "Information about the last restart slot (hard fork).\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nThe last restart <code>Slot</code>.\nThe const program ID.\nReturns <code>true</code> if given pubkey is the program ID.\nReturns the program ID.")

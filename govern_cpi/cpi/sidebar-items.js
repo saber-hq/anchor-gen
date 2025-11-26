@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["activate_proposal","cancel_proposal","create_governor","create_proposal","create_proposal_meta","new_vote","queue_proposal","set_electorate","set_governance_params","set_vote"],"mod":["accounts"],"struct":["Return"]};

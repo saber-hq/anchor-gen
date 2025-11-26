@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/five8_core-0.1.2/src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="five8_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="../../static.files/src-script-b8d3f215.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">five8_core/</div>lib.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
+<a href=#2 id=2 data-nosnippet>2</a>#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+<a href=#3 id=3 data-nosnippet>3</a>#![no_std]
+<a href=#4 id=4 data-nosnippet>4</a>#[cfg(feature = <span class="string">"std"</span>)]
+<a href=#5 id=5 data-nosnippet>5</a></span><span class="kw">extern crate </span>std;
+<a href=#6 id=6 data-nosnippet>6</a>
+<a href=#7 id=7 data-nosnippet>7</a><span class="attr">#[cfg(feature = <span class="string">"std"</span>)]
+<a href=#8 id=8 data-nosnippet>8</a></span><span class="kw">use </span>core::fmt;
+<a href=#9 id=9 data-nosnippet>9</a><span class="kw">pub const </span>BASE58_INVERSE_TABLE_OFFSET: u8 = <span class="string">b'1'</span>;
+<a href=#10 id=10 data-nosnippet>10</a><span class="kw">pub const </span>BASE58_INVERSE_TABLE_SENTINEL: u8 = <span class="number">1 </span>+ <span class="string">b'z' </span>- BASE58_INVERSE_TABLE_OFFSET;
+<a href=#11 id=11 data-nosnippet>11</a>
+<a href=#12 id=12 data-nosnippet>12</a><span class="kw">pub const </span>BASE58_INVALID_CHAR: u8 = <span class="number">255</span>;
+<a href=#13 id=13 data-nosnippet>13</a><span class="kw">pub const </span>BASE58_ENCODED_32_MAX_LEN: usize = <span class="number">44</span>; <span class="comment">/* Computed as ceil(log_58(256^32 - 1)) */
+<a href=#14 id=14 data-nosnippet>14</a></span><span class="kw">pub const </span>BASE58_ENCODED_64_MAX_LEN: usize = <span class="number">88</span>; <span class="comment">/* Computed as ceil(log_58(256^64 - 1)) */
+<a href=#15 id=15 data-nosnippet>15</a></span><span class="kw">pub const </span>INTERMEDIATE_SZ_32: usize = <span class="number">9</span>; <span class="comment">/* Computed by ceil(log_(58^5) (256^32-1)) */
+<a href=#16 id=16 data-nosnippet>16</a></span><span class="kw">pub const </span>INTERMEDIATE_SZ_64: usize = <span class="number">18</span>; <span class="comment">/* Computed by ceil(log_(58^5) (256^64-1)) */
+<a href=#17 id=17 data-nosnippet>17</a></span><span class="kw">pub const </span>RAW58_SZ_32: usize = INTERMEDIATE_SZ_32 * <span class="number">5</span>;
+<a href=#18 id=18 data-nosnippet>18</a><span class="kw">pub const </span>RAW58_SZ_64: usize = INTERMEDIATE_SZ_64 * <span class="number">5</span>;
+<a href=#19 id=19 data-nosnippet>19</a><span class="kw">pub const </span>N_32: usize = <span class="number">32</span>;
+<a href=#20 id=20 data-nosnippet>20</a><span class="kw">pub const </span>N_64: usize = <span class="number">64</span>;
+<a href=#21 id=21 data-nosnippet>21</a><span class="kw">pub const </span>BINARY_SZ_32: usize = N_32 / <span class="number">4</span>;
+<a href=#22 id=22 data-nosnippet>22</a><span class="kw">pub const </span>BINARY_SZ_64: usize = N_64 / <span class="number">4</span>;
+<a href=#23 id=23 data-nosnippet>23</a>
+<a href=#24 id=24 data-nosnippet>24</a><span class="kw">const </span>BAD: u8 = BASE58_INVALID_CHAR;
+<a href=#25 id=25 data-nosnippet>25</a><span class="kw">pub const </span>BASE58_INVERSE: [u8; <span class="number">75</span>] = [
+<a href=#26 id=26 data-nosnippet>26</a>    <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, BAD, BAD, BAD, BAD, BAD, BAD, BAD, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>,
+<a href=#27 id=27 data-nosnippet>27</a>    BAD, <span class="number">17</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">20</span>, <span class="number">21</span>, BAD, <span class="number">22</span>, <span class="number">23</span>, <span class="number">24</span>, <span class="number">25</span>, <span class="number">26</span>, <span class="number">27</span>, <span class="number">28</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">31</span>, <span class="number">32</span>, BAD, BAD, BAD, BAD,
+<a href=#28 id=28 data-nosnippet>28</a>    BAD, BAD, <span class="number">33</span>, <span class="number">34</span>, <span class="number">35</span>, <span class="number">36</span>, <span class="number">37</span>, <span class="number">38</span>, <span class="number">39</span>, <span class="number">40</span>, <span class="number">41</span>, <span class="number">42</span>, <span class="number">43</span>, BAD, <span class="number">44</span>, <span class="number">45</span>, <span class="number">46</span>, <span class="number">47</span>, <span class="number">48</span>, <span class="number">49</span>, <span class="number">50</span>, <span class="number">51</span>, <span class="number">52</span>,
+<a href=#29 id=29 data-nosnippet>29</a>    <span class="number">53</span>, <span class="number">54</span>, <span class="number">55</span>, <span class="number">56</span>, <span class="number">57</span>, BAD,
+<a href=#30 id=30 data-nosnippet>30</a>];
+<a href=#31 id=31 data-nosnippet>31</a>
+<a href=#32 id=32 data-nosnippet>32</a><span class="comment">/* Contains the unique values less than 2^32 such that:
+<a href=#33 id=33 data-nosnippet>33</a>58^(5*(8-j)) = sum_k table[j][k]*2^(32*(7-k)) */
+<a href=#34 id=34 data-nosnippet>34</a></span><span class="kw">pub const </span>DEC_TABLE_32: [[u32; BINARY_SZ_32]; INTERMEDIATE_SZ_32] = [
+<a href=#35 id=35 data-nosnippet>35</a>    [
+<a href=#36 id=36 data-nosnippet>36</a>        <span class="number">1277</span>, <span class="number">2650397687</span>, <span class="number">3801011509</span>, <span class="number">2074386530</span>, <span class="number">3248244966</span>, <span class="number">687255411</span>, <span class="number">2959155456</span>, <span class="number">0</span>,
+<a href=#37 id=37 data-nosnippet>37</a>    ],
+<a href=#38 id=38 data-nosnippet>38</a>    [
+<a href=#39 id=39 data-nosnippet>39</a>        <span class="number">0</span>, <span class="number">8360</span>, <span class="number">1184754854</span>, <span class="number">3047609191</span>, <span class="number">3418394749</span>, <span class="number">132556120</span>, <span class="number">1199103528</span>, <span class="number">0</span>,
+<a href=#40 id=40 data-nosnippet>40</a>    ],
+<a href=#41 id=41 data-nosnippet>41</a>    [
+<a href=#42 id=42 data-nosnippet>42</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">54706</span>, <span class="number">2996985344</span>, <span class="number">1834629191</span>, <span class="number">3964963911</span>, <span class="number">485140318</span>, <span class="number">1073741824</span>,
+<a href=#43 id=43 data-nosnippet>43</a>    ],
+<a href=#44 id=44 data-nosnippet>44</a>    [
+<a href=#45 id=45 data-nosnippet>45</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">357981</span>, <span class="number">1476998812</span>, <span class="number">3337178590</span>, <span class="number">1483338760</span>, <span class="number">4194304000</span>,
+<a href=#46 id=46 data-nosnippet>46</a>    ],
+<a href=#47 id=47 data-nosnippet>47</a>    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">2342503</span>, <span class="number">3052466824</span>, <span class="number">2595180627</span>, <span class="number">17825792</span>],
+<a href=#48 id=48 data-nosnippet>48</a>    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">15328518</span>, <span class="number">1933902296</span>, <span class="number">4063920128</span>],
+<a href=#49 id=49 data-nosnippet>49</a>    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">100304420</span>, <span class="number">3355157504</span>],
+<a href=#50 id=50 data-nosnippet>50</a>    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">656356768</span>],
+<a href=#51 id=51 data-nosnippet>51</a>    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>],
+<a href=#52 id=52 data-nosnippet>52</a>];
+<a href=#53 id=53 data-nosnippet>53</a>
+<a href=#54 id=54 data-nosnippet>54</a><span class="kw">pub const </span>DEC_TABLE_64: [[u32; BINARY_SZ_64]; INTERMEDIATE_SZ_64] = [
+<a href=#55 id=55 data-nosnippet>55</a>    [
+<a href=#56 id=56 data-nosnippet>56</a>        <span class="number">249448</span>, <span class="number">3719864065</span>, <span class="number">173911550</span>, <span class="number">4021557284</span>, <span class="number">3115810883</span>, <span class="number">2498525019</span>, <span class="number">1035889824</span>, <span class="number">627529458</span>,
+<a href=#57 id=57 data-nosnippet>57</a>        <span class="number">3840888383</span>, <span class="number">3728167192</span>, <span class="number">2901437456</span>, <span class="number">3863405776</span>, <span class="number">1540739182</span>, <span class="number">1570766848</span>, <span class="number">0</span>, <span class="number">0</span>,
+<a href=#58 id=58 data-nosnippet>58</a>    ],
+<a href=#59 id=59 data-nosnippet>59</a>    [
+<a href=#60 id=60 data-nosnippet>60</a>        <span class="number">0</span>, <span class="number">1632305</span>, <span class="number">1882780341</span>, <span class="number">4128706713</span>, <span class="number">1023671068</span>, <span class="number">2618421812</span>, <span class="number">2005415586</span>, <span class="number">1062993857</span>,
+<a href=#61 id=61 data-nosnippet>61</a>        <span class="number">3577221846</span>, <span class="number">3960476767</span>, <span class="number">1695615427</span>, <span class="number">2597060712</span>, <span class="number">669472826</span>, <span class="number">104923136</span>, <span class="number">0</span>, <span class="number">0</span>,
+<a href=#62 id=62 data-nosnippet>62</a>    ],
+<a href=#63 id=63 data-nosnippet>63</a>    [
+<a href=#64 id=64 data-nosnippet>64</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">10681231</span>, <span class="number">1422956801</span>, <span class="number">2406345166</span>, <span class="number">4058671871</span>, <span class="number">2143913881</span>, <span class="number">4169135587</span>, <span class="number">2414104418</span>,
+<a href=#65 id=65 data-nosnippet>65</a>        <span class="number">2549553452</span>, <span class="number">997594232</span>, <span class="number">713340517</span>, <span class="number">2290070198</span>, <span class="number">1103833088</span>, <span class="number">0</span>, <span class="number">0</span>,
+<a href=#66 id=66 data-nosnippet>66</a>    ],
+<a href=#67 id=67 data-nosnippet>67</a>    [
+<a href=#68 id=68 data-nosnippet>68</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">69894212</span>, <span class="number">1038812943</span>, <span class="number">1785020643</span>, <span class="number">1285619000</span>, <span class="number">2301468615</span>, <span class="number">3492037905</span>, <span class="number">314610629</span>,
+<a href=#69 id=69 data-nosnippet>69</a>        <span class="number">2761740102</span>, <span class="number">3410618104</span>, <span class="number">1699516363</span>, <span class="number">910779968</span>, <span class="number">0</span>, <span class="number">0</span>,
+<a href=#70 id=70 data-nosnippet>70</a>    ],
+<a href=#71 id=71 data-nosnippet>71</a>    [
+<a href=#72 id=72 data-nosnippet>72</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">457363084</span>, <span class="number">927569770</span>, <span class="number">3976106370</span>, <span class="number">1389513021</span>, <span class="number">2107865525</span>, <span class="number">3716679421</span>,
+<a href=#73 id=73 data-nosnippet>73</a>        <span class="number">1828091393</span>, <span class="number">2088408376</span>, <span class="number">439156799</span>, <span class="number">2579227194</span>, <span class="number">0</span>, <span class="number">0</span>,
+<a href=#74 id=74 data-nosnippet>74</a>    ],
+<a href=#75 id=75 data-nosnippet>75</a>    [
+<a href=#76 id=76 data-nosnippet>76</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">2992822783</span>, <span class="number">383623235</span>, <span class="number">3862831115</span>, <span class="number">112778334</span>, <span class="number">339767049</span>, <span class="number">1447250220</span>,
+<a href=#77 id=77 data-nosnippet>77</a>        <span class="number">486575164</span>, <span class="number">3495303162</span>, <span class="number">2209946163</span>, <span class="number">268435456</span>, <span class="number">0</span>,
+<a href=#78 id=78 data-nosnippet>78</a>    ],
+<a href=#79 id=79 data-nosnippet>79</a>    [
+<a href=#80 id=80 data-nosnippet>80</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">2404108010</span>, <span class="number">2962826229</span>, <span class="number">3998086794</span>, <span class="number">1893006839</span>, <span class="number">2266258239</span>, <span class="number">1429430446</span>,
+<a href=#81 id=81 data-nosnippet>81</a>        <span class="number">307953032</span>, <span class="number">2361423716</span>, <span class="number">176160768</span>, <span class="number">0</span>,
+<a href=#82 id=82 data-nosnippet>82</a>    ],
+<a href=#83 id=83 data-nosnippet>83</a>    [
+<a href=#84 id=84 data-nosnippet>84</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">29</span>, <span class="number">3596590989</span>, <span class="number">3044036677</span>, <span class="number">1332209423</span>, <span class="number">1014420882</span>, <span class="number">868688145</span>,
+<a href=#85 id=85 data-nosnippet>85</a>        <span class="number">4264082837</span>, <span class="number">3688771808</span>, <span class="number">2485387264</span>, <span class="number">0</span>,
+<a href=#86 id=86 data-nosnippet>86</a>    ],
+<a href=#87 id=87 data-nosnippet>87</a>    [
+<a href=#88 id=88 data-nosnippet>88</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">195</span>, <span class="number">1054003707</span>, <span class="number">3711696540</span>, <span class="number">582574436</span>, <span class="number">3549229270</span>, <span class="number">1088536814</span>,
+<a href=#89 id=89 data-nosnippet>89</a>        <span class="number">2338440092</span>, <span class="number">1468637184</span>, <span class="number">0</span>,
+<a href=#90 id=90 data-nosnippet>90</a>    ],
+<a href=#91 id=91 data-nosnippet>91</a>    [
+<a href=#92 id=92 data-nosnippet>92</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1277</span>, <span class="number">2650397687</span>, <span class="number">3801011509</span>, <span class="number">2074386530</span>, <span class="number">3248244966</span>, <span class="number">687255411</span>,
+<a href=#93 id=93 data-nosnippet>93</a>        <span class="number">2959155456</span>, <span class="number">0</span>,
+<a href=#94 id=94 data-nosnippet>94</a>    ],
+<a href=#95 id=95 data-nosnippet>95</a>    [
+<a href=#96 id=96 data-nosnippet>96</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">8360</span>, <span class="number">1184754854</span>, <span class="number">3047609191</span>, <span class="number">3418394749</span>, <span class="number">132556120</span>, <span class="number">1199103528</span>,
+<a href=#97 id=97 data-nosnippet>97</a>        <span class="number">0</span>,
+<a href=#98 id=98 data-nosnippet>98</a>    ],
+<a href=#99 id=99 data-nosnippet>99</a>    [
+<a href=#100 id=100 data-nosnippet>100</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">54706</span>, <span class="number">2996985344</span>, <span class="number">1834629191</span>, <span class="number">3964963911</span>, <span class="number">485140318</span>,
+<a href=#101 id=101 data-nosnippet>101</a>        <span class="number">1073741824</span>,
+<a href=#102 id=102 data-nosnippet>102</a>    ],
+<a href=#103 id=103 data-nosnippet>103</a>    [
+<a href=#104 id=104 data-nosnippet>104</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">357981</span>, <span class="number">1476998812</span>, <span class="number">3337178590</span>, <span class="number">1483338760</span>, <span class="number">4194304000</span>,
+<a href=#105 id=105 data-nosnippet>105</a>    ],
+<a href=#106 id=106 data-nosnippet>106</a>    [
+<a href=#107 id=107 data-nosnippet>107</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">2342503</span>, <span class="number">3052466824</span>, <span class="number">2595180627</span>, <span class="number">17825792</span>,
+<a href=#108 id=108 data-nosnippet>108</a>    ],
+<a href=#109 id=109 data-nosnippet>109</a>    [
+<a href=#110 id=110 data-nosnippet>110</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">15328518</span>, <span class="number">1933902296</span>, <span class="number">4063920128</span>,
+<a href=#111 id=111 data-nosnippet>111</a>    ],
+<a href=#112 id=112 data-nosnippet>112</a>    [
+<a href=#113 id=113 data-nosnippet>113</a>        <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">100304420</span>, <span class="number">3355157504</span>,
+<a href=#114 id=114 data-nosnippet>114</a>    ],
+<a href=#115 id=115 data-nosnippet>115</a>    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">656356768</span>],
+<a href=#116 id=116 data-nosnippet>116</a>    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>],
+<a href=#117 id=117 data-nosnippet>117</a>];
+<a href=#118 id=118 data-nosnippet>118</a>
+<a href=#119 id=119 data-nosnippet>119</a><span class="attr">#[derive(Debug, PartialEq)]
+<a href=#120 id=120 data-nosnippet>120</a></span><span class="kw">pub enum </span>DecodeError {
+<a href=#121 id=121 data-nosnippet>121</a>    InvalidChar(u8),
+<a href=#122 id=122 data-nosnippet>122</a>    TooLong,
+<a href=#123 id=123 data-nosnippet>123</a>    TooShort,
+<a href=#124 id=124 data-nosnippet>124</a>    LargestTermTooHigh,
+<a href=#125 id=125 data-nosnippet>125</a>    OutputTooLong,
+<a href=#126 id=126 data-nosnippet>126</a>}
+<a href=#127 id=127 data-nosnippet>127</a>
+<a href=#128 id=128 data-nosnippet>128</a><span class="attr">#[cfg(feature = <span class="string">"std"</span>)]
+<a href=#129 id=129 data-nosnippet>129</a></span><span class="kw">impl </span>std::error::Error <span class="kw">for </span>DecodeError {}
+<a href=#130 id=130 data-nosnippet>130</a>
+<a href=#131 id=131 data-nosnippet>131</a><span class="attr">#[cfg(feature = <span class="string">"std"</span>)]
+<a href=#132 id=132 data-nosnippet>132</a></span><span class="kw">impl </span>fmt::Display <span class="kw">for </span>DecodeError {
+<a href=#133 id=133 data-nosnippet>133</a>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+<a href=#134 id=134 data-nosnippet>134</a>        <span class="kw">match </span><span class="self">self </span>{
+<a href=#135 id=135 data-nosnippet>135</a>            DecodeError::InvalidChar(c) =&gt; {
+<a href=#136 id=136 data-nosnippet>136</a>                <span class="macro">write!</span>(f, <span class="string">"Illegal base58 char number: {}"</span>, c)
+<a href=#137 id=137 data-nosnippet>137</a>            }
+<a href=#138 id=138 data-nosnippet>138</a>            DecodeError::TooLong =&gt; f.write_str(<span class="string">"Base58 string too long"</span>),
+<a href=#139 id=139 data-nosnippet>139</a>            DecodeError::TooShort =&gt; f.write_str(<span class="string">"Base58 string too short"</span>),
+<a href=#140 id=140 data-nosnippet>140</a>            DecodeError::LargestTermTooHigh =&gt; f.write_str(<span class="string">"Largest term greater than 2^32"</span>),
+<a href=#141 id=141 data-nosnippet>141</a>            DecodeError::OutputTooLong =&gt; f.write_str(<span class="string">"Decoded output has too many bytes"</span>),
+<a href=#142 id=142 data-nosnippet>142</a>        }
+<a href=#143 id=143 data-nosnippet>143</a>    }
+<a href=#144 id=144 data-nosnippet>144</a>}</code></pre></div></section></main></body></html>

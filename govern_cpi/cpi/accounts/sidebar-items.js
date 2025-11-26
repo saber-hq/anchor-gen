@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ActivateProposal","CancelProposal","CreateGovernor","CreateProposal","CreateProposalMeta","NewVote","QueueProposal","SetElectorate","SetGovernanceParams","SetVote"]};

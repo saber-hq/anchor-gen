@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["stable_instruction","stable_rc","stable_ref_cell","stable_slice","stable_vec"]};

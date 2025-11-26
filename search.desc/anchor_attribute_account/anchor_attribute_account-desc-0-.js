@@ -1,0 +1,1 @@
+searchState.loadedDescShard("anchor_attribute_account", 0, "An attribute for a data structure representing a Solana …\nDefines the program’s ID. This should be used at the …\nConvenience macro to define a static public key.\nA data structure that can be used as an internal field for …")

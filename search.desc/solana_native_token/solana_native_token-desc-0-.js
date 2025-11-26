@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_native_token", 0, "Definitions for the native SOL token and its fractional …\nThere are 10^9 lamports in one SOL\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nApproximately convert fractional native tokens (lamports) …\nApproximately convert native tokens (SOL) into fractional …")

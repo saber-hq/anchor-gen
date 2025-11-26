@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_feature_gate_interface", 0, "Runtime features.\nThe const program ID.\nActivate a feature\nReturns <code>true</code> if given pubkey is the program ID.\nReturns the argument unchanged.\nReturns the program ID.\nCalls <code>U::from(self)</code>.")

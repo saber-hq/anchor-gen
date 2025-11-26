@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["bit_vec"],"mod":["adapter"],"struct":["BitSlice","BitSliceMut","BitVec"],"trait":["BitSliceable","BitSliceableMut","Bits","BitsExt","BitsMut","BitsMutExt","BitsPush","BlockType"]};

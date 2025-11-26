@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_builtin_key_or_sysvar"],"struct":["BUILTIN_PROGRAMS_KEYS","MAYBE_BUILTIN_KEY_OR_SYSVAR","Message"]};

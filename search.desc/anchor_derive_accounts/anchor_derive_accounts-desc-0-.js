@@ -1,0 +1,1 @@
+searchState.loadedDescShard("anchor_derive_accounts", 0, "Implements an <code>Accounts</code> deserializer on the given struct. …")

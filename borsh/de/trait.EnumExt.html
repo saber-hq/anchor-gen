@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Additional methods offered on enums which is used by `[derive(BorshDeserialize)]`."><title>EnumExt in borsh::de - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="borsh" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../borsh/index.html">borsh</a><span class="version">1.5.7</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">EnumExt</a></h2><h3><a href="#required-methods">Required Methods</a></h3><ul class="block"><li><a href="#tymethod.deserialize_variant" title="deserialize_variant">deserialize_variant</a></li></ul><h3><a href="#dyn-compatibility">Dyn Compatibility</a></h3><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2><a href="index.html">In borsh::<wbr>de</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">borsh</a>::<wbr><a href="index.html">de</a></div><h1>Trait <span class="trait">EnumExt</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/borsh/de/mod.rs.html#81-136">Source</a> </span></div><pre class="rust item-decl"><code>pub trait EnumExt: <a class="trait" href="trait.BorshDeserialize.html" title="trait borsh::de::BorshDeserialize">BorshDeserialize</a> {
+    // Required method
+    fn <a href="#tymethod.deserialize_variant" class="fn">deserialize_variant</a>&lt;R: <a class="trait" href="../io/trait.Read.html" title="trait borsh::io::Read">Read</a>&gt;(reader: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;mut R</a>, tag: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>) -&gt; <a class="type" href="../io/type.Result.html" title="type borsh::io::Result">Result</a>&lt;Self&gt;;
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Additional methods offered on enums which is used by <code>[derive(BorshDeserialize)]</code>.</p>
+</div></details><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.deserialize_variant" class="method"><a class="src rightside" href="../../src/borsh/de/mod.rs.html#135">Source</a><h4 class="code-header">fn <a href="#tymethod.deserialize_variant" class="fn">deserialize_variant</a>&lt;R: <a class="trait" href="../io/trait.Read.html" title="trait borsh::io::Read">Read</a>&gt;(reader: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.reference.html">&amp;mut R</a>, tag: <a class="primitive" href="https://doc.rust-lang.org/1.86.0/std/primitive.u8.html">u8</a>) -&gt; <a class="type" href="../io/type.Result.html" title="type borsh::io::Result">Result</a>&lt;Self&gt;</h4></section></summary><div class="docblock"><p>Deserialises given variant of an enum from the reader.</p>
+<p>This may be used to perform validation or filtering based on what
+variant is being deserialised.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>borsh::BorshDeserialize;
+<span class="kw">use </span>borsh::de::EnumExt <span class="kw">as _</span>;
+
+<span class="doccomment">/// derive is only available if borsh is built with `features = ["derive"]`
+</span><span class="attr">#[derive(Debug, PartialEq, Eq, BorshDeserialize)]
+</span><span class="kw">enum </span>MyEnum {
+    Zero,
+    One(u8),
+    Many(Vec&lt;u8&gt;)
+}
+
+<span class="attr">#[derive(Debug, PartialEq, Eq)]
+</span><span class="kw">struct </span>OneOrZero(MyEnum);
+
+<span class="kw">impl </span>borsh::de::BorshDeserialize <span class="kw">for </span>OneOrZero {
+    <span class="kw">fn </span>deserialize_reader&lt;R: borsh::io::Read&gt;(
+        reader: <span class="kw-2">&amp;mut </span>R,
+    ) -&gt; borsh::io::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">use </span>borsh::de::EnumExt;
+        <span class="kw">let </span>tag = u8::deserialize_reader(reader)<span class="question-mark">?</span>;
+        <span class="kw">if </span>tag == <span class="number">2 </span>{
+            <span class="prelude-val">Err</span>(borsh::io::Error::new(
+                borsh::io::ErrorKind::InvalidData,
+                <span class="string">"MyEnum::Many not allowed here"</span>,
+            ))
+        } <span class="kw">else </span>{
+            MyEnum::deserialize_variant(reader, tag).map(<span class="self">Self</span>)
+        }
+    }
+}
+
+<span class="kw">use </span>borsh::from_slice;
+<span class="kw">let </span>data = <span class="string">b"\0"</span>;
+<span class="macro">assert_eq!</span>(MyEnum::Zero, from_slice::&lt;MyEnum&gt;(<span class="kw-2">&amp;</span>data[..]).unwrap());
+<span class="macro">assert_eq!</span>(MyEnum::Zero, from_slice::&lt;OneOrZero&gt;(<span class="kw-2">&amp;</span>data[..]).unwrap().<span class="number">0</span>);
+
+<span class="kw">let </span>data = <span class="string">b"\x02\0\0\0\0"</span>;
+<span class="macro">assert_eq!</span>(MyEnum::Many(Vec::new()), from_slice::&lt;MyEnum&gt;(<span class="kw-2">&amp;</span>data[..]).unwrap());
+<span class="macro">assert!</span>(from_slice::&lt;OneOrZero&gt;(<span class="kw-2">&amp;</span>data[..]).is_err());</code></pre></div>
+</div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/1.86.0/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety", so this trait is not object safe.</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><section id="impl-EnumExt-for-Definition" class="impl"><a class="src rightside" href="../../src/borsh/schema.rs.html#46">Source</a><a href="#impl-EnumExt-for-Definition" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.EnumExt.html" title="trait borsh::de::EnumExt">EnumExt</a> for <a class="enum" href="../schema/enum.Definition.html" title="enum borsh::schema::Definition">Definition</a></h3></section><section id="impl-EnumExt-for-Fields" class="impl"><a class="src rightside" href="../../src/borsh/schema.rs.html#144">Source</a><a href="#impl-EnumExt-for-Fields" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.EnumExt.html" title="trait borsh::de::EnumExt">EnumExt</a> for <a class="enum" href="../schema/enum.Fields.html" title="enum borsh::schema::Fields">Fields</a></h3></section></div><script src="../../trait.impl/borsh/de/trait.EnumExt.js" async></script></section></div></main></body></html>

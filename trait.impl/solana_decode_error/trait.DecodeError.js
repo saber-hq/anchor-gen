@@ -1,0 +1,9 @@
+(function() {
+    var implementors = Object.fromEntries([["solana_pubkey",[["impl&lt;T&gt; <a class=\"trait\" href=\"solana_decode_error/trait.DecodeError.html\" title=\"trait solana_decode_error::DecodeError\">DecodeError</a>&lt;T&gt; for <a class=\"enum\" href=\"solana_pubkey/enum.ParsePubkeyError.html\" title=\"enum solana_pubkey::ParsePubkeyError\">ParsePubkeyError</a>"],["impl&lt;T&gt; <a class=\"trait\" href=\"solana_decode_error/trait.DecodeError.html\" title=\"trait solana_decode_error::DecodeError\">DecodeError</a>&lt;T&gt; for <a class=\"enum\" href=\"solana_pubkey/enum.PubkeyError.html\" title=\"enum solana_pubkey::PubkeyError\">PubkeyError</a>"]]],["solana_stake_interface",[["impl&lt;E&gt; <a class=\"trait\" href=\"solana_decode_error/trait.DecodeError.html\" title=\"trait solana_decode_error::DecodeError\">DecodeError</a>&lt;E&gt; for <a class=\"enum\" href=\"solana_stake_interface/error/enum.StakeError.html\" title=\"enum solana_stake_interface::error::StakeError\">StakeError</a>"]]],["solana_system_interface",[["impl&lt;T&gt; <a class=\"trait\" href=\"solana_decode_error/trait.DecodeError.html\" title=\"trait solana_decode_error::DecodeError\">DecodeError</a>&lt;T&gt; for <a class=\"enum\" href=\"solana_system_interface/error/enum.SystemError.html\" title=\"enum solana_system_interface::error::SystemError\">SystemError</a>"]]],["solana_vote_interface",[["impl&lt;E&gt; <a class=\"trait\" href=\"solana_decode_error/trait.DecodeError.html\" title=\"trait solana_decode_error::DecodeError\">DecodeError</a>&lt;E&gt; for <a class=\"enum\" href=\"solana_vote_interface/error/enum.VoteError.html\" title=\"enum solana_vote_interface::error::VoteError\">VoteError</a>"]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[610,345,351,339]}

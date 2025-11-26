@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_PERMITTED_ACCOUNTS_DATA_ALLOCATIONS_PER_TRANSACTION","MAX_PERMITTED_DATA_LENGTH"],"mod":["error","instruction","program"]};

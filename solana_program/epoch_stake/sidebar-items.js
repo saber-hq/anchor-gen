@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["get_epoch_stake_for_vote_account","get_epoch_total_stake"]};

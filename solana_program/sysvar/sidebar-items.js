@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ID"],"fn":["check_id","id","is_sysvar_id"],"macro":["declare_deprecated_sysvar_id","declare_sysvar_id"],"mod":["clock","epoch_rewards","epoch_schedule","fees","instructions","last_restart_slot","recent_blockhashes","rent","rewards","slot_hashes","slot_history","stake_history"],"struct":["ALL_IDS"],"trait":["Sysvar","SysvarId"]};

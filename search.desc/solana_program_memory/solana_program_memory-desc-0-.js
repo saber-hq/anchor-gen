@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_program_memory", 0, "Basic low-level memory operations.\nLike C <code>memcmp</code>.\nLike C <code>memcpy</code>.\nLike C <code>memmove</code>.\nLike C <code>memset</code>.\nSafety\nSafety\nSafety\nSafety")

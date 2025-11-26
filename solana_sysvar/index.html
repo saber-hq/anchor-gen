@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Access to special accounts with dynamically-updated data."><title>solana_sysvar - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="solana_sysvar" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../static.files/storage-3a5871a4.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../solana_sysvar/index.html">solana_<wbr>sysvar</a><span class="version">2.2.1</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#macros" title="Macros">Macros</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#statics" title="Statics">Statics</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>solana_sysvar</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/solana_sysvar/lib.rs.html#1-333">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Access to special accounts with dynamically-updated data.</p>
+<p>Sysvars are special accounts that contain dynamically-updated data about the
+network cluster, the blockchain history, and the executing transaction. Each
+sysvar is defined in its own submodule within this module. The <a href="clock/index.html" title="mod solana_sysvar::clock"><code>clock</code></a>,
+<a href="epoch_schedule/index.html" title="mod solana_sysvar::epoch_schedule"><code>epoch_schedule</code></a>, [<code>instructions</code>], and <a href="rent/index.html" title="mod solana_sysvar::rent"><code>rent</code></a> sysvars are most useful
+to on-chain programs.</p>
+<p>Simple sysvars implement the <a href="trait.Sysvar.html#method.get" title="associated function solana_sysvar::Sysvar::get"><code>Sysvar::get</code></a> method, which loads a sysvar
+directly from the runtime, as in this example that logs the <code>clock</code> sysvar:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_account_info::AccountInfo;
+<span class="kw">use </span>solana_msg::msg;
+<span class="kw">use </span>solana_sysvar::Sysvar;
+<span class="kw">use </span>solana_program_error::ProgramResult;
+<span class="kw">use </span>solana_pubkey::Pubkey;
+
+<span class="kw">fn </span>process_instruction(
+    program_id: <span class="kw-2">&amp;</span>Pubkey,
+    accounts: <span class="kw-2">&amp;</span>[AccountInfo],
+    instruction_data: <span class="kw-2">&amp;</span>[u8],
+) -&gt; ProgramResult {
+    <span class="kw">let </span>clock = solana_clock::Clock::get()<span class="question-mark">?</span>;
+    <span class="macro">msg!</span>(<span class="string">"clock: {:#?}"</span>, clock);
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>Since Solana sysvars are accounts, if the <code>AccountInfo</code> is provided to the
+program, then the program can deserialize the sysvar with
+<a href="trait.Sysvar.html#method.from_account_info" title="associated function solana_sysvar::Sysvar::from_account_info"><code>Sysvar::from_account_info</code></a> to access its data, as in this example that
+again logs the <a href="clock/index.html" title="mod solana_sysvar::clock"><code>clock</code></a> sysvar.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>solana_account_info::{AccountInfo, next_account_info};
+<span class="kw">use </span>solana_msg::msg;
+<span class="kw">use </span>solana_sysvar::Sysvar;
+<span class="kw">use </span>solana_program_error::ProgramResult;
+<span class="kw">use </span>solana_pubkey::Pubkey;
+
+<span class="kw">fn </span>process_instruction(
+    program_id: <span class="kw-2">&amp;</span>Pubkey,
+    accounts: <span class="kw-2">&amp;</span>[AccountInfo],
+    instruction_data: <span class="kw-2">&amp;</span>[u8],
+) -&gt; ProgramResult {
+    <span class="kw">let </span>account_info_iter = <span class="kw-2">&amp;mut </span>accounts.iter();
+    <span class="kw">let </span>clock_account = next_account_info(account_info_iter)<span class="question-mark">?</span>;
+    <span class="kw">let </span>clock = solana_clock::Clock::from_account_info(<span class="kw-2">&amp;</span>clock_account)<span class="question-mark">?</span>;
+    <span class="macro">msg!</span>(<span class="string">"clock: {:#?}"</span>, clock);
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>When possible, programs should prefer to call <code>Sysvar::get</code> instead of
+deserializing with <code>Sysvar::from_account_info</code>, as the latter imposes extra
+overhead of deserialization while also requiring the sysvar account address
+be passed to the program, wasting the limited space available to
+transactions. Deserializing sysvars that can instead be retrieved with
+<code>Sysvar::get</code> should be only be considered for compatibility with older
+programs that pass around sysvar accounts.</p>
+<p>Some sysvars are too large to deserialize within a program, and
+<code>Sysvar::from_account_info</code> returns an error, or the serialization attempt
+will exhaust the program’s compute budget. Some sysvars do not implement
+<code>Sysvar::get</code> and return an error. Some sysvars have custom deserializers
+that do not implement the <code>Sysvar</code> trait. These cases are documented in the
+modules for individual sysvars.</p>
+<p>All sysvar accounts are owned by the account identified by <a href="https://docs.rs/solana-sdk-ids/latest/solana_sdk_ids/sysvar/constant.ID.html"><code>sysvar::ID</code></a>.</p>
+<p>For more details see the Solana <a href="https://docs.solanalabs.com/runtime/sysvars">documentation on sysvars</a>.</p>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="__private/index.html" title="mod solana_sysvar::__private">__<wbr>private</a></dt><dt><a class="mod" href="clock/index.html" title="mod solana_sysvar::clock">clock</a></dt><dd>Information about the network’s clock, ticks, slots, etc.</dd><dt><a class="mod" href="epoch_rewards/index.html" title="mod solana_sysvar::epoch_rewards">epoch_<wbr>rewards</a></dt><dd>Epoch rewards for current epoch</dd><dt><a class="mod" href="epoch_schedule/index.html" title="mod solana_sysvar::epoch_schedule">epoch_<wbr>schedule</a></dt><dd>Information about epoch duration.</dd><dt><a class="mod" href="fees/index.html" title="mod solana_sysvar::fees">fees</a></dt><dd>Current cluster fees.</dd><dt><a class="mod" href="last_restart_slot/index.html" title="mod solana_sysvar::last_restart_slot">last_<wbr>restart_<wbr>slot</a></dt><dd>Information about the last restart slot (hard fork).</dd><dt><a class="mod" href="program_stubs/index.html" title="mod solana_sysvar::program_stubs">program_<wbr>stubs</a></dt><dd>Implementations of syscalls used when <code>solana-program</code> is built for non-SBF targets.</dd><dt><a class="mod" href="recent_blockhashes/index.html" title="mod solana_sysvar::recent_blockhashes">recent_<wbr>blockhashes</a></dt><dd>Information about recent blocks and their fee calculators.</dd><dt><a class="mod" href="rent/index.html" title="mod solana_sysvar::rent">rent</a></dt><dd>Configuration for network <a href="https://docs.solanalabs.com/implemented-proposals/rent">rent</a>.</dd><dt><a class="mod" href="rewards/index.html" title="mod solana_sysvar::rewards">rewards</a></dt><dd>This sysvar is deprecated and unused.</dd><dt><a class="mod" href="slot_hashes/index.html" title="mod solana_sysvar::slot_hashes">slot_<wbr>hashes</a></dt><dd>The most recent hashes of a slot’s parent banks.</dd><dt><a class="mod" href="slot_history/index.html" title="mod solana_sysvar::slot_history">slot_<wbr>history</a></dt><dd>A bitvector of slots present over the last epoch.</dd><dt><a class="mod" href="stake_history/index.html" title="mod solana_sysvar::stake_history">stake_<wbr>history</a></dt><dd>History of stake activations and de-activations.</dd></dl><h2 id="macros" class="section-header">Macros<a href="#macros" class="anchor">§</a></h2><dl class="item-table"><dt><a class="macro" href="macro.impl_sysvar_get.html" title="macro solana_sysvar::impl_sysvar_get">impl_<wbr>sysvar_<wbr>get</a></dt><dd>Implements the <a href="trait.Sysvar.html#method.get" title="associated function solana_sysvar::Sysvar::get"><code>Sysvar::get</code></a> method for both SBF and host targets.</dd></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.ALL_IDS.html" title="struct solana_sysvar::ALL_IDS">ALL_IDS</a><wbr><span class="stab deprecated" title="">Deprecated</span></dt></dl><h2 id="statics" class="section-header">Statics<a href="#statics" class="anchor">§</a></h2><dl class="item-table"><dt><a class="static" href="static.ALL_IDS.html" title="static solana_sysvar::ALL_IDS">ALL_IDS</a><wbr><span class="stab deprecated" title="">Deprecated</span></dt></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.Sysvar.html" title="trait solana_sysvar::Sysvar">Sysvar</a></dt><dd>A type that holds sysvar data.</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.is_sysvar_id.html" title="fn solana_sysvar::is_sysvar_id">is_<wbr>sysvar_<wbr>id</a><wbr><span class="stab deprecated" title="">Deprecated</span></dt><dd>Returns <code>true</code> of the given <code>Pubkey</code> is a sysvar account.</dd></dl></section></div></main></body></html>

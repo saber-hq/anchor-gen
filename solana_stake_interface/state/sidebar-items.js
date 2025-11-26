@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_SLASH_PENALTY","DEFAULT_WARMUP_COOLDOWN_RATE","NEW_WARMUP_COOLDOWN_RATE"],"enum":["StakeAuthorize","StakeState","StakeStateV2"],"fn":["warmup_cooldown_rate"],"struct":["Authorized","Delegation","Lockup","Meta","Stake"],"type":["StakeActivationStatus"]};

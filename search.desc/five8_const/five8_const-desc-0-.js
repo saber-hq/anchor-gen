@@ -1,0 +1,1 @@
+searchState.loadedDescShard("five8_const", 0, "five8_const\nDecode into a 32-byte array. Panic on error.\nDecode into a 64-byte array. Panic on error.\nTry decode into a 32-byte array.\nTry decode into a 64-byte array.")

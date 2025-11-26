@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_ENTRIES"],"fn":["get_entries","set_entries_for_tests_only"],"mod":["sysvar"],"struct":["SlotHashes"],"type":["Slot","SlotHash"]};

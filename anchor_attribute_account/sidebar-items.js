@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["account","zero_copy"],"derive":["ZeroCopyAccessor"],"macro":["declare_id","pubkey"]};

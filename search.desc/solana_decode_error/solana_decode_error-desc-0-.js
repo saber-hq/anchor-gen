@@ -1,0 +1,1 @@
+searchState.loadedDescShard("solana_decode_error", 0, "Converting custom error codes to enums.\nAllows custom errors to be decoded back to their original …")

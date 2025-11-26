@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Governor","Proposal","ProposalMeta","Vote"]};

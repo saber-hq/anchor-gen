@@ -1,0 +1,1 @@
+searchState.loadedDescShard("anchor_attribute_program", 0, "Declare an external program based on its IDL.\nThis attribute is used to override the Anchor defaults of …\nThe <code>#[program]</code> attribute defines the module containing all …")
