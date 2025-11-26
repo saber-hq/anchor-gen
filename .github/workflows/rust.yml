@@ -15,7 +15,7 @@ jobs:
     name: Clippy/Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -31,7 +31,7 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Rust nightly
         uses: actions-rs/toolchain@v1
         with:
@@ -47,7 +47,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Rust nightly
         uses: actions-rs/toolchain@v1
         with:
@@ -61,7 +61,7 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Rust nightly
         uses: actions-rs/toolchain@v1
         with:
@@ -76,7 +76,7 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Rust nightly
         uses: actions-rs/toolchain@v1
         with:
