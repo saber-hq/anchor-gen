@@ -1,6 +1,6 @@
 [package]
 name = "anchor-idl"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2021"
 description = "Generates Rust code from an Anchor IDL."
 authors = ["Ian Macalinao <ian@saber.so>"]
